@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('partials/head') %>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+    <div class="container-scroller">
+        <!-- partial:../../partials/_sidebar.html -->
+        <%- include('partials/sidebar') %>
+            <!-- partial -->
+            <div class="container-fluid page-body-wrapper">
+                <!-- partial:../../partials/_navbar.html -->
+                <%- include('partials/topbar') %>
+                    <!-- partial -->
+                    <div class="main-panel">
+                        <div class="content-wrapper">
+                            <div class="row">
+                                <div class="col-lg-12 grid-margin stretch-card">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h4 class="card-title">Usuarios</h4>
+                                                <div>
+                                                    <button class="btn btn-outline-secondary btn-fw" data-toggle="modal"
+                                                        data-target="#addModal">
+                                                        <i class="fas fa-plus"></i> Agregar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th> Id </th>
+                                                            <th> Nombres </th>
+                                                            <th> Apellidos </th>
+                                                            <th> Fecha Nacimiento </th>
+                                                            <th> Correo </th>
+                                                            <th> Rol </th>
+                                                            <th> Documentacion </th>
+                                                            <th> Estado </th>
+                                                            <th> Acción </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td> 1 </td>
+                                                            <td> Herman Beck </td>
+                                                            <td> $ 77.99 </td>
+                                                            <td> May 15, 2015 </td>
+                                                            <td> May 15, 2015 </td>
+                                                            <td> May 15, 2015 </td>
+                                                            <td> May 15, 2015 </td>
+                                                            <td> May 15, 2015 </td>
+                                                            <td>
+                                                                <button type="button" class="button-iconn"
+                                                                    data-toggle="modal" data-target="#editModal">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </button>
+                                                                <button type="button" class="button-iconn">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Editar -->
+                        <div class="modal fade" id="editModal" tabindex="-1" role="dialog"
+                            aria-labelledby="editModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel">Editar Usuario</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="forms-sample" method="post" action="/editar_usuario/"
+                                            id="editForm">
+                                            <input type="hidden" name="id_usuario" id="id_usuario" />
+                                            <div class="form-group row">
+                                                <label for="editNombre" class="col-sm-3 col-form-label">Nombre</label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="nombre" class="form-control"
+                                                        id="editNombre" placeholder="Nombre" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="editApellido"
+                                                    class="col-sm-3 col-form-label">Apellidos</label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="apellido" class="form-control"
+                                                        id="editApellido" placeholder="Apellidos" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="editFechaNacimiento" class="col-sm-3 col-form-label">Fecha
+                                                    de nacimiento</label>
+                                                <div class="col-sm-9">
+                                                    <input type="date" name="fecha_nacimiento" class="form-control"
+                                                        id="editFechaNacimiento" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="editGmail" class="col-sm-3 col-form-label">Gmail</label>
+                                                <div class="col-sm-9">
+                                                    <input type="email" name="gmail" class="form-control" id="editGmail"
+                                                        placeholder="Gmail" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="editEstado" class="col-sm-3 col-form-label">Estado</label>
+                                                <div class="col-sm-9">
+                                                    <select class="form-control" id="editEstado" name="estado" required>
+                                                        <option value="espera">Espera</option>
+                                                        <option value="habilitado">Habilitado</option>
+                                                        <option value="deshabilitado">Deshabilitado</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-dark mr-2"
+                                                    data-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-dark">Guardar Cambios</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Agregar -->
+                        <div class="modal fade" id="addModal" tabindex="-1" role="dialog"
+                            aria-labelledby="addModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addModalLabel">Agregar Usuario</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="forms-sample" method="post" action="/agregar_usuario">
+                                            <div class="form-group row">
+                                                <label for="nombre" class="col-sm-3 col-form-label">Nombre</label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="nombre" class="form-control" id="nombre"
+                                                        placeholder="Nombre">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="apellido" class="col-sm-3 col-form-label">Apellidos</label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="apellido" class="form-control"
+                                                        id="apellido" placeholder="Apellidos">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="fecha_nacimiento" class="col-sm-3 col-form-label">Fecha de
+                                                    nacimiento</label>
+                                                <div class="col-sm-9">
+                                                    <input type="date" name="fecha_nacimiento" class="form-control"
+                                                        id="fecha_nacimiento" placeholder="Fecha de nacimiento">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="gmail" class="col-sm-3 col-form-label">Gmail</label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="gmail" class="form-control" id="gmail"
+                                                        placeholder="Gmail">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="id_clase" class="col-sm-3 col-form-label">Clase</label>
+                                                <div class="col-sm-9">
+                                                    <select class="form-control" name="id_clase" id="id_clase">
+                                                        <option value="">Selecciona una clase</option>
+                                                        <option value="1">Boxeo</option>
+                                                        <option value="2">Mixtas</option>
+                                                        <option value="3">Parkour</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="contraseña"
+                                                    class="col-sm-3 col-form-label">Contraseña</label>
+                                                <div class="col-sm-9">
+                                                    <input type="password" name="contraseña" class="form-control"
+                                                        id="contraseña" placeholder="Contraseña">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="rol" class="col-sm-3 col-form-label">Rol</label>
+                                                <div class="col-sm-9">
+                                                    <select class="form-control" name="id_rol" id="rol">
+                                                        <option value="1">Estudiante</option>
+                                                        <option value="2">Profesor</option>
+                                                        <option value="3">Administrador</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="estado" class="col-sm-3 col-form-label">Estado</label>
+                                                <div class="col-sm-9">
+                                                    <select class="form-control" name="estado" id="estado">
+                                                        <option value="espera">Espera</option>
+                                                        <option value="habilitado">Habilitado</option>
+                                                        <option value="deshabilitado">Deshabilitado</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-dark mr-2"
+                                                    data-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-dark">Guardar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- content-wrapper ends -->
+                        <!-- partial:../../partials/_footer.html -->
+                        <%- include('partials/footer') %>
+                            <!-- partial -->
+                    </div>
+                    <!-- main-panel ends -->
+            </div>
+            <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <%- include('partials/scripts') %>
+
+
+        <!-- End custom js for this page -->
+</body>
+
+</html>

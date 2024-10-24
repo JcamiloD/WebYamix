@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken');
+
+
 exports.register = async (req, res) => {
     const { nombre, apellido, correo, contraseña, fecha_nacimiento } = req.body;
     console.log(req.body);
@@ -14,10 +17,10 @@ exports.register = async (req, res) => {
         }
 
         if (!passwordRegex.test(contraseña)) {
-            return res.render('web/inscripcion', { 
-                alert: 'La contraseña debe tener al menos 6 caracteres, incluyendo letras min y mayus , números y caracteres especiales.', 
-                alertType: 'error', 
-                ruta: 'register' 
+            return res.render('web/inscripcion', {
+                alert: 'La contraseña debe tener al menos 6 caracteres, incluyendo letras min y mayus , números y caracteres especiales.',
+                alertType: 'error',
+                ruta: 'register'
             });
         }
 
@@ -44,17 +47,17 @@ exports.register = async (req, res) => {
 
         if (apiResponse.ok) {
             // Si el registro es exitoso, redirige al login con alerta de éxito
-            return res.render('web/inscripcion', { 
+            return res.render('web/inscripcion', {
                 alert: 'Registro exitoso, ahora puedes iniciar sesión',
                 ruta: 'login',
-                alertType: 'success' 
-            });            
+                alertType: 'success'
+            });
         } else {
             // Si la API devuelve un error (correo ya en uso u otro error), muestra la alerta de error
-            return res.render('web/inscripcion', { 
-                alert: apiData.message || 'Error al registrar el usuario', 
-                alertType: 'error', 
-                ruta: 'register' 
+            return res.render('web/inscripcion', {
+                alert: apiData.message || 'Error al registrar el usuario',
+                alertType: 'error',
+                ruta: 'register'
             });
         }
     } catch (error) {
@@ -62,6 +65,7 @@ exports.register = async (req, res) => {
         return res.render('web/inscripcion', { alert: 'Ocurrió un error en el servidor', alertType: 'error', ruta: 'register' });
     }
 };
+
 
 exports.login = async (req, res) => {
     const { correo, contraseña } = req.body;
@@ -97,10 +101,18 @@ exports.login = async (req, res) => {
             };
             res.cookie('jwt', token, cookieOptions);
 
+            const decodedToken = jwt.decode(token);
+            const userRole = decodedToken.rol;
+
+            let ruta = '';
+            if (userRole === 'administrador') {
+                ruta = 'dashboard';
+            }
+
             return res.render('web/login', {
                 alert: 'Login correcto',
                 alertType: 'success',
-                ruta: '' // Redirige a la página principal o la ruta que desees
+                ruta: ruta
             });
         } else {
             return res.render('web/login', {
@@ -118,3 +130,12 @@ exports.login = async (req, res) => {
         });
     }
 };
+
+
+
+
+
+exports.logout = (req, res) => {
+    res.clearCookie('jwt');
+    return res.redirect('/')
+}

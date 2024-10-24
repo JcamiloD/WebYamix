@@ -10,6 +10,7 @@ router.get('/register', (req, res) => {
 
 router.post('/registro', auth.register);
 router.post('/logueo', auth.login);
+router.get('/logout', auth.logout);
 
 
 module.exports = router;
