@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - Glassmorphism Login form</title>
+  <link rel="stylesheet" href="css/login.css">
+
+</head>
+
+<body>
+  <!-- partial:index.partial.html -->
+  <section id="login">
+    <div class="form-box">
+      <div class="form-value">
+        <form action="/logueo" method="post">
+          <h2>Login</h2>
+          <div class="inputbox">
+            <ion-icon name="mail-outline"></ion-icon>
+            <input name="correo" type="person" required>
+            <label for="">correo</label>
+          </div>
+          <div class="inputbox">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+            <input name="contraseña" type="password" required>
+            <label for="">Contraseña</label>
+          </div>
+          <div class="forget">
+            <label>
+              <input type="checkbox"> Recuérdame
+            </label>
+            <label>
+              <a href="#">¿Olvidaste la contraseña?</a>
+            </label>
+          </div>
+          <button> Iniciar Sesión </button>
+          <div class="register">
+            <p>¿No tienes cuenta? <a href="/register">Registrate</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <!-- partial -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'></script>
+  <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'></script>
+
+
+  <script>
+  <% if (typeof alert !== 'undefined') { %>
+      Swal.fire({
+        icon: '<%= alertType %>',
+        title: '<%= alertType === "success" ? "¡Éxito!" : "¡Error!" %>',
+        text: '<%= alert %>',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+        window.location = '/<%= ruta %>';  // Redirige después de cerrar la alerta
+      });
+  <% } %>
+  </script>
+</body>
+
+</html>

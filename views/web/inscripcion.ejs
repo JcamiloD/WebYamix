@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Inscripción</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
+    <section id="sec">
+        <div class="form-box">
+            <div class="form-value">
+                <form action="/registro" method="post">
+                    <h2>Inscribete</h2>
+                    <div class="inputbox">
+                        <ion-icon name="person"></ion-icon>
+                        <input name="nombre" type="text" required>
+                        <label for="">Nombres</label>
+                    </div>
+                    <div class="inputbox">
+                        <ion-icon name="person"></ion-icon>
+                        <input name="apellido" type="text" required>
+                        <label for="">Apellidos</label>
+                    </div>
+                    <div class="inputbox">
+                        <ion-icon name="mail-outline"></ion-icon>
+                        <input name="correo" type="email" required>
+                        <label for="">Correo</label>
+                    </div>
+                    <div class="inputbox">
+                        <ion-icon name="calendar"></ion-icon>
+                        <input name="fecha_nacimiento" type="date" required>
+                    </div>
+                    <div class="inputbox">
+                        <ion-icon name="lock-closed-outline"></ion-icon>
+                        <input name="contraseña" type="password" required>
+                        <label for="">Contraseña</label>
+                    </div>
+                    <button>Registrar</button>
+                    <div class="register">
+                        <p>¿Ya tienes cuenta? <a href="/login">Iniciar Sesión</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'></script>
+    
+    <!-- Script para mostrar alertas -->
+    <!-- Script para mostrar alertas -->
+<script>
+    <% if (typeof alert !== 'undefined') { %>
+        Swal.fire({
+            icon: '<%= alertType %>',
+            title: '<%= alertType === "success" ? "¡Éxito!" : "¡Error!" %>',
+            text: '<%= alert %>',
+            confirmButtonText: 'Aceptar'
+        }).then(() => {
+            window.location = '/<%= ruta %>';  // Redirige después de cerrar la alerta
+        });
+    <% } %>
+</script>
+
+</body>
+
+</html>
