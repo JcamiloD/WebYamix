@@ -10,6 +10,7 @@ const rutas = require('./routes/routes.js');
 const auth = require('./routes/auth.routes.js')
 const dashboard = require('./routes/dashboard.routes.js')
 const usuariosAdmin = require('./routes/usuariosAdmin.routes.js')
+const cursos = require('./routes/cursos.routes'); 
 
 const app = express();
 
@@ -42,7 +43,7 @@ dotenv.config({ path: './env/.env' });
 
 // Configura las rutas
 
-app.use('/',rutas, auth,dashboard,usuariosAdmin);
+app.use('/',rutas, auth,dashboard,usuariosAdmin,cursos);
 
 
 
