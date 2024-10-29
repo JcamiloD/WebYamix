@@ -13,6 +13,7 @@ const usuariosAdmin = require('./routes/usuariosAdmin.routes.js')
 const cursos = require('./routes/cursos.routes'); 
 const clases = require('./routes/clases.routes'); 
 
+
 const app = express();
 
 // Configura cookie-parser para manejar cookies
