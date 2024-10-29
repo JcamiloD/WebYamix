@@ -78,7 +78,6 @@
                                     </div>
                                 </div>
                             </div>
-                    
                             <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
@@ -89,12 +88,15 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <form id="addForm">
+                                            <form id="addForm" action="/agregar_clase" method="post" >
                                                 <div class="form-group">
-                                                    <label for="addIdCurso">ID Curso</label>
+                                                    <label for="addIdCurso">Curso</label>
+                                                    
                                                     <select name="id_curso" class="form-control" id="addIdCurso" required>
                                                         <option value="" disabled selected>Seleccione un curso</option>
-                                                        <option value="id_curso"></option>
+                                                        <% cursos.forEach(curso => { %>
+                                                            <option value="<%= curso.id_curso %>"><%= curso.nombre_curso %></option>
+                                                        <% }); %>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
@@ -106,10 +108,12 @@
                                                     <input type="time" name="hora_final" class="form-control" id="addHoraFinal" required>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="addIdUsuario">ID Usuario</label>
-                                                    <select name="id_usuario" class="form-control" id="addIdUsuario" required>
-                                                        <option value="" disabled selected>Seleccione un usuario</option>
-                                                        <!-- Aquí se deben agregar las opciones dinámicamente -->
+                                                    <label for="addIdUsuario">Profesor</label>
+                                                    <select name="id_profesor" class="form-control" id="addIdProfesor" required>
+                                                        <option value="" disabled selected>Seleccione un profesor</option>
+                                                        <% profesores.forEach(profesor => { %>
+                                                            <option value="<%= profesor.id_usuario %>"><%= profesor.nombre_usuario %></option>
+                                                        <% }); %>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
@@ -128,6 +132,7 @@
                                     </div>
                                 </div>
                             </div>
+                            
                             
                             <!-- Modal para editar clase -->
                             <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -180,6 +185,41 @@
                         </div>
                         <!-- page-body-wrapper ends -->
                         <script>
+                            $(document).ready(function() {
+    // Cargar cursos al abrir el modal
+    $('#addModal').on('show.bs.modal', function() {
+        $.ajax({
+            url: '/api/obtener_cursos', // Ruta para obtener cursos
+            method: 'GET',
+            success: function(data) {
+                const selectCurso = $('#addIdCurso');
+                selectCurso.empty(); // Limpia el select
+                selectCurso.append('<option value="" disabled selected>Seleccione un curso</option>');
+                data.forEach(curso => {
+                    selectCurso.append(`<option value="${curso.id_curso}">${curso.nombre_curso}</option>`);
+                });
+            },
+            error: function(err) {
+                console.error('Error al cargar cursos:', err);
+            }
+        });
+
+        // Cargar profesores al abrir el modal
+        $.ajax({
+            url: '/api/obtener_profesores', // Ruta para obtener profesores
+            method: 'GET',
+            success: function(data) {
+                const selectUsuario = $('#addIdUsuario');
+                selectUsuario.empty(); // Limpia el select
+                selectUsuario.append('<option value="" disabled selected>Seleccione un profesor</option>');
+                data.forEach(usuario => {
+                    selectUsuario.append(`<option value="${usuario.id_usuario}">${usuario.nombre_usuario}</option>`);
+                });
+            },
+            error: function(err) {
+                console.error('Error al cargar profesores:', err);
+            }
+        });
                             $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function() {
                                 const idClase = $(this).data('id');
                                 const idCurso = $(this).data('curso');

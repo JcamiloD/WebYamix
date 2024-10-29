@@ -8,8 +8,17 @@ router.delete('/eliminar_clase/:id', clases.eliminarClase);
 router.get('/traer_clases', clases.traerClases);
 router.get('/obtener_clase/:id_clase', clases.obtenerClase);
 
-router.get('/clasesAdmin', clases.traerClases, (req, res) => {
-    res.render('admin/clasesAdmin',  { data: res.locals.data});
+
+
+
+
+router.get('/clasesAdmin', clases.traerClases, clases.obtenerProfesores, clases.obtenerCursos, (req, res) => {
+    res.render('admin/clasesAdmin',  
+        { 
+            data: res.locals.data,
+            profesores: res.locals.profesores,
+            cursos : res.locals.cursos
+        });
 });
 
 module.exports = router;

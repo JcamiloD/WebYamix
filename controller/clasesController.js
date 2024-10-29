@@ -1,6 +1,44 @@
 
 const { promisify } = require('util');
 
+
+exports.obtenerCursos = async (req, res, next) => {
+    try {
+        const response = await fetch(`${process.env.pathApi}/obtener_cursos`); // Cambia la URL según tu API
+        const cursos = await response.json();
+        console.log(cursos)
+        if (response.ok) {
+            res.locals.cursos = cursos;
+            next();
+        } else {
+            console.error('Error al traer cursos:', cursos);
+            res.status(response.status).send(cursos.message || 'Error al obtener cursos');
+        }
+    } catch (error) {
+        console.error('Error al obtener datos de la API:', error);
+        res.status(500).send('Error al obtener cursos');
+    }
+};
+
+// Método para obtener todos los profesores desde la API
+exports.obtenerProfesores = async (req, res, next) => {
+    try {
+        const response = await fetch(`${process.env.pathApi}/obtener_profesores`); // Cambia la URL según tu API
+        const profesores = await response.json();
+        console.log(profesores)
+        if (response.ok) {
+            res.locals.profesores = profesores;
+            next();
+            
+        } else {
+            console.error('Error al traer profesores:', profesores);
+            res.status(response.status).send(profesores.message || 'Error al obtener profesores');
+        }
+    } catch (error) {
+        console.error('Error al obtener datos de la API:', error);
+        res.status(500).send('Error al obtener profesores');
+    }
+};
 // Controlador para actualizar una clase
 exports.actualizarClase = async (req, res) => {
     const { id } = req.params;
@@ -25,6 +63,8 @@ exports.actualizarClase = async (req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 };
+
+
 
 // Controlador para traer todas las clases y renderizar en la vista
 exports.traerClases = async (req, res, next) => {
