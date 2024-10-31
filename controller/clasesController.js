@@ -6,7 +6,7 @@ exports.obtenerCursos = async (req, res, next) => {
     try {
         const response = await fetch(`${process.env.pathApi}/obtener_cursos`); // Cambia la URL según tu API
         const cursos = await response.json();
-        console.log(cursos)
+
         if (response.ok) {
             res.locals.cursos = cursos;
             next();
@@ -25,7 +25,7 @@ exports.obtenerProfesores = async (req, res, next) => {
     try {
         const response = await fetch(`${process.env.pathApi}/obtener_profesores`); // Cambia la URL según tu API
         const profesores = await response.json();
-        console.log(profesores)
+
         if (response.ok) {
             res.locals.profesores = profesores;
             next();
@@ -45,7 +45,7 @@ exports.actualizarClase = async (req, res) => {
 
     try {
         const response = await fetch(`http://localhost:4000/api/actualizar_clase/${id}`, {
-            method: 'PUT', // Cambia a 'PUT' si la API lo requiere
+            method: 'POST', // Cambia a 'PUT' si la API lo requiere
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(req.body)
         });
@@ -66,30 +66,37 @@ exports.actualizarClase = async (req, res) => {
 
 
 
-// Controlador para traer todas las clases y renderizar en la vista
+
+
 exports.traerClases = async (req, res, next) => {
     try {
         const response = await fetch(`${process.env.pathApi}/traer_clases`); // Cambia la URL según tu API
         const data = await response.json();
-        console.log("hola "+data)
 
         if (response.ok) {
             res.locals.data = data;
-            next();
+            return next(); // Asegúrate de que llamas a next()
         } else {
             console.error('Error al traer clases:', data);
-            res.status(response.status).send(data.message || 'Error al traer las clases');
+            return res.status(response.status).send(data.message || 'Error al traer las clases');
         }
     } catch (error) {
         console.error('Error al obtener datos de la API:', error);
-        res.status(500).send('Error al obtener las clases');
+        return res.status(500).send('Error al obtener las clases');
     }
 };
 
-// Controlador para agregar una nueva clase
+
+
+
+
 exports.agregarClase = async (req, res) => {
     try {
         const { hora_inicio, hora_final, id_curso, id_usuario, estado } = req.body;
+
+        if (!id_usuario) {
+            return res.status(400).json({ success: false, message: 'id_usuario es requerido' });
+        }
 
         const response = await fetch(`${process.env.pathApi}/agregar_clase`, {
             method: 'POST',
@@ -105,20 +112,27 @@ exports.agregarClase = async (req, res) => {
             })
         });
 
+   
+        const data = await response.json(); 
+
+      
         if (response.ok) {
-            res.json({ success: true, message: 'Clase agregada exitosamente' });
+            
+            return res.status(201).json({ success: true, message: 'Clase agregada exitosamente', id_clase: data.id_clase });
         } else {
-            const result = await response.json();
-            console.error('Error al agregar clase:', result);
-            res.status(response.status).json({ success: false, error: result.error || 'Error desconocido' });
+  
+            return res.status(response.status).json({ success: false, message: data.message || 'Error al agregar clase en el servidor externo' });
         }
+
     } catch (error) {
         console.error('Error al agregar clase:', error);
         res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
 };
 
-// Controlador para eliminar una clase
+
+
+
 exports.eliminarClase = async (req, res) => {
     const { id } = req.params;
 

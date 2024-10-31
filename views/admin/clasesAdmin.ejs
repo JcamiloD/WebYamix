@@ -56,11 +56,12 @@
                                                                 <td><button class="button-iconn"><i class="fas fa-plus"></i></button></i></td>
                                                                 <td>
                                                                     <button type="button" class="button-iconn" data-toggle="modal" data-target="#editModal" 
-                                                                            data-id="<%= clase.id_clase %>" data-curso="<%= clase.id_curso %>"
-                                                                            data-hora-inicio="<%= clase.hora_inicio %>" data-hora-final="<%= clase.hora_final %>"
-                                                                            data-usuario="<%= clase.id_usuario %>" data-estado="<%= clase.estado %>">
-                                                                        <i class="fas fa-edit"></i>
-                                                                    </button>
+                                                                    data-id="<%= clase.id_clase %>" data-id_curso="<%= clase.id_curso %>"
+                                                                    data-hora-inicio="<%= clase.hora_inicio %>" data-hora-final="<%= clase.hora_final %>"
+                                                                    data-usuario="<%= clase.id_usuario || 'sin profesor' %>" data-estado="<%= clase.estado %>">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </button>
+                                                            
                                                                     <button type="button" class="button-iconn" onclick="confirmarEliminacion(<%= clase.id_clase %>)">
                                                                         <i class="fas fa-trash"></i>
                                                                     </button>
@@ -78,6 +79,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
@@ -109,12 +111,13 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="addIdUsuario">Profesor</label>
-                                                    <select name="id_profesor" class="form-control" id="addIdProfesor" required>
+                                                    <select name="id_usuario" class="form-control" id="addIdProfesor" required>
                                                         <option value="" disabled selected>Seleccione un profesor</option>
                                                         <% profesores.forEach(profesor => { %>
                                                             <option value="<%= profesor.id_usuario %>"><%= profesor.nombre_usuario %></option>
                                                         <% }); %>
                                                     </select>
+                                                    
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="addEstado">Estado</label>
@@ -134,191 +137,216 @@
                             </div>
                             
                             
-                            <!-- Modal para editar clase -->
-                            <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="editModalLabel">Editar Clase</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form id="editForm">
-                                                <input type="hidden" name="id_clase" id="editIdClase">
-                                                
-                                                <div class="form-group">
-                                                    <label for="editIdCurso">ID Curso</label>
-                                                    <input type="number" name="id_curso" class="form-control" id="editIdCurso" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="editHoraInicio">Hora Inicio</label>
-                                                    <input type="time" name="hora_inicio" class="form-control" id="editHoraInicio" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="editHoraFinal">Hora Final</label>
-                                                    <input type="time" name="hora_final" class="form-control" id="editHoraFinal" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="editIdUsuario">ID Usuario</label>
-                                                    <input type="number" name="id_usuario" class="form-control" id="editIdUsuario" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="editEstado">Estado</label>
-                                                    <select name="estado" class="form-control" id="editEstado" required>
-                                                        <option value="activo">Activo</option>
-                                                        <option value="inactivo">Inactivo</option>
-                                                    </select>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
-                                                    <button type="submit" class="btn btn-dark">Actualizar</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+       
+                         <!-- Modal para editar clase -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Clase</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" action="/actualizar_clase" method="post">
+                    <input type="hidden" name="id_clase" id="editIdClase">
+
+                    <div class="form-group">
+                        <label for="id_curso">Curso</label>
+                        <select name="id_curso" class="form-control" id="id_curso" required>
+                            <option value="" disabled selected>Seleccione un curso</option>
+                            <% cursos.forEach(curso => { %>
+                                <option value="<%= curso.id_curso %>"><%= curso.nombre_curso %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editHoraInicio">Hora Inicio</label>
+                        <input type="time" name="hora_inicio" class="form-control" id="editHoraInicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editHoraFinal">Hora Final</label>
+                        <input type="time" name="hora_final" class="form-control" id="editHoraFinal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editIdUsuario">Profesor</label>
+                        <select name="id_usuario" class="form-control" id="editIdUsuario" required>
+                            <option value="" disabled selected>Seleccione un profesor</option>
+                            <% profesores.forEach(profesor => { %>
+                                <option value="<%= profesor.id_usuario %>"><%= profesor.nombre_usuario %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEstado">Estado</label>
+                        <select name="estado" class="form-control" id="editEstado" required>
+                            <option value="activo">Activo</option>
+                            <option value="inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
                     
                             <!-- main-panel ends -->
                         </div>
                         <!-- page-body-wrapper ends -->
                         <script>
-                            $(document).ready(function() {
-    // Cargar cursos al abrir el modal
-    $('#addModal').on('show.bs.modal', function() {
-        $.ajax({
-            url: '/api/obtener_cursos', // Ruta para obtener cursos
-            method: 'GET',
-            success: function(data) {
-                const selectCurso = $('#addIdCurso');
-                selectCurso.empty(); // Limpia el select
-                selectCurso.append('<option value="" disabled selected>Seleccione un curso</option>');
-                data.forEach(curso => {
-                    selectCurso.append(`<option value="${curso.id_curso}">${curso.nombre_curso}</option>`);
-                });
-            },
-            error: function(err) {
-                console.error('Error al cargar cursos:', err);
-            }
-        });
+                    $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function() {
+    const idClase = $(this).data('id');
+    const idCurso = $(this).data('id_curso');  // Asegúrate de que este nombre es correcto
+    const horaInicio = $(this).data('hora-inicio');
+    const horaFinal = $(this).data('hora-final');
+    const idUsuario = $(this).data('usuario');
+    const estado = $(this).data('estado');
 
-        // Cargar profesores al abrir el modal
-        $.ajax({
-            url: '/api/obtener_profesores', // Ruta para obtener profesores
-            method: 'GET',
-            success: function(data) {
-                const selectUsuario = $('#addIdUsuario');
-                selectUsuario.empty(); // Limpia el select
-                selectUsuario.append('<option value="" disabled selected>Seleccione un profesor</option>');
-                data.forEach(usuario => {
-                    selectUsuario.append(`<option value="${usuario.id_usuario}">${usuario.nombre_usuario}</option>`);
-                });
-            },
-            error: function(err) {
-                console.error('Error al cargar profesores:', err);
-            }
-        });
-                            $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function() {
-                                const idClase = $(this).data('id');
-                                const idCurso = $(this).data('curso');
-                                const horaInicio = $(this).data('hora-inicio');
-                                const horaFinal = $(this).data('hora-final');
-                                const idUsuario = $(this).data('usuario');
-                                const estado = $(this).data('estado');
-                    
-                                $('#editIdClase').val(idClase);
-                                $('#editIdCurso').val(idCurso);
-                                $('#editHoraInicio').val(horaInicio);
-                                $('#editHoraFinal').val(horaFinal);
-                                $('#editIdUsuario').val(idUsuario);
-                                $('#editEstado').val(estado);
-                    
-                                $('#editModal').modal('show');
-                            });
-                    
+    $('#editIdClase').val(idClase);
+    $('#editHoraInicio').val(horaInicio);
+    $('#editHoraFinal').val(horaFinal);
+
+    // Selecciona la opción correcta en el select de curso
+    $('#id_curso').val(idCurso);  // Esta línea debe estar configurando el valor correcto
+
+    $('#editIdUsuario').val(idUsuario);
+    $('#editEstado').val(estado);
+
+    $('#editModal').modal('show');
+});
+
+
+
+                            // Cuando se envía el formulario de edición
                             $('#editForm').on('submit', function(event) {
                                 event.preventDefault();
-                    
+                        
                                 const idClase = $('#editIdClase').val();
                                 const formData = {
-                                    id_curso: $('#editIdCurso').val(),
+                                    id_curso: $('#id_curso').val(),
                                     hora_inicio: $('#editHoraInicio').val(),
                                     hora_final: $('#editHoraFinal').val(),
                                     id_usuario: $('#editIdUsuario').val(),
                                     estado: $('#editEstado').val()
                                 };
-                    
+                        
+                                // Verificación de datos
+                                if (!formData.id_curso || !formData.hora_inicio || !formData.hora_final || !formData.id_usuario || !formData.estado) {
+                                    alert('Por favor, completa todos los campos.');
+                                    return;
+                                }
+                        
                                 fetch(`/actualizar_clase/${idClase}`, {
                                     method: 'PUT',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify(formData)
                                 })
-                                .then(response => response.json())
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Error en la respuesta del servidor');
+                                    }
+                                    return response.json();
+                                })
                                 .then(data => {
+                                    console.log(data); // Para ver la respuesta del servidor
                                     if (data.success) {
+                                        alert('Clase actualizada exitosamente.');
                                         window.location.reload();
                                     } else {
-                                        alert('Error: ' + data.message || 'Error desconocido al actualizar');
+                                        alert('Error: ' + (data.message || 'Error desconocido al actualizar'));
                                     }
                                 })
                                 .catch(error => {
                                     console.error('Error al actualizar la clase:', error);
-                                    alert('Error interno del servidor');
+                                    alert('Error interno del servidor: ' + error.message);
                                 });
                             });
-                    
+                        
+                            // Cuando se envía el formulario de agregar clase
                             $('#addForm').on('submit', function(event) {
                                 event.preventDefault();
-                    
+                        
                                 const formData = {
                                     id_curso: $('#addIdCurso').val(),
                                     hora_inicio: $('#addHoraInicio').val(),
                                     hora_final: $('#addHoraFinal').val(),
-                                    id_usuario: $('#addIdUsuario').val(),
+                                    id_usuario: $('#addIdProfesor').val(),
                                     estado: $('#addEstado').val()
                                 };
-                    
+                        
+                                // Verificación de datos
+                                if (!formData.id_curso || !formData.hora_inicio || !formData.hora_final || !formData.id_usuario || !formData.estado) {
+                                    alert('Por favor, completa todos los campos.');
+                                    return;
+                                }
+                        
                                 fetch('/agregar_clase', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify(formData)
                                 })
-                                .then(response => response.json())
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Error en la respuesta del servidor');
+                                    }
+                                    return response.json();
+                                })
                                 .then(data => {
+                                    console.log(data); // Para ver la respuesta del servidor
                                     if (data.success) {
+                                        alert('Clase agregada exitosamente.');
                                         window.location.reload();
                                     } else {
-                                        alert('Error: ' + data.message || 'Error desconocido al agregar');
+                                        alert('Error: ' + (data.message || 'Error desconocido al agregar'));
                                     }
                                 })
                                 .catch(error => {
                                     console.error('Error al agregar la clase:', error);
-                                    alert('Error interno del servidor');
+                                    alert('Error interno del servidor: ' + error.message);
                                 });
                             });
-                    
+                        
+                            // Función para confirmar eliminación de una clase
                             function confirmarEliminacion(id) {
                                 if (confirm('¿Estás seguro de que deseas eliminar esta clase?')) {
                                     fetch(`/eliminar_clase/${id}`, {
                                         method: 'DELETE'
                                     })
-                                    .then(response => response.json())
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Error en la respuesta del servidor');
+                                        }
+                                        return response.json();
+                                    })
                                     .then(data => {
+                                        console.log(data); // Para ver la respuesta del servidor
                                         if (data.success) {
+                                            alert('Clase eliminada exitosamente.');
                                             window.location.reload();
                                         } else {
-                                            alert('Error: ' + data.message || 'Error desconocido al eliminar');
+                                            alert('Error: ' + (data.message || 'Error desconocido al eliminar'));
                                         }
                                     })
                                     .catch(error => {
                                         console.error('Error al eliminar la clase:', error);
-                                        alert('Error interno del servidor');
+                                        alert('Error interno del servidor: ' + error.message);
                                     });
                                 }
                             }
                         </script>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
                     </div>
                     
                     
