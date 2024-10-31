@@ -15,6 +15,7 @@ const roles = require('./routes/roles.routes.js')
 
 const cursos = require('./routes/cursos.routes'); 
 const clases = require('./routes/clases.routes'); 
+const eventos = require('./routes/calendario.routes'); 
 
 
 const app = express();
@@ -49,7 +50,9 @@ dotenv.config({ path: './env/.env' });
 // Configura las rutas
 
 
-app.use('/',rutas, auth,dashboard, usuarios, cursos, clases, roles);
+
+app.use('/',rutas, auth,dashboard, usuarios, cursos, clases, roles,eventos);
+
 
 
 
