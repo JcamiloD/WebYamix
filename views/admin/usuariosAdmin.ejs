@@ -3,252 +3,630 @@
 
 <head>
     <%- include('partials/head') %>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <style>
+            .icon-btn {
+                background-color: transparent;
+                border: none;
+                color: white;
+                font-size: 1.2rem;
+                cursor: pointer;
+            }
+
+            .icon-btn:hover {
+                color: #ddd;
+            }
+
+            .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+            }
+
+            .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            }
+
+            .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 25px;
+            }
+
+            .slider:before {
+            position: absolute;
+            content: "";
+            height: 19px;
+            width: 19px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            }
+
+            input:checked + .slider {
+            background-color: #2196F3;
+            }
+
+            input:checked + .slider:before {
+            transform: translateX(25px);
+            }
+        </style>
+        <!-- Incluye las librerías necesarias para exportar a Excel y PDF -->
+        <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.9.2/dist/html2pdf.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jspdf@2.4.0/dist/jspdf.umd.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.24/dist/jspdf.plugin.autotable.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.8.2/dist/html2pdf.bundle.min.js"></script>
+
+        <!-- Enlace a SweetAlert2 desde un CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+
 
 </head>
 
 <body>
     <div class="container-scroller">
         <!-- partial:../../partials/_sidebar.html -->
-        <%- include('partials/sidebar') %>
-            <!-- partial -->
-            <div class="container-fluid page-body-wrapper">
-                <!-- partial:../../partials/_navbar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+            <%- include('partials/sidebar') %>
+        </nav>
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:../../partials/_navbar.html -->
+            <nav class="navbar p-0 fixed-top d-flex flex-row">
                 <%- include('partials/topbar') %>
-                    <!-- partial -->
-                    <div class="main-panel">
-                        <div class="content-wrapper">
-                            <div class="row">
-                                <div class="col-lg-12 grid-margin stretch-card">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h4 class="card-title">Usuarios</h4>
-                                                <div>
-                                                    <button class="btn btn-outline-secondary btn-fw" data-toggle="modal"
-                                                        data-target="#addModal">
-                                                        <i class="fas fa-plus"></i> Agregar
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered">
-                                                    <thead>
-                                                        <tr>
-                                                            <th> Id </th>
-                                                            <th> Nombres </th>
-                                                            <th> Apellidos </th>
-                                                            <th> Fecha Nacimiento </th>
-                                                            <th> Correo </th>
-                                                            <th> Rol </th>
-                                                            <th> Documentacion </th>
-                                                            <th> Estado </th>
-                                                            <th> Acción </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td> 1 </td>
-                                                            <td> Herman Beck </td>
-                                                            <td> $ 77.99 </td>
-                                                            <td> May 15, 2015 </td>
-                                                            <td> May 15, 2015 </td>
-                                                            <td> May 15, 2015 </td>
-                                                            <td> May 15, 2015 </td>
-                                                            <td> May 15, 2015 </td>
-                                                            <td>
-                                                                <button type="button" class="button-iconn"
-                                                                    data-toggle="modal" data-target="#editModal">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                                <button type="button" class="button-iconn">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+            </nav>
+            <!-- partial -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h3 class="card-title">Usuarios</h3>
+                                    <div>
+                                        <button id="exportPdf" class="btn btn-outline-secondary btn-fw">
+                                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-fw" data-toggle="modal"
+                                            data-target="#addModal">
+                                            <i class="fas fa-plus"></i> Agregar
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-fw" onclick="exportToExcel()">
+                                            <i class="fas fa-file-excel"></i> Exportar a Excel
+                                        </button>
+
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table id="miTabla" class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Id</th>
+                                                <th>Nombre</th>
+                                                <th>Apellidos</th>
+                                                <th>Rol</th>
+                                                <th>Gmail</th>
+                                                <th>Fecha de nacimiento</th>
+                                                <th>Fecha de pagos</th>
+                                                <th>Estado</th>
+                                                <th>Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if (Array.isArray(data) && data.length > 0) { %>
+                                                <% data.forEach(usuario => { %>
+                                                    <tr>
+                                                        <td><%= usuario.id_usuario %></td>
+                                                        <td><%= usuario.nombre %></td>
+                                                        <td><%= usuario.apellido %></td>
+                                                        <td><%= usuario.nombre_rol.charAt(0).toUpperCase() + usuario.nombre_rol.slice(1).toLowerCase() %></td>
+                                                        <td><%= usuario.correo %></td>
+                                                        <td>
+                                                            <% if (usuario.fecha_nacimiento) { %>
+                                                                <% 
+                                                                    const fechaNacimiento = new Date(usuario.fecha_nacimiento);
+                                                                    const dia = fechaNacimiento.getDate();
+                                                                    const mes = fechaNacimiento.toLocaleString('es-ES', { month: 'long' }).charAt(0).toUpperCase() + fechaNacimiento.toLocaleString('es-ES', { month: 'long' }).slice(1);
+                                                                    const año = fechaNacimiento.getFullYear();
+                                                                    
+                                                                    // Construimos la fecha en el formato deseado
+                                                                    const fechaFinal = `${dia} de ${mes} del ${año}`; // "20 de Febrero del 2001"
+                                                                %>
+                                                                <%= fechaFinal %>
+                                                            <% } else { %>
+                                                                Sin fecha de nacimiento
+                                                            <% } %>
+                                                        </td>                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                        <td>
+                                                            <% if (usuario.pagos) { %>
+                                                                <%= `Días ${new Date(usuario.pagos).getDate()}` %>
+                                                            <% } else { %>
+                                                                Sin pagos
+                                                            <% } %>
+                                                        </td>
+                                                        <td><%= usuario.estado.charAt(0).toUpperCase() +  usuario.estado.slice(1).toLowerCase() %></td>
+                                                        <td>
+                                                            <!-- Botón para editar -->
+                                                            <button type="button" class="icon-btn" data-toggle="modal"
+                                                            data-target="#editModal"
+                                                            data-id_usuario="<%= usuario.id_usuario %>"
+                                                            data-nombre="<%= usuario.nombre %>"
+                                                            data-apellido="<%= usuario.apellido %>"
+                                                            data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
+                                                            data-gmail="<%= usuario.correo %>"
+                                                            data-id_rol="<%= usuario.id_rol %>"
+                                                            data-estado="<%= usuario.estado %>"
+                                                            data-documentacion="<%= usuario.documentacion %>"
+                                                            data-pagos="<%= usuario.pagos %>">
+                                                            <i class="fas fa-edit"></i>
+                                                            </button>
+
+                                        
+                                                            <!-- Botón para eliminar -->
+                                                            <button type="button" class="icon-btn"
+                                                                onclick="confirmarEliminacion(<%= usuario.id_usuario %>)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="9" class="text-center">No hay usuarios disponibles.</td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                        
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Modal editar -->
+                    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel">Editar Usuario</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="editForm" method="post" action="/editar_usuario">
+                                        <input type="hidden" name="id_usuario" id="editIdUsuario" />
+
+                                        <div class="form-group row">
+                                            <label for="editNombre" class="col-sm-3 col-form-label">Nombre</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="nombre" class="form-control" id="editNombre" placeholder="Nombre" required>
                                             </div>
                                         </div>
-                                    </div>
 
+                                        <div class="form-group row">
+                                            <label for="editApellido" class="col-sm-3 col-form-label">Apellidos</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="apellido" class="form-control" id="editApellido" placeholder="Apellidos" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="editFechaNacimiento" class="col-sm-3 col-form-label">Fecha de nacimiento</label>
+                                            <div class="col-sm-9">
+                                                <input type="date" name="fecha_nacimiento" class="form-control" id="editFechaNacimiento" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="editCorreo" class="col-sm-3 col-form-label">Correo</label>
+                                            <div class="col-sm-9">
+                                                <input type="email" name="correo" class="form-control" id="editCorreo" placeholder="Correo" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="editRol" class="col-sm-3 col-form-label">Rol</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" name="id_rol" id="editRol" required>
+                                                    <% if (roles && roles.length) { %>
+                                                        <% roles.forEach(function(rol) { %>
+                                                            <option value="<%= rol.id_rol %>">
+                                                                <%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %>
+                                                            </option>
+                                                        <% }); %>
+                                                    <% } else { %>
+                                                        <option value="">No hay roles disponibles</option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="editEstado" class="col-sm-3 col-form-label">Estado</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" id="editEstado" name="estado" required>
+                                                    <option value="espera">Espera</option>
+                                                    <option value="habilitado">Habilitado</option>
+                                                    <option value="deshabilitado">Deshabilitado</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="editDocumentacion" class="col-sm-3 col-form-label">Documentación</label>
+                                            <div class="col-sm-3">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="editDocumentacion" name="documentacion" value="1"> <!-- Valor del checkbox -->
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        
+                                            <label for="editPagos" class="col-sm-3 col-form-label d-none">Pagos</label>
+                                            <div class="col-sm-3">
+                                                <input type="date" name="pagos" class="form-control d-none" id="editPagos" required> <!-- Agrega la clase d-none -->
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-dark">Guardar Cambios</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Modal Editar -->
-                        <div class="modal fade" id="editModal" tabindex="-1" role="dialog"
-                            aria-labelledby="editModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editModalLabel">Editar Usuario</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form class="forms-sample" method="post" action="/editar_usuario/"
-                                            id="editForm">
-                                            <input type="hidden" name="id_usuario" id="id_usuario" />
-                                            <div class="form-group row">
-                                                <label for="editNombre" class="col-sm-3 col-form-label">Nombre</label>
-                                                <div class="col-sm-9">
-                                                    <input type="text" name="nombre" class="form-control"
-                                                        id="editNombre" placeholder="Nombre" required>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="editApellido"
-                                                    class="col-sm-3 col-form-label">Apellidos</label>
-                                                <div class="col-sm-9">
-                                                    <input type="text" name="apellido" class="form-control"
-                                                        id="editApellido" placeholder="Apellidos" required>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="editFechaNacimiento" class="col-sm-3 col-form-label">Fecha
-                                                    de nacimiento</label>
-                                                <div class="col-sm-9">
-                                                    <input type="date" name="fecha_nacimiento" class="form-control"
-                                                        id="editFechaNacimiento" required>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="editGmail" class="col-sm-3 col-form-label">Gmail</label>
-                                                <div class="col-sm-9">
-                                                    <input type="email" name="gmail" class="form-control" id="editGmail"
-                                                        placeholder="Gmail" required>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="editEstado" class="col-sm-3 col-form-label">Estado</label>
-                                                <div class="col-sm-9">
-                                                    <select class="form-control" id="editEstado" name="estado" required>
-                                                        <option value="espera">Espera</option>
-                                                        <option value="habilitado">Habilitado</option>
-                                                        <option value="deshabilitado">Deshabilitado</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-dark mr-2"
-                                                    data-dismiss="modal">Cancelar</button>
-                                                <button type="submit" class="btn btn-dark">Guardar Cambios</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Modal Agregar -->
-                        <div class="modal fade" id="addModal" tabindex="-1" role="dialog"
-                            aria-labelledby="addModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="addModalLabel">Agregar Usuario</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form class="forms-sample" method="post" action="/agregar_usuario">
-                                            <div class="form-group row">
-                                                <label for="nombre" class="col-sm-3 col-form-label">Nombre</label>
-                                                <div class="col-sm-9">
-                                                    <input type="text" name="nombre" class="form-control" id="nombre"
-                                                        placeholder="Nombre">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="apellido" class="col-sm-3 col-form-label">Apellidos</label>
-                                                <div class="col-sm-9">
-                                                    <input type="text" name="apellido" class="form-control"
-                                                        id="apellido" placeholder="Apellidos">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="fecha_nacimiento" class="col-sm-3 col-form-label">Fecha de
-                                                    nacimiento</label>
-                                                <div class="col-sm-9">
-                                                    <input type="date" name="fecha_nacimiento" class="form-control"
-                                                        id="fecha_nacimiento" placeholder="Fecha de nacimiento">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="gmail" class="col-sm-3 col-form-label">Gmail</label>
-                                                <div class="col-sm-9">
-                                                    <input type="text" name="gmail" class="form-control" id="gmail"
-                                                        placeholder="Gmail">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="id_clase" class="col-sm-3 col-form-label">Clase</label>
-                                                <div class="col-sm-9">
-                                                    <select class="form-control" name="id_clase" id="id_clase">
-                                                        <option value="">Selecciona una clase</option>
-                                                        <option value="1">Boxeo</option>
-                                                        <option value="2">Mixtas</option>
-                                                        <option value="3">Parkour</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="contraseña"
-                                                    class="col-sm-3 col-form-label">Contraseña</label>
-                                                <div class="col-sm-9">
-                                                    <input type="password" name="contraseña" class="form-control"
-                                                        id="contraseña" placeholder="Contraseña">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="rol" class="col-sm-3 col-form-label">Rol</label>
-                                                <div class="col-sm-9">
-                                                    <select class="form-control" name="id_rol" id="rol">
-                                                        <option value="1">Estudiante</option>
-                                                        <option value="2">Profesor</option>
-                                                        <option value="3">Administrador</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label for="estado" class="col-sm-3 col-form-label">Estado</label>
-                                                <div class="col-sm-9">
-                                                    <select class="form-control" name="estado" id="estado">
-                                                        <option value="espera">Espera</option>
-                                                        <option value="habilitado">Habilitado</option>
-                                                        <option value="deshabilitado">Deshabilitado</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-dark mr-2"
-                                                    data-dismiss="modal">Cancelar</button>
-                                                <button type="submit" class="btn btn-dark">Guardar</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- content-wrapper ends -->
-                        <!-- partial:../../partials/_footer.html -->
-                        <%- include('partials/footer') %>
-                            <!-- partial -->
                     </div>
-                    <!-- main-panel ends -->
+
+
+                    
+
+
+                    <!-- Modal agregar -->
+                    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addModalLabel">Agregar Usuario</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" action="/agregar_usuario" id="addForm">
+                                        <div class="form-group row">
+                                            <label for="addNombre" class="col-sm-3 col-form-label">Nombre</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="nombre" class="form-control" id="addNombre" placeholder="Nombre" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="addApellido" class="col-sm-3 col-form-label">Apellidos</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="apellido" class="form-control" id="addApellido" placeholder="Apellidos" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="addFechaNacimiento" class="col-sm-3 col-form-label">Fecha de nacimiento</label>
+                                            <div class="col-sm-9">
+                                                <input type="date" name="fecha_nacimiento" class="form-control" id="addFechaNacimiento" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="addCorreo" class="col-sm-3 col-form-label">Correo</label>
+                                            <div class="col-sm-9">
+                                                <input type="email" name="correo" class="form-control" id="addCorreo" placeholder="Correo" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="addContrasena" class="col-sm-3 col-form-label">Contraseña</label>
+                                            <div class="col-sm-9">
+                                                <input type="password" name="contrasena" class="form-control" id="addContrasena" placeholder="Contraseña" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="addConfirmarContrasena" class="col-sm-3 col-form-label">Confirmar Contraseña</label>
+                                            <div class="col-sm-9">
+                                                <input type="password" name="confirmar_contrasena" class="form-control" id="addConfirmarContrasena" placeholder="Confirmar Contraseña" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="addRol" class="col-sm-3 col-form-label">Rol</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" name="id_rol" id="addRol" required>
+                                                    <% if (roles && roles.length) { %>
+                                                        <% roles.forEach(function(rol) { %>
+                                                            <option value="<%= rol.id_rol %>"><%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %></option>
+                                                        <% }); %>
+                                                    <% } else { %>
+                                                        <option value="">No hay roles disponibles</option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="addEstado" class="col-sm-3 col-form-label">Estado</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" name="estado" required>
+                                                    <option value="espera">Espera</option>
+                                                    <option value="habilitado">Habilitado</option>
+                                                    <option value="deshabilitado">Deshabilitado</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="addDocumentacion" class="col-sm-3 col-form-label">Documentación</label>
+                                            <div class="col-sm-3">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="addDocumentacion">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                            
+                                            <label for="addPagado" class="col-sm-3 col-form-label">Pagado</label>
+                                            <div class="col-sm-3">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="addPagado">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Texto que se mostrará al activar la opción de Pagado -->
+                                        <div class="form-group row" id="fechaPagosText" style="display: none;">
+                                            <div class="col-sm-12 text-center">
+                                                <p id="fechaPagosMensaje" style="font-style: italic; color: #555;"></p>
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-dark">Guardar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- content-wrapper ends -->
+                    <!-- partial:../../partials/_footer.html -->
+                    <footer class="footer">
+                        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
+                                bootstrapdash.com 2020</span>
+                            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a
+                                    href="https://www.bootstrapdash.com/bootstrap-admin-template/"
+                                    target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
+                        </div>
+                    </footer>
+                    <!-- partial -->
+                </div>
+                <!-- main-panel ends -->
             </div>
             <!-- page-body-wrapper ends -->
+        </div>
+        <!-- container-scroller -->
+        <!-- plugins:js -->
+        <%- include('partials/scripts') %>
+            <!-- Asegúrate de tener estos enlaces en el <head> o justo antes de cerrar el body -->
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+            
+            <script>
+                document.getElementById('addPagado').addEventListener('change', function() {
+                    const fechaPagosText = document.getElementById('fechaPagosText');
+                    const fechaPagosMensaje = document.getElementById('fechaPagosMensaje');
+            
+                    if (this.checked) {
+                        // Obtener el día actual
+                        const fechaActual = new Date();
+                        const diaActual = fechaActual.getDate(); // Número del día actual
+            
+                        // Mostrar el mensaje dinámico con la fecha
+                        fechaPagosMensaje.textContent = `La fecha de pagos se establecerá el ${diaActual} de cada mes.`;
+                        fechaPagosText.style.display = 'block'; // Mostrar el texto
+                    } else {
+                        fechaPagosText.style.display = 'none'; // Ocultar el texto si se desactiva
+                    }
+                });
+            
+                // Validación de contraseñas y envío del formulario
+                document.getElementById('addForm').addEventListener('submit', function(event) {
+                    const password = document.getElementById('addContrasena').value;
+                    const confirmPassword = document.getElementById('addConfirmarContrasena').value;
+            
+                    if (password !== confirmPassword) {
+                        event.preventDefault(); // Evitar el envío del formulario
+                        alert("Las contraseñas no coinciden. Por favor, inténtalo de nuevo."); // Mensaje de error
+                        return; // Detener el resto del script si hay error en las contraseñas
+                    }
+            
+                    // Obtener el valor del switch de Documentación
+                    const documentacionCheckbox = document.getElementById('addDocumentacion');
+                    const documentacionValue = documentacionCheckbox.checked ? true : false;
+            
+                    // Crear un input oculto para enviar el valor booleano del switch de Documentación
+                    const hiddenDocumentacionInput = document.createElement('input');
+                    hiddenDocumentacionInput.type = 'hidden';
+                    hiddenDocumentacionInput.name = 'documentacion';
+                    hiddenDocumentacionInput.value = documentacionValue;
+                    document.getElementById('addForm').appendChild(hiddenDocumentacionInput);
+            
+                    // Obtener el valor del switch de Pagado y la fecha del sistema
+                    const pagadoCheckbox = document.getElementById('addPagado');
+                    if (pagadoCheckbox.checked) {
+                        // Obtener la fecha actual
+                        const fechaActual = new Date();
+                        const diaActual = fechaActual.getDate();
+                        const mesActual = fechaActual.getMonth() + 1; // Recuerda que los meses inician desde 0
+                        const añoActual = fechaActual.getFullYear();
+            
+                        // Crear un string de fecha en formato 'YYYY-MM-DD'
+                        const fechaString = `${añoActual}-${mesActual < 10 ? '0' : ''}${mesActual}-${diaActual < 10 ? '0' : ''}${diaActual}`;
+            
+                        // Crear un input oculto para enviar la fecha si el switch de Pagado está activado
+                        const hiddenPagadoInput = document.createElement('input');
+                        hiddenPagadoInput.type = 'hidden';
+                        hiddenPagadoInput.name = 'fecha_pagado';
+                        hiddenPagadoInput.value = fechaString;
+                        document.getElementById('addForm').appendChild(hiddenPagadoInput);
+                    }
+                });
+            </script>
+            
+            
+            
+            
+            
+            
+            
+
+            <script>
+                $(document).ready(function () {
+                    $('#editModal').on('show.bs.modal', function (event) {
+                        var button = $(event.relatedTarget); // Botón que activó el modal
+                        var id_usuario = button.data('id_usuario');
+                        var nombre = button.data('nombre');
+                        var apellido = button.data('apellido');
+                        var fecha_nacimiento = button.data('fecha_nacimiento');
+                        var gmail = button.data('gmail');
+                        var estado = button.data('estado');
+                        var id_rol = button.data('id_rol');
+                        var documentacion = button.data('documentacion') === 1; // Convertir a booleano
+                        var pagos = button.data('pagos').split('T')[0]; // Extraer solo la fecha
+            
+                        console.log(id_usuario, nombre, apellido, fecha_nacimiento, gmail, estado, id_rol, documentacion, pagos); // Verifica que los valores están bien
+            
+                        var modal = $(this);
+            
+                        // Asignar los valores al modal
+                        modal.find('.modal-body #editIdUsuario').val(id_usuario);
+                        modal.find('.modal-body #editNombre').val(nombre);
+                        modal.find('.modal-body #editApellido').val(apellido);
+                        modal.find('.modal-body #editFechaNacimiento').val(fecha_nacimiento);
+                        modal.find('.modal-body #editCorreo').val(gmail);
+                        modal.find('.modal-body #editEstado').val(estado);
+                        modal.find('.modal-body #editRol').val(id_rol); // Establecer el rol seleccionado
+                        modal.find('.modal-body #editDocumentacion').prop('checked', documentacion); // controlar el estado del switch
+                        modal.find('.modal-body #editPagos').val(pagos); // Establecer la fecha de pagos
+            
+                        // Establecer el valor del campo oculto para documentacion
+                        modal.find('.modal-body #documentacionHidden').val(documentacion ? 1 : 0); // 1 si está marcado, 0 si no
+            
+                        // Establecer la acción del formulario para incluir el ID del usuario
+                        modal.find('#editForm').attr('action', '/editar_usuario/' + id_usuario);
+                    });
+                });
+            </script>
+            
+            
+            
+            
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+
+
+            <script>
+
+                const { jsPDF } = window.jspdf;
+
+                document.getElementById('exportPdf').addEventListener('click', () => {
+                    const doc = new jsPDF();
+
+                    html2canvas(document.querySelector('.table-responsive')).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        const imgWidth = 210;
+                        const pageHeight = 295;
+                        const imgHeight = canvas.height * imgWidth / canvas.width;
+                        let heightLeft = imgHeight;
+                        let position = 0;
+
+                        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+
+                        while (heightLeft >= 0) {
+                            position = heightLeft - imgHeight;
+                            doc.addPage();
+                            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                            heightLeft -= pageHeight;
+                        }
+
+                        doc.save('usuarios.pdf');
+                    });
+                });
+                function exportToExcel() {
+                    let wb = XLSX.utils.table_to_book(document.getElementById('miTabla'), { sheet: "Usuarios" });
+                    XLSX.writeFile(wb, 'usuarios.xlsx');
+                }
+
+                function confirmarEliminacion(id) {
+                    console.log(`ID del usuario a eliminar: ${id}`);
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "¡No podrás recuperar este usuario después de eliminarlo!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, eliminar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/eliminar/${id}`, {
+                                method: 'DELETE'
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Error al eliminar el usuario');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    console.log(data); // Verifica que se reciba el mensaje correcto
+                                    Swal.fire(
+                                        'Eliminado!',
+                                        'El usuario ha sido eliminado.',
+                                        'success'
+                                    ).then(() => {
+                                        window.location.reload();
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error en la eliminación:', error);
+                                    Swal.fire(
+                                        'Error!',
+                                        'Ocurrió un error al eliminar el usuario.',
+                                        'error'
+                                    );
+                                });
+                        }
+                    });
+                }
+
+
+            </script>
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <%- include('partials/scripts') %>
-
-
-        <!-- End custom js for this page -->
 </body>
 
 </html>
