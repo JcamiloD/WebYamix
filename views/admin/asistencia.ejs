@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('partials/head') %>
+    <%- include('partials/scripts') %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="container-scroller">
+        <!-- partial:../../partials/_sidebar.html -->
+        <%- include('partials/sidebar') %>
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:../../partials/_navbar.html -->
+            <%- include('partials/topbar') %>
+            <!-- partial -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h3 class="card-title">Asistencia</h3>
+                                    <button class="btn btn-outline-secondary btn-fw" data-toggle="modal" data-target="#addModal">
+                                        <i class="fas fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table id="miTabla" class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>ID Asistencia</th>
+                                                <th>Curso</th>
+                                                <th>Fecha</th>
+                                                <th>Hora Inicio</th>
+                                                <th>Hora Final</th>
+                                                <th>Instructor</th>
+                                                <th>Estudiantes</th>
+                                                <th>Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Boxeo</td>
+                                                <td>Activo</td>
+                                                <td>09:00</td>
+                                                <td>11:00</td>
+                                                <td>Juan Pérez</td>
+                                                <td>
+                                                    <button class="button-iconn" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal" data-id="1">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button class="button-iconn" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal" data-id="1">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                    <button type="button" class="button-iconn" data-toggle="modal" data-target="#editModal" 
+                                                            data-id="1" data-id_curso="1" data-hora-inicio="09:00" data-hora-final="11:00"
+                                                            data-usuario="Juan Pérez" data-estado="Activo">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="button-iconn" onclick="confirmarEliminacion(1)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>Artes Marciales</td>
+                                                <td>Inactivo</td>
+                                                <td>14:00</td>
+                                                <td>16:00</td>
+                                                <td>Maria López</td>
+                                                <td>
+                                                    <button class="button-iconn" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal" data-id="2">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button class="button-iconn" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal" data-id="1">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                    <button type="button" class="button-iconn" data-toggle="modal" data-target="#editModal" 
+                                                            data-id="2" data-id_curso="2" data-hora-inicio="14:00" data-hora-final="16:00"
+                                                            data-usuario="Maria López" data-estado="Inactivo">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="button-iconn" onclick="confirmarEliminacion(2)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <!-- Se pueden añadir más filas de ejemplo aquí -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal estudiantes -->
+                    <div class="modal fade" id="editEstudiantesModal" tabindex="-1" role="dialog" aria-labelledby="editEstudiantesModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editEstudiantesModalLabel">Agregar estudiantes a la clase</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="card-description">Selecciona los estudiantes que deseas asignar a la clase</p>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Estudiantes Asignados</h6>
+                                            <div id="assignedStudentsContainer">
+                                                <p>Estudiante 1</p>
+                                                <p>Estudiante 2</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Estudiantes No Asignados</h6>
+                                            <div id="unassignedStudentsContainer">
+                                                <p>Estudiante 3</p>
+                                                <p>Estudiante 4</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="button" class="btn btn-dark" id="saveStudentsButton">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal para agregar clase -->
+                    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addModalLabel">Agregar Clase</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addForm">
+                                        <div class="form-group">
+                                            <label for="addIdCurso">Curso</label>
+                                            <select name="id_curso" class="form-control" id="addIdCurso" required>
+                                                <option value="1">Boxeo</option>
+                                                <option value="2">Artes Marciales</option>
+                                                <option value="3">Parkour</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="addHoraInicio">Hora Inicio</label>
+                                            <input type="time" name="hora_inicio" class="form-control" id="addHoraInicio" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="addHoraFinal">Hora Final</label>
+                                            <input type="time" name="hora_final" class="form-control" id="addHoraFinal" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="addIdUsuario">Profesor</label>
+                                            <select name="id_usuario" class="form-control" id="addIdProfesor" required>
+                                                <option value="1">Juan Pérez</option>
+                                                <option value="2">Maria López</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="addEstado">Estado</label>
+                                            <select name="estado" class="form-control" id="addEstado" required>
+                                                <option value="activo">Activo</option>
+                                                <option value="inactivo">Inactivo</option>
+                                            </select>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-dark">Agregar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal para editar clase -->
+                    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel">Editar Clase</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="editForm">
+                                        <input type="hidden" name="id" id="editId">
+                                        <div class="form-group">
+                                            <label for="editIdCurso">Curso</label>
+                                            <select name="id_curso" class="form-control" id="editIdCurso" required>
+                                                <option value="1">Boxeo</option>
+                                                <option value="2">Artes Marciales</option>
+                                                <option value="3">Parkour</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editHoraInicio">Hora Inicio</label>
+                                            <input type="time" name="hora_inicio" class="form-control" id="editHoraInicio" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editHoraFinal">Hora Final</label>
+                                            <input type="time" name="hora_final" class="form-control" id="editHoraFinal" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editIdUsuario">Profesor</label>
+                                            <select name="id_usuario" class="form-control" id="editIdUsuario" required>
+                                                <option value="1">Juan Pérez</option>
+                                                <option value="2">Maria López</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editEstado">Estado</label>
+                                            <select name="estado" class="form-control" id="editEstado" required>
+                                                <option value="activo">Activo</option>
+                                                <option value="inactivo">Inactivo</option>
+                                            </select>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-dark">Guardar Cambios</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- content-wrapper ends -->
+                <!-- partial:../../partials/_footer.html -->
+                <%- include('partials/footer') %>
+                <!-- partial -->
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#miTabla').DataTable();
+    </script>
+</body>
+
+</html>

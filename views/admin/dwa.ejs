@@ -317,6 +317,33 @@
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
             <script>
+                // Verificar el correo en tiempo real
+                $('#correo').on('blur', function() {
+                    const correo = $(this).val();
+
+                    // Consulta a la API para verificar si el correo ya está en uso
+                    $.ajax({
+                        url: '/api/verificar_correo',  // Ruta de la API para verificar el correo
+                        method: 'POST',
+                        data: { correo },
+                        success: function(response) {
+                            if (response.existe) {
+                                // Mostrar mensaje de error si el correo está en uso
+                                $('#correoError').text('El correo ya está registrado. Por favor, utiliza uno diferente.');
+                            } else {
+                                // Limpiar el mensaje de error si el correo es válido
+                                $('#correoError').text('');
+                            }
+                        },
+                        error: function() {
+                            $('#correoError').text('Error al verificar el correo.');
+                        }
+                    });
+                });
+
+            </script>
+
+            <script>
                 $(document).ready(function () {
                     $('#editModal').on('show.bs.modal', function (event) {
                         var button = $(event.relatedTarget); // Botón que activó el modal
