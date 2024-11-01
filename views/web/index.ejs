@@ -31,18 +31,40 @@
 
 		<!-- Menu -->
 		<nav id="menu">
-			<div class="inner">
-				<h2>Menu</h2>
-				<ul class="links">
-					<li><a href="#">Perfil</a></li>
-					<li><a href="/dashboard">Dashboard</a></li>
-					<li><a href="/login">Iniciar Sesión</a></li>
-					<li><a href="/register">Registrarme</a></li>
-					<li><a href="/logout">Cerrar sesión</a></li>
-				</ul>
-				<a href="#" class="close">Close</a>
-			</div>
-		</nav>
+            <div class="inner">
+                <h2>Menu</h2>
+                <ul class="links">
+                    <% if (permisos && permisos.includes('perfil')) { %>
+                    <li><a href="/perfil">Perfil</a></li>
+                    <% } %>
+                    <% if (permisos && permisos.includes('calendario estudiante' || 'calendario profesor')) { %>
+                        <li><a href="/calendarioUser">Calendario</a></li>
+                    <% } %>
+                    <% if (permisos && permisos.includes('dashboard')) { %>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <% } %>
+                    <% if (permisos && permisos.includes('catalogo estudiante')) { %>
+                    <li><a href="/catalogouser">Catalogo</a></li>
+                    <% } %>
+                    <% if (permisos && permisos.includes('asistencia profesor')) { %>
+                        <li><a href="/asistenciaProfe">Asistencia</a></li>
+                    <% } else if (Array.isArray(permisos) && permisos.length > 0) { %>
+                        <li><a href="/asistenciaUser">Asistencia</a></li>
+                    <% } %>
+                    
+                    
+                    
+                    <% if (!permisos || permisos.length === 0) { %>
+                        <li><a href="/login">Iniciar Sesión</a></li>
+                        <li><a href="/inscripcion">Inscribirme</a></li>
+                    <% } %>
+                    <% if (!permisos || permisos.length > 0) { %>
+                    <li><a href="/logout" id="logout-link">Salir</a></li>
+                    <% } %>
+                </ul>
+                <a href="#" class="close">Close</a>
+            </div>
+        </nav>
 
 		<!-- Banner -->
 		<section id="banner">

@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const { attachUserPermissions } = require('../controller/middleware/permisosVista');
 
+router.use(attachUserPermissions);
 
 router.get('/', (req, res) => {
-    res.render('web/index');
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('web/index',{
+        permisos: userPermissions
+    });
 });
 
 
