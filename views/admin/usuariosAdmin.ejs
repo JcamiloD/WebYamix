@@ -238,6 +238,9 @@
                                             <label for="editCorreo" class="col-sm-3 col-form-label">Correo</label>
                                             <div class="col-sm-9">
                                                 <input type="email" name="correo" class="form-control" id="editCorreo" placeholder="Correo" required>
+                                                <div id="editCorreoError" class="invalid-feedback" style="display: none;">
+                                                    El correo ya está en uso.
+                                                </div>
                                             </div>
                                         </div>
 
@@ -277,14 +280,13 @@
                                                     <span class="slider round"></span>
                                                 </label>
                                             </div>
-                                        
+                                            
                                             <label for="editPagos" class="col-sm-3 col-form-label d-none">Pagos</label>
                                             <div class="col-sm-3">
                                                 <input type="date" name="pagos" class="form-control d-none" id="editPagos" required> <!-- Agrega la clase d-none -->
                                             </div>
                                         </div>
                                         
-
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
                                             <button type="submit" class="btn btn-dark">Guardar Cambios</button>
@@ -310,6 +312,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
+                                    <div id="error-message" class="alert alert-danger" style="display: none;"></div>
                                     <form method="post" action="/agregar_usuario" id="addForm">
                                         <div class="form-group row">
                                             <label for="addNombre" class="col-sm-3 col-form-label">Nombre</label>
@@ -338,13 +341,13 @@
                                         <div class="form-group row">
                                             <label for="addContrasena" class="col-sm-3 col-form-label">Contraseña</label>
                                             <div class="col-sm-9">
-                                                <input type="password" name="contrasena" class="form-control" id="addContrasena" placeholder="Contraseña" required>
+                                                <input type="password" name="contrasena" class="form-control" id="addContrasena" placeholder="Contraseña" required minlength="6">
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="addConfirmarContrasena" class="col-sm-3 col-form-label">Confirmar Contraseña</label>
                                             <div class="col-sm-9">
-                                                <input type="password" name="confirmar_contrasena" class="form-control" id="addConfirmarContrasena" placeholder="Confirmar Contraseña" required>
+                                                <input type="password" name="confirmar_contrasena" class="form-control" id="addConfirmarContrasena" placeholder="Confirmar Contraseña" required minlength="6">
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -396,7 +399,6 @@
                                                 <p id="fechaPagosMensaje" style="font-style: italic; color: #555;"></p>
                                             </div>
                                         </div>
-                                        
 
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
@@ -407,6 +409,7 @@
                             </div>
                         </div>
                     </div>
+
 
 
                     <!-- content-wrapper ends -->
@@ -432,6 +435,103 @@
             <!-- Asegúrate de tener estos enlaces en el <head> o justo antes de cerrar el body -->
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+            <script>
+                document.getElementById('editForm').addEventListener('submit', function(e) {
+                    e.preventDefault(); // Evita que el formulario se envíe automáticamente
+            
+                    const email = document.getElementById('editCorreo').value;
+                    const idUsuario = document.getElementById('editIdUsuario').value;
+            
+                    // Lógica para verificar si el correo ya está en uso
+                    fetch('http://localhost:4000/api/verificar_correo_editar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ correo: email, id_usuario: idUsuario })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.existe) {
+                            // Si el correo ya está en uso, mostrar mensaje de error
+                            document.getElementById('editCorreoError').style.display = 'block';
+                            document.getElementById('editCorreo').classList.add('is-invalid');
+                        } else {
+                            // Si el correo está disponible, enviar el formulario
+                            document.getElementById('editForm').submit();
+                        }
+                    });
+                });
+            </script>
+
+            <script>
+                document.getElementById('addForm').addEventListener('submit', function(e) {
+                    const contrasena = document.getElementById('addContrasena').value;
+                    const mensajeError = document.getElementById('error-message');
+
+                    // Verifica la longitud mínima de la contraseña
+                    if (contrasena.length < 6) {
+                        e.preventDefault(); // Evita el envío del formulario
+                        mensajeError.innerText = 'La contraseña debe tener al menos 6 caracteres.';
+                        mensajeError.style.display = 'block'; // Muestra el mensaje de error
+                        return; // Sale de la función
+                    } else {
+                        mensajeError.style.display = 'none'; // Oculta el mensaje de error si la contraseña es válida
+                    }
+
+                    // Aquí puedes añadir más validaciones si es necesario
+                });
+            </script>
+            
+
+            <script>
+                $(document).ready(function() {
+                    $('#addForm').on('submit', function(event) {
+                        event.preventDefault(); // Evitar el envío del formulario
+            
+                        // Obtener la referencia al formulario
+                        const form = $(this);
+            
+                        // Obtener el correo del input
+                        const correo = $('#addCorreo').val();
+            
+                        // Hacer la llamada AJAX para verificar el correo
+                        $.ajax({
+                            url: 'http://localhost:4000/api/verificar_correo',
+                            type: 'POST',
+                            data: { correo: correo },
+                            success: function(response) {
+                                if (response.existe) {
+                                    // Mostrar un mensaje de error si el correo ya está en uso
+                                    $('#error-message').text('El correo ya está en uso.').show();
+                                } else {
+                                    // Si el correo es válido, enviar el formulario
+                                    $.ajax({
+                                        url: form.attr('action'), // Usar la referencia guardada al formulario
+                                        type: 'POST',
+                                        data: form.serialize(), // Serializar todos los datos del formulario
+                                        success: function() {
+                                            // Aquí puedes agregar lógica para manejar la respuesta del servidor
+                                            $('#addModal').modal('hide'); // Cerrar la modal
+                                            location.reload(); // Recargar la página si es necesario
+                                        },
+                                        error: function() {
+                                            // Manejar errores en la solicitud de agregar usuario
+                                            $('#error-message').text('Ocurrió un error al agregar el usuario.').show();
+                                        }
+                                    });
+                                }
+                            },
+                            error: function() {
+                                // Manejar errores en la verificación de correo
+                                $('#error-message').text('Ocurrió un error al verificar el correo.').show();
+                            }
+                        });
+                    });
+                });
+            </script>
+            
             
             <script>
                 document.getElementById('addPagado').addEventListener('change', function() {

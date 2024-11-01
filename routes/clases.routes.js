@@ -23,4 +23,16 @@ router.get('/clasesAdmin',
     }
 );
 
+// Ruta para obtener todos los estudiantes
+router.get('/todos_estudiantes',  clases.traerEstudiantes, (req, res) => {
+    res.json(res.locals.data);
+});
+
+// Ruta para obtener permisos por rol
+router.get('/estudiantes_clases/:claseId',  clases.traerEstudiantesPorClase, (req, res) => {
+    res.json(res.locals.data);
+});
+
+router.post('/actualizar_estudiantes', clases.actualizarEstudiantesPorClase);
+
 module.exports = router;

@@ -39,6 +39,8 @@ exports.obtenerProfesores = async (req, res, next) => {
         res.status(500).send('Error al obtener profesores');
     }
 };
+
+
 // Controlador para actualizar una clase
 exports.actualizarClase = async (req, res) => {
     const { id } = req.params;
@@ -171,5 +173,50 @@ exports.obtenerClase = async (req, res) => {
     } catch (error) {
         console.error('Error al obtener datos de la clase:', error);
         res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    }
+};
+
+// Obtener todos los estudiantes
+exports.traerEstudiantes = async (req, res, next) => {
+    try {
+        const response = await fetch(`${process.env.pathApi}/obtener_estudiantes`);
+        const data = await response.json();
+        res.locals.data = data;
+        next();
+    } catch (error) {
+        console.error('Error al obtener estudiantes:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+};
+
+// Obtener estudiantes por clase
+exports.traerEstudiantesPorClase = async (req, res, next) => {
+    const claseId = req.params.claseId;
+    try {
+        const response = await fetch(`${process.env.pathApi}/obtener_clases_estudiantes/${claseId}`);
+        const data = await response.json();
+        res.locals.data = data;
+        next();
+    } catch (error) {
+        console.error('Error al obtener estudiantes por clase:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+};
+
+
+// Controlador para actualizar estudiantes en una clase desde el frontend
+exports.actualizarEstudiantesPorClase = async (req, res) => {
+    try {
+        const response = await fetch(`${process.env.pathApi}/actualizar_estudiantes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(req.body)
+        });
+        
+        const result = await response.json();
+        res.json(result);
+    } catch (error) {
+        console.error('Error al actualizar estudiantes en el proyecto:', error);
+        res.status(500).json({ error: 'Error al actualizar estudiantes' });
     }
 };
