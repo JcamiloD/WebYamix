@@ -3,12 +3,6 @@
 
 <head>
     <%- include('partials/head') %>
-<<<<<<< HEAD
-    
-=======
-    <%- include('partials/scripts') %>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
->>>>>>> d2485574a63c7ee0b5ed6eab3cb2e9832d2d7c10
 </head>
 
 <body>
@@ -27,7 +21,8 @@
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h3 class="card-title">Clases</h3>
-                                            <button class="btn btn-outline-secondary btn-fw" data-toggle="modal" data-target="#addModal">
+                                            <button class="btn btn-outline-secondary btn-fw" data-toggle="modal"
+                                                data-target="#addModal">
                                                 <i class="fas fa-plus"></i> Agregar
                                             </button>
                                         </div>
@@ -35,7 +30,7 @@
                                             <table id="miTabla" class="table table-bordered">
                                                 <thead>
                                                     <tr>
-                                          
+
                                                         <th>Curso</th>
                                                         <th>Hora Inicio</th>
                                                         <th>Hora Final</th>
@@ -46,40 +41,57 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <% if (Array.isArray(data) && data.length > 0) { %>
-                                                        <% data.forEach(clase => { %>
+                                                    <% if (Array.isArray(data) && data.length> 0) { %>
+                                                        <% data.forEach(clase=> { %>
                                                             <tr>
-                                                           
-                                                                <td><%= clase.nombre_curso %></td>
-                                                                <td><%= clase.hora_inicio %></td>
-                                                                <td><%= clase.hora_final %></td>
-                                                                <td><%= clase.nombre_usuario %></td>
-                                                                
-                                                                <td><%= clase.estado %></td>
+
                                                                 <td>
-                                                                    <button class="button-iconn" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal" data-id="<%= clase.id_clase %>">
+                                                                    <%= clase.nombre_curso %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= clase.hora_inicio %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= clase.hora_final %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= clase.nombre_usuario %>
+                                                                </td>
+
+                                                                <td>
+                                                                    <%= clase.estado %>
+                                                                </td>
+                                                                <td>
+                                                                    <button class="button-iconn" data-bs-toggle="modal"
+                                                                        data-bs-target="#editEstudiantesModal"
+                                                                        data-id="<%= clase.id_clase %>">
                                                                         <i class="fas fa-plus"></i>
                                                                     </button>
-                                                                </td>                                                                
+                                                                </td>
                                                                 <td>
-                                                                    <button type="button" class="button-iconn" data-toggle="modal" data-target="#editModal" 
-                                                                    data-id="<%= clase.id_clase %>" data-id_curso="<%= clase.id_curso %>"
-                                                                    data-hora-inicio="<%= clase.hora_inicio %>" data-hora-final="<%= clase.hora_final %>"
-                                                                    data-usuario="<%= clase.id_usuario || 'sin profesor' %>" data-estado="<%= clase.estado %>">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                            
-                                                                    <button type="button" class="button-iconn" onclick="confirmarEliminacion(<%= clase.id_clase %>)">
+                                                                    <button type="button" class="button-iconn"
+                                                                        data-toggle="modal" data-target="#editModal"
+                                                                        data-id="<%= clase.id_clase %>"
+                                                                        data-id_curso="<%= clase.id_curso %>"
+                                                                        data-hora-inicio="<%= clase.hora_inicio %>"
+                                                                        data-hora-final="<%= clase.hora_final %>"
+                                                                        data-usuario="<%= clase.id_usuario || 'sin profesor' %>"
+                                                                        data-estado="<%= clase.estado %>">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+
+                                                                    <button type="button" class="button-iconn"
+                                                                        onclick="confirmarEliminacion(<%= clase.id_clase %>)">
                                                                         <i class="fas fa-trash"></i>
                                                                     </button>
                                                                 </td>
                                                             </tr>
-                                                        <% }) %>
-                                                    <% } else { %>
-                                                        <tr>
-                                                            <td colspan="7">No hay clases disponibles</td>
-                                                        </tr>
-                                                    <% } %>
+                                                            <% }) %>
+                                                                <% } else { %>
+                                                                    <tr>
+                                                                        <td colspan="7">No hay clases disponibles</td>
+                                                                    </tr>
+                                                                    <% } %>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -88,15 +100,19 @@
                             </div>
 
                             <!-- Modal estudiantes -->
-                            <div class="modal fade" id="editEstudiantesModal" tabindex="-1" role="dialog" aria-labelledby="editEstudiantesModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="editEstudiantesModal" tabindex="-1" role="dialog"
+                                aria-labelledby="editEstudiantesModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="editEstudiantesModalLabel">Agregar estudiantes a la clase</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <h5 class="modal-title" id="editEstudiantesModalLabel">Agregar estudiantes a
+                                                la clase</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p class="card-description">Selecciona los estudiantes que deseas asignar a la clase</p>
+                                            <p class="card-description">Selecciona los estudiantes que deseas asignar a
+                                                la clase</p>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <h6>Estudiantes Asignados</h6>
@@ -112,8 +128,10 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancelar</button>
-                                                <button type="button" class="btn btn-dark" id="saveStudentsButton">Guardar</button>
+                                                <button type="button" class="btn btn-dark"
+                                                    data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="button" class="btn btn-dark"
+                                                    id="saveStudentsButton">Guardar</button>
                                             </div>
                                         </div>
                                     </div>
@@ -124,7 +142,8 @@
 
 
 
-                            <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="addModal" tabindex="-1" role="dialog"
+                                aria-labelledby="addModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -134,34 +153,43 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <form id="addForm" action="/agregar_clase" method="post" >
+                                            <form id="addForm" action="/agregar_clase" method="post">
                                                 <div class="form-group">
                                                     <label for="addIdCurso">Curso</label>
-                                                    
-                                                    <select name="id_curso" class="form-control" id="addIdCurso" required>
+
+                                                    <select name="id_curso" class="form-control" id="addIdCurso"
+                                                        required>
                                                         <option value="" disabled selected>Seleccione un curso</option>
-                                                        <% cursos.forEach(curso => { %>
-                                                            <option value="<%= curso.id_curso %>"><%= curso.nombre_curso %></option>
-                                                        <% }); %>
+                                                        <% cursos.forEach(curso=> { %>
+                                                            <option value="<%= curso.id_curso %>">
+                                                                <%= curso.nombre_curso %>
+                                                            </option>
+                                                            <% }); %>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="addHoraInicio">Hora Inicio</label>
-                                                    <input type="time" name="hora_inicio" class="form-control" id="addHoraInicio" required>
+                                                    <input type="time" name="hora_inicio" class="form-control"
+                                                        id="addHoraInicio" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="addHoraFinal">Hora Final</label>
-                                                    <input type="time" name="hora_final" class="form-control" id="addHoraFinal" required>
+                                                    <input type="time" name="hora_final" class="form-control"
+                                                        id="addHoraFinal" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="addIdUsuario">Profesor</label>
-                                                    <select name="id_usuario" class="form-control" id="addIdProfesor" required>
-                                                        <option value="" disabled selected>Seleccione un profesor</option>
-                                                        <% profesores.forEach(profesor => { %>
-                                                            <option value="<%= profesor.id_usuario %>"><%= profesor.nombre_usuario %></option>
-                                                        <% }); %>
+                                                    <select name="id_usuario" class="form-control" id="addIdProfesor"
+                                                        required>
+                                                        <option value="" disabled selected>Seleccione un profesor
+                                                        </option>
+                                                        <% profesores.forEach(profesor=> { %>
+                                                            <option value="<%= profesor.id_usuario %>">
+                                                                <%= profesor.nombre_usuario %>
+                                                            </option>
+                                                            <% }); %>
                                                     </select>
-                                                    
+
                                                 </div>
                                                 <div hidden>
                                                     <label for="addEstado">Estado</label>
@@ -171,7 +199,8 @@
                                                     </select>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
+                                                    <button type="button" class="btn btn-dark mr-2"
+                                                        data-dismiss="modal">Cancelar</button>
                                                     <button type="submit" class="btn btn-dark">Agregar</button>
                                                 </div>
                                             </form>
@@ -179,368 +208,259 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            
-       
-                         <!-- Modal para editar clase -->
-                        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editModalLabel">Editar Clase</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form id="editForm" action="/actualizar_clase" method="post">
-                                            <input type="hidden" name="id_clase" id="editIdClase">
 
-                                            <div class="form-group">
-                                                <label for="id_curso">Curso</label>
-                                                <select name="id_curso" class="form-control" id="id_curso" required>
-                                                    <option value="" disabled selected>Seleccione un curso</option>
-                                                    <% cursos.forEach(curso => { %>
-                                                        <option value="<%= curso.id_curso %>"><%= curso.nombre_curso %></option>
-                                                    <% }); %>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editHoraInicio">Hora Inicio</label>
-                                                <input type="time" name="hora_inicio" class="form-control" id="editHoraInicio" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editHoraFinal">Hora Final</label>
-                                                <input type="time" name="hora_final" class="form-control" id="editHoraFinal" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editIdUsuario">Profesor</label>
-                                                <select name="id_usuario" class="form-control" id="editIdUsuario" required>
-                                                    <option value="" disabled selected>Seleccione un profesor</option>
-                                                    <% profesores.forEach(profesor => { %>
-                                                        <option value="<%= profesor.id_usuario %>"><%= profesor.nombre_usuario %></option>
-                                                    <% }); %>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editEstado">Estado</label>
-                                                <select name="estado" class="form-control" id="editEstado" required>
-                                                    <option value="activo">Activo</option>
-                                                    <option value="inactivo">Inactivo</option>
-                                                </select>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
-                                                <button type="submit" class="btn btn-dark">Actualizar</button>
-                                            </div>
-                                        </form>
+
+
+                            <!-- Modal para editar clase -->
+                            <div class="modal fade" id="editModal" tabindex="-1" role="dialog"
+                                aria-labelledby="editModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editModalLabel">Editar Clase</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="editForm" action="/actualizar_clase" method="post">
+                                                <input type="hidden" name="id_clase" id="editIdClase">
+
+                                                <div class="form-group">
+                                                    <label for="id_curso">Curso</label>
+                                                    <select name="id_curso" class="form-control" id="id_curso" required>
+                                                        <option value="" disabled selected>Seleccione un curso</option>
+                                                        <% cursos.forEach(curso=> { %>
+                                                            <option value="<%= curso.id_curso %>">
+                                                                <%= curso.nombre_curso %>
+                                                            </option>
+                                                            <% }); %>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editHoraInicio">Hora Inicio</label>
+                                                    <input type="time" name="hora_inicio" class="form-control"
+                                                        id="editHoraInicio" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editHoraFinal">Hora Final</label>
+                                                    <input type="time" name="hora_final" class="form-control"
+                                                        id="editHoraFinal" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editIdUsuario">Profesor</label>
+                                                    <select name="id_usuario" class="form-control" id="editIdUsuario"
+                                                        required>
+                                                        <option value="" disabled selected>Seleccione un profesor
+                                                        </option>
+                                                        <% profesores.forEach(profesor=> { %>
+                                                            <option value="<%= profesor.id_usuario %>">
+                                                                <%= profesor.nombre_usuario %>
+                                                            </option>
+                                                            <% }); %>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editEstado">Estado</label>
+                                                    <select name="estado" class="form-control" id="editEstado" required>
+                                                        <option value="activo">Activo</option>
+                                                        <option value="inactivo">Inactivo</option>
+                                                    </select>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-dark mr-2"
+                                                        data-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-dark">Actualizar</button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                    
+
                             <!-- main-panel ends -->
                         </div>
                         <!-- page-body-wrapper ends -->
                         <!-- plugins:js -->
-                        <%- include('partials/scripts') %>
-                        
-                        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    </div>
+                    <%- include('partials/scripts') %>
                         <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-    // Formularios de agregar y editar clases
-    const addForm = document.getElementById('addForm');
-    const editForm = document.getElementById('editForm');
-
-    // Horas válidas en bloques de 2 horas
-    const validHours = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"];
-
-    function validateTime(horaInicio, horaFinal) {
-        console.log('Hora inicio:', horaInicio, 'Hora final:', horaFinal);
-
-        const inicio = new Date(`1970-01-01T${horaInicio}:00`);
-        const final = new Date(`1970-01-01T${horaFinal}:00`);
-        const diff = (final - inicio) / (1000 * 60 * 60); // diferencia en horas
-
-        // Validar que la diferencia sea exactamente 2 horas y que la hora de inicio esté en los bloques válidos
-        if (diff !== 2 || !validHours.includes(horaInicio)) {
-            alert("La hora debe estar en bloques de 2 horas, de 8 am a 8 pm.");
-            return false;
-        }
-
-        const [startHour, startMinute] = horaInicio.split(':').map(Number);
-        const [endHour, endMinute] = horaFinal.split(':').map(Number);
-        const calculatedEndHour = (startHour + 2) % 24;
-
-        // Validar que la hora final sea exactamente 2 horas después de la hora de inicio
-        if (endHour !== calculatedEndHour || endMinute !== startMinute) {
-            alert("La hora final debe ser exactamente 2 horas después de la hora de inicio.");
-            return false;
-        }
-
-        return true;
-    }
-});
-
-$(document).ready(function() {
-    console.log('Documento listo');
-
-    // Evento para abrir la modal de estudiantes
-    $('#editEstudiantesModal').on('show.bs.modal', async function(event) {
-        console.log('Modal de estudiantes abierta');
-        
-        // Tu lógica para manejar el modal y obtener los estudiantes
-        // ...
-    });
-
-    // Evento para guardar estudiantes seleccionados
-    $('#saveStudentsButton').on('click', function() {
-        console.log('Botón Guardar clickeado');
-        
-        // Tu lógica para guardar estudiantes seleccionados
-        // ...
-    });
-
-    // Evento para abrir la modal de edición de clase
-    $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function() {
-        const idClase = $(this).data('id');
-        const idCurso = $(this).data('id_curso');
-        const horaInicio = $(this).data('hora-inicio');
-        const horaFinal = $(this).data('hora-final');
-        const idUsuario = $(this).data('usuario');
-        const estado = $(this).data('estado');
-
-        $('#editIdClase').val(idClase);
-        $('#editHoraInicio').val(horaInicio);
-        $('#editHoraFinal').val(horaFinal);
-        $('#id_curso').val(idCurso);
-        $('#editIdUsuario').val(idUsuario);
-        $('#editEstado').val(estado);
-
-        $('#editModal').modal('show');
-    });
-});
-
-                        
-                                    // Validar que la última clase no termine después de las 10 pm
+                            $(document).ready(function() {
+                                console.log('Documento listo');
+                            
+                                // Función para cargar estudiantes en el modal de edición de estudiantes
+                                async function loadStudents(claseId) {
+                                    const assignedStudentsContainer = $('#assignedStudentsContainer');
+                                    const unassignedStudentsContainer = $('#unassignedStudentsContainer');
+                                    assignedStudentsContainer.empty();
+                                    unassignedStudentsContainer.empty();
+                            
+                                    try {
+                                        const response = await fetch('/todos_estudiantes');
+                                        if (!response.ok) throw new Error('Error en la respuesta de estudiantes');
+                                        const estudiantes = await response.json();
+                            
+                                        const assignedResponse = await fetch(`/estudiantes_clases/${claseId}`);
+                                        if (!assignedResponse.ok) throw new Error('Error en la respuesta de estudiantes asignados');
+                                        const assignedEstudiantes = await assignedResponse.json();
+                            
+                                        estudiantes.forEach(estudiante => {
+                                            const checkboxHtml = `
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="estudiante-${estudiante.id_usuario}" data-estudiante-id="${estudiante.id_usuario}">
+                                                    <label class="form-check-label" for="estudiante-${estudiante.id_usuario}">
+                                                        ${capitalize(estudiante.nombre_completo)}
+                                                    </label>
+                                                </div>
+                                            `;
+                            
+                                            if (assignedEstudiantes.some(assigned => assigned.id_usuario === estudiante.id_usuario)) {
+                                                assignedStudentsContainer.append(checkboxHtml);
+                                                $(`#estudiante-${estudiante.id_usuario}`).prop('checked', true);
+                                            } else {
+                                                unassignedStudentsContainer.append(checkboxHtml);
+                                            }
+                                        });
+                            
+                                        $('#editEstudiantesModal').data('clase-id', claseId);
+                                    } catch (error) {
+                                        console.error('Error al obtener estudiantes:', error);
+                                    }
+                                }
+                            
+                                // Evento para abrir la modal de estudiantes
+                                $('#editEstudiantesModal').on('show.bs.modal', function(event) {
+                                    const button = $(event.relatedTarget);
+                                    const claseId = button.data('id');
+                                    loadStudents(claseId);
+                                });
+                            
+                                // Función para guardar estudiantes seleccionados
+                                function saveSelectedStudents() {
+                                    const claseId = $('#editEstudiantesModal').data('clase-id');
+                                    const estudiantesSeleccionados = $('#assignedStudentsContainer input[type="checkbox"], #unassignedStudentsContainer input[type="checkbox"]')
+                                        .filter((_, checkbox) => $(checkbox).is(':checked'))
+                                        .map((_, checkbox) => $(checkbox).data('estudiante-id'))
+                                        .get();
+                            
+                                    fetch('/actualizar_estudiantes', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ claseId, estudiantes: estudiantesSeleccionados })
+                                    })
+                                    .then(response => response.ok ? response.json() : Promise.reject('Error en la API'))
+                                    .then(data => {
+                                        $('#editEstudiantesModal').modal('hide');
+                                        location.reload();
+                                    })
+                                    .catch(error => console.error('Error al guardar estudiantes:', error));
+                                }
+                            
+                                $('#saveStudentsButton').on('click', saveSelectedStudents);
+                            
+                                // Evento para abrir la modal de edición de clase
+                                $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function() {
+                                    const button = $(this);
+                                    const claseData = {
+                                        idClase: button.data('id'),
+                                        horaInicio: button.data('hora-inicio'),
+                                        horaFinal: button.data('hora-final'),
+                                        idCurso: button.data('id_curso'),
+                                        idUsuario: button.data('usuario'),
+                                        estado: button.data('estado'),
+                                        
+                                    };
+                            
+                                    $('#editIdClase').val(claseData.idClase);
+                                    $('#editHoraInicio').val(claseData.horaInicio);
+                                    $('#editHoraFinal').val(claseData.horaFinal);
+                                    $('#id_curso').val(claseData.idCurso);
+                                    console.log("hola"+claseData.horaFinal)
+                                    $('#editIdUsuario').val(claseData.idUsuario);
+                                    $('#editEstado').val(claseData.estado);
+                                    $('#editModal').modal('show');
+                                });
+                            
+                                // Validación de tiempo
+                                function validateTime(start, end) {
+                                    const [startHour, startMinute] = start.split(':').map(Number);
+                                    const [endHour, endMinute] = end.split(':').map(Number);
+                            
                                     if (endHour > 22 || (endHour === 22 && endMinute > 0)) {
                                         alert("La última clase posible debe terminar a las 10 pm.");
                                         return false;
                                     }
-                        
                                     return true;
                                 }
-                        
-                                function handleSubmit(event, form) {
-                                    const horaInicio = form.querySelector('[name="hora_inicio"]').value;
-                                    const horaFinal = form.querySelector('[name="hora_final"]').value;
-                        
-                                    // Si la validación de tiempo falla, se evita el envío del formulario
-                                    if (!validateTime(horaInicio, horaFinal)) {
-                                        event.preventDefault(); // Detener el envío del formulario
-                                    }
+                            
+                                // Función genérica para manejar el envío de formularios
+                                function handleFormSubmit(event, formId, url, method = 'POST') {
+                                    event.preventDefault();
+                            
+                                    const formData = {
+                                        id_curso: $(`#${formId}IdCurso`).val(),
+                                        hora_inicio: $(`#${formId}HoraInicio`).val(),
+                                        hora_final: $(`#${formId}HoraFinal`).val(),
+                                        id_usuario: $(`#${formId}IdUsuario`).val(),
+                                        estado: $(`#${formId}Estado`).val()
+                                    };
+                            
+                                    if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
+                            
+                                    fetch(url, {
+                                        method,
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify(formData)
+                                    })
+                                    .then(response => response.ok ? response.json() : Promise.reject('Error en el servidor'))
+                                    .then(data => {
+                                        alert(data.success ? `${method === 'POST' ? 'Clase agregada' : 'Clase actualizada'} exitosamente.` : `Error al ${method === 'POST' ? 'agregar' : 'actualizar'}`);
+                                        window.location.reload();
+                                    })
+                                    .catch(error => console.error('Error:', error));
                                 }
-                        
-                                // Agregar event listener a los formularios de agregar y editar
-                                if (addForm) {
-                                    addForm.addEventListener('submit', (event) => handleSubmit(event, addForm));
-                                }
-                        
-                                if (editForm) {
-                                    editForm.addEventListener('submit', (event) => handleSubmit(event, editForm));
-                                }
-                        
-                                // Código para la modal de edición de estudiantes
-                                $(document).ready(function() {
-                                    $('#editEstudiantesModal').on('show.bs.modal', async function(event) {
-                                        const button = $(event.relatedTarget);
-                                        const claseId = button.data('id');
-                        
-                                        const assignedStudentsContainer = $('#assignedStudentsContainer');
-                                        const unassignedStudentsContainer = $('#unassignedStudentsContainer');
-                                        assignedStudentsContainer.empty();
-                                        unassignedStudentsContainer.empty();
-                        
-                                        try {
-                                            const response = await fetch('/todos_estudiantes');
-                                            if (!response.ok) throw new Error('Error en la respuesta de estudiantes');
-                                            const estudiantes = await response.json();
-                        
-                                            const assignedResponse = await fetch(`/estudiantes_clases/${claseId}`);
-                                            if (!assignedResponse.ok) throw new Error('Error en la respuesta de estudiantes asignados');
-                                            const assignedEstudiantes = await assignedResponse.json();
-                        
-                                            estudiantes.forEach(estudiante => {
-                                                const checkboxHtml = `
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input" id="estudiante-${estudiante.id_usuario}" data-estudiante-id="${estudiante.id_usuario}">
-                                                        <label class="form-check-label" for="estudiante-${estudiante.id_usuario}">
-                                                            ${capitalize(estudiante.nombre_completo)}
-                                                        </label>
-                                                    </div>
-                                                `;
-                        
-                                                if (assignedEstudiantes.some(assigned => assigned.id_usuario === estudiante.id_usuario)) {
-                                                    assignedStudentsContainer.append(checkboxHtml);
-                                                    $(`#estudiante-${estudiante.id_usuario}`).prop('checked', true);
-                                                } else {
-                                                    unassignedStudentsContainer.append(checkboxHtml);
-                                                }
-                                            });
-                        
-                                            $('#editEstudiantesModal').data('clase-id', claseId);
-                                        } catch (error) {
-                                            console.error('Error al obtener estudiantes:', error);
-                                        }
-                                    });
-                        
-                                    $('#saveStudentsButton').on('click', function() {
-                                        const claseId = $('#editEstudiantesModal').data('clase-id');
-                                        const estudiantesSeleccionados = [];
-                        
-                                        $('#assignedStudentsContainer input[type="checkbox"], #unassignedStudentsContainer input[type="checkbox"]').each(function() {
-                                            if ($(this).is(':checked')) {
-                                                estudiantesSeleccionados.push($(this).data('estudiante-id'));
-                                            }
-                                        });
-                        
-                                        fetch('/actualizar_estudiantes', {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ claseId, estudiantes: estudiantesSeleccionados })
-                                        })
-                                        .then(response => response.ok ? response.json() : Promise.reject('Error en la API'))
-                                        .then(data => {
-                                            $('#editEstudiantesModal').modal('hide');
-                                            location.reload();
-                                        })
-                                        .catch(error => console.error('Error al guardar estudiantes:', error));
-                                    });
-                        
-                                    $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function() {
-                                        const idClase = $(this).data('id');
-                                        $('#editIdClase').val(idClase);
-                                        $('#editHoraInicio').val($(this).data('hora-inicio'));
-                                        $('#editHoraFinal').val($(this).data('hora-final'));
-                                        $('#id_curso').val($(this).data('id_curso'));
-                                        $('#editIdUsuario').val($(this).data('usuario'));
-                                        $('#editEstado').val($(this).data('estado'));
-                                        $('#editModal').modal('show');
-                                    });
-                        
-                                    $('#editForm').on('submit', function(event) {
-                                        event.preventDefault();
-                        
-                                        const idClase = $('#editIdClase').val();
-                                        const formData = {
-                                            id_curso: $('#id_curso').val(),
-                                            hora_inicio: $('#editHoraInicio').val(),
-                                            hora_final: $('#editHoraFinal').val(),
-                                            id_usuario: $('#editIdUsuario').val(),
-                                            estado: $('#editEstado').val()
-                                        };
-                        
-                                        // Validación de las horas antes de enviar el formulario
-                                        if (!validateTime(formData.hora_inicio, formData.hora_final)) return; // Si la validación falla, no continuar
-                        
-                                        if (!formData.id_curso || !formData.hora_inicio || !formData.hora_final || !formData.id_usuario || !formData.estado) {
-                                            alert('Por favor, completa todos los campos.');
-                                            return;
-                                        }
-                        
-                                        fetch(`/actualizar_clase/${idClase}`, {
-                                            method: 'PUT',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify(formData)
-                                        })
-                                        .then(response => response.ok ? response.json() : Promise.reject('Error en el servidor'))
-                                        .then(data => {
-                                            alert(data.success ? 'Clase actualizada exitosamente.' : 'Error al actualizar');
-                                            window.location.reload();
-                                        })
-                                        .catch(error => console.error('Error al actualizar:', error));
-                                    });
-                        
-                                    $('#addForm').on('submit', function(event) {
-                                        event.preventDefault();
-                        
-                                        const horaInicio = $('#addHoraInicio').val();
-                                        const horaFinal = $('#addHoraFinal').val();
-                        
-                                        // Validación de las horas antes de enviar el formulario
-                                        if (!validateTime(horaInicio, horaFinal)) return; // Si la validación falla, no continuar
-                        
-                                        const formData = {
-                                            id_curso: $('#addIdCurso').val(),
-                                            hora_inicio: horaInicio,
-                                            hora_final: horaFinal,
-                                            id_usuario: $('#addIdProfesor').val(),
-                                            estado: $('#addEstado').val()
-                                        };
-                        
-                                        if (!formData.id_curso || !formData.hora_inicio || !formData.hora_final || !formData.id_usuario || !formData.estado) {
-                                            alert('Por favor, completa todos los campos.');
-                                            return;
-                                        }
-                        
-                                        fetch('/agregar_clase', {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify(formData)
-                                        })
-                                        .then(response => response.ok ? response.json() : Promise.reject('Error en el servidor'))
-                                        .then(data => {
-                                            alert(data.success ? 'Clase agregada exitosamente.' : 'Error al agregar');
-                                            window.location.reload();
-                                        })
-                                        .catch(error => console.error('Error al agregar:', error));
-                                    });
-                                });
-                        
+                            
+                                // Eventos para los formularios de agregar y editar clase
+                                $('#addForm').on('submit', (event) => handleFormSubmit(event, 'add', '/agregar_clase'));
+                                $('#editForm').on('submit', (event) => handleFormSubmit(event, 'edit', `/actualizar_clase/${$('#editIdClase').val()}`, 'PUT'));
+                            
+                                // Confirmación y eliminación de clase
                                 window.confirmarEliminacion = function(id) {
                                     if (confirm('¿Estás seguro de que deseas eliminar esta clase?')) {
-                fetch(`/eliminar_clase/${id}`, {
-                    method: 'DELETE'
-                })
-                .then(response => response.ok ? response.json() : Promise.reject('Error en el servidor'))
-                .then(data => {
-                    alert(data.success ? 'Clase eliminada exitosamente.' : 'Error al eliminar');
-                    window.location.reload();
-                })
-                .catch(error => console.error('Error al eliminar:', error));
-            }
-        };
-
-        // Función para capitalizar el primer nombre completo
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-    });
-</script>
-
-                        
-
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                    </div>
-                    
-                    
-    <!-- container-scroller -->
-    
-
-
-        <!-- End custom js for this page -->
+                                        fetch(`/eliminar_clase/${id}`, { method: 'DELETE' })
+                                        .then(response => response.ok ? response.json() : Promise.reject('Error en el servidor'))
+                                        .then(data => {
+                                            alert(data.success ? 'Clase eliminada exitosamente.' : 'Error al eliminar');
+                                            window.location.reload();
+                                        })
+                                        .catch(error => console.error('Error al eliminar:', error));
+                                    }
+                                };
+                            
+                                // Función para capitalizar el primer nombre completo
+                                function capitalize(str) {
+                                    return str.charAt(0).toUpperCase() + str.slice(1);
+                                }
+                            });
+                            
+                        </script>
 </body>
 
 </html>
