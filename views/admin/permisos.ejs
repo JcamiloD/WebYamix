@@ -72,7 +72,9 @@
                                     <table id="miTabla" class="table table-bordered">
                                         <thead>
                                             <tr>
-                                        
+
+                                                <td>#</td>
+
                                                 <th>Rol</th>
                                                 <th>Permiso(s)</th>
                                                 <th>Acción</th>
@@ -80,9 +82,25 @@
                                         </thead>
                                         <tbody>
                                             <% if (Array.isArray(data) && data.length > 0) { %>
-                                                <% data.forEach(rol => { %>
+                                                <% 
+                                                    // Separar los roles 3, 2, 1 y el resto
+                                                    const primerosRoles = data.filter(rol => [3, 2, 1].includes(rol.id_rol));
+                                                    const otrosRoles = data.filter(rol => ![3, 2, 1].includes(rol.id_rol));
+                                    
+                                                    // Concatenar los roles en el orden deseado (3, 2, 1 primero)
+                                                    const rolesOrdenados = [
+                                                        ...primerosRoles.filter(rol => rol.id_rol === 3),
+                                                        ...primerosRoles.filter(rol => rol.id_rol === 2),
+                                                        ...primerosRoles.filter(rol => rol.id_rol === 1),
+                                                        ...otrosRoles
+                                                    ];
+                                                %>
+                                    
+                                                <% rolesOrdenados.forEach((rol, index) => { %>
                                                     <tr>
-                                               
+
+                                                        <td><%= index + 1 %></td> <!-- Número autoincrementable -->
+
                                                         <td><%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1) %></td>
                                                         <td class="permissions-cell">
                                                             <% if (Array.isArray(rol.permisos) && rol.permisos.length > 0) { %>
@@ -93,23 +111,19 @@
                                                                 Sin permisos
                                                             <% } %>
                                                         </td>
-                                                        
-                                                   
+                                    
                                                         <td>
-                                                            <button type="button" class="button-iconn" data-bs-toggle="modal" data-bs-target="#editModal" data-id="<%= rol.id_rol %>">
-                                                                <i class="mdi mdi-key-plus"></i>
-                                                            </button>
-                                                            <button type="button" class="button-iconn" data-id="<%= rol.id_rol %>" onclick="abrirModalEditarRol(<%= rol.id_rol %>, '<%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1) %>')">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
-                                                            <% if (rol.nombre_rol !== 'administrador' && rol.nombre_rol !== 'Estudiante' && rol.nombre_rol !== 'miembro') { %>
+                                                            <% if (![1, 2, 3].includes(rol.id_rol)) { %>
+                                                                <button type="button" class="button-iconn" data-bs-toggle="modal" data-bs-target="#editModal" data-id="<%= rol.id_rol %>">
+                                                                    <i class="mdi mdi-key-plus"></i>
+                                                                </button>
+                                                                <button type="button" class="button-iconn" data-id="<%= rol.id_rol %>" onclick="abrirModalEditarRol(<%= rol.id_rol %>, '<%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1) %>')">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </button>
                                                                 <button type="button" class="button-iconn" onclick="confirmarEliminacion(<%= rol.id_rol %>)">
                                                                     <i class="fas fa-trash"></i>
                                                                 </button>
-                                                            <% } else { %>
-                                                                <button type="button" class="button-iconn" disabled>
-                                                                    <i class="fas fa-trash" style="color: grey;"></i>
-                                                                </button>
+
                                                             <% } %>
                                                         </td>
                                                         
@@ -117,7 +131,7 @@
                                                 <% }) %>
                                             <% } %>
                                         </tbody>
-                                    </table>
+                                    </table>                                                              
                                 </div>
                             </div>
                         </div>

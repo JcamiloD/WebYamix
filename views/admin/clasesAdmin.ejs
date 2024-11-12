@@ -5,9 +5,6 @@
     <%- include('partials/head') %>
     <%- include('partials/scripts') %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -246,36 +243,80 @@
                         
                         
                         <script>
-                            document.addEventListener('DOMContentLoaded', function () {
-                                // Formularios de agregar y editar clases
-                                const addForm = document.getElementById('addForm');
-                                const editForm = document.getElementById('editForm');
-                                
-                                // Horas válidas en bloques de 2 horas
-                                const validHours = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"];
-                        
-                                function validateTime(horaInicio, horaFinal) {
-                                    console.log('Hora inicio:', horaInicio, 'Hora final:', horaFinal);
-                        
-                                    const inicio = new Date(`1970-01-01T${horaInicio}:00`);
-                                    const final = new Date(`1970-01-01T${horaFinal}:00`);
-                                    const diff = (final - inicio) / (1000 * 60 * 60); // diferencia en horas
-                        
-                                    // Validar que la diferencia sea exactamente 2 horas y que la hora de inicio esté en los bloques válidos
-                                    if (diff !== 2 || !validHours.includes(horaInicio)) {
-                                        alert("La hora debe estar en bloques de 2 horas, de 8 am a 8 pm.");
-                                        return false;
-                                    }
-                        
-                                    const [startHour, startMinute] = horaInicio.split(':').map(Number);
-                                    const [endHour, endMinute] = horaFinal.split(':').map(Number);
-                                    const calculatedEndHour = (startHour + 2) % 24;
-                        
-                                    // Validar que la hora final sea exactamente 2 horas después de la hora de inicio
-                                    if (endHour !== calculatedEndHour || endMinute !== startMinute) {
-                                        alert("La hora final debe ser exactamente 2 horas después de la hora de inicio.");
-                                        return false;
-                                    }
+                        document.addEventListener('DOMContentLoaded', function () {
+    // Formularios de agregar y editar clases
+    const addForm = document.getElementById('addForm');
+    const editForm = document.getElementById('editForm');
+
+    // Horas válidas en bloques de 2 horas
+    const validHours = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"];
+
+    function validateTime(horaInicio, horaFinal) {
+        console.log('Hora inicio:', horaInicio, 'Hora final:', horaFinal);
+
+        const inicio = new Date(`1970-01-01T${horaInicio}:00`);
+        const final = new Date(`1970-01-01T${horaFinal}:00`);
+        const diff = (final - inicio) / (1000 * 60 * 60); // diferencia en horas
+
+        // Validar que la diferencia sea exactamente 2 horas y que la hora de inicio esté en los bloques válidos
+        if (diff !== 2 || !validHours.includes(horaInicio)) {
+            alert("La hora debe estar en bloques de 2 horas, de 8 am a 8 pm.");
+            return false;
+        }
+
+        const [startHour, startMinute] = horaInicio.split(':').map(Number);
+        const [endHour, endMinute] = horaFinal.split(':').map(Number);
+        const calculatedEndHour = (startHour + 2) % 24;
+
+        // Validar que la hora final sea exactamente 2 horas después de la hora de inicio
+        if (endHour !== calculatedEndHour || endMinute !== startMinute) {
+            alert("La hora final debe ser exactamente 2 horas después de la hora de inicio.");
+            return false;
+        }
+
+        return true;
+    }
+});
+
+$(document).ready(function() {
+    console.log('Documento listo');
+
+    // Evento para abrir la modal de estudiantes
+    $('#editEstudiantesModal').on('show.bs.modal', async function(event) {
+        console.log('Modal de estudiantes abierta');
+        
+        // Tu lógica para manejar el modal y obtener los estudiantes
+        // ...
+    });
+
+    // Evento para guardar estudiantes seleccionados
+    $('#saveStudentsButton').on('click', function() {
+        console.log('Botón Guardar clickeado');
+        
+        // Tu lógica para guardar estudiantes seleccionados
+        // ...
+    });
+
+    // Evento para abrir la modal de edición de clase
+    $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function() {
+        const idClase = $(this).data('id');
+        const idCurso = $(this).data('id_curso');
+        const horaInicio = $(this).data('hora-inicio');
+        const horaFinal = $(this).data('hora-final');
+        const idUsuario = $(this).data('usuario');
+        const estado = $(this).data('estado');
+
+        $('#editIdClase').val(idClase);
+        $('#editHoraInicio').val(horaInicio);
+        $('#editHoraFinal').val(horaFinal);
+        $('#id_curso').val(idCurso);
+        $('#editIdUsuario').val(idUsuario);
+        $('#editEstado').val(estado);
+
+        $('#editModal').modal('show');
+    });
+});
+
                         
                                     // Validar que la última clase no termine después de las 10 pm
                                     if (endHour > 22 || (endHour === 22 && endMinute > 0)) {
