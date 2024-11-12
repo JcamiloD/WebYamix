@@ -72,7 +72,9 @@
                                     <table id="miTabla" class="table table-bordered">
                                         <thead>
                                             <tr>
+
                                                 <td>#</td>
+
                                                 <th>Rol</th>
                                                 <th>Permiso(s)</th>
                                                 <th>Acción</th>
@@ -96,7 +98,9 @@
                                     
                                                 <% rolesOrdenados.forEach((rol, index) => { %>
                                                     <tr>
+
                                                         <td><%= index + 1 %></td> <!-- Número autoincrementable -->
+
                                                         <td><%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1) %></td>
                                                         <td class="permissions-cell">
                                                             <% if (Array.isArray(rol.permisos) && rol.permisos.length > 0) { %>
@@ -119,8 +123,10 @@
                                                                 <button type="button" class="button-iconn" onclick="confirmarEliminacion(<%= rol.id_rol %>)">
                                                                     <i class="fas fa-trash"></i>
                                                                 </button>
+
                                                             <% } %>
                                                         </td>
+                                                        
                                                     </tr>
                                                 <% }) %>
                                             <% } %>

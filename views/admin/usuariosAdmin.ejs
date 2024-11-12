@@ -123,7 +123,9 @@
                                     <table id="miTabla" class="table table-bordered">
                                         <thead>
                                             <tr>
+
                                                 <th>#</th>
+
                                                 <th>Nombre</th>
                                                 <th>Apellidos</th>
                                                 <th>Rol</th>
@@ -152,6 +154,7 @@
                                         
                                                 <% usuariosOrdenados.forEach((usuario, index) => { %>
                                                     <tr>
+
                                                         <td><%= index + 1 %></td> <!-- Índice autoincrementable -->
                                                         <td><%= usuario.nombre %></td>
                                                         <td><%= usuario.apellido %></td>
