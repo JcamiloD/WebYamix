@@ -56,12 +56,20 @@
 
             input:checked + .slider {
             background-color: #2196F3;
-            }
-
-            input:checked + .slider:before {
+        }
+        
+        input:checked + .slider:before {
             transform: translateX(25px);
-            }
+        }
         </style>
+        <%- include('partials/scripts') %>
+        
+        
+<!-- Incluye los archivos CSS y JS de FullCalendar -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+
         <!-- Incluye las librerías necesarias para exportar a Excel y PDF -->
         <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.9.2/dist/html2pdf.bundle.min.js"></script>
@@ -115,7 +123,7 @@
                                     <table id="miTabla" class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Id</th>
+                                                <th>#</th>
                                                 <th>Nombre</th>
                                                 <th>Apellidos</th>
                                                 <th>Rol</th>
@@ -128,9 +136,23 @@
                                         </thead>
                                         <tbody>
                                             <% if (Array.isArray(data) && data.length > 0) { %>
-                                                <% data.forEach(usuario => { %>
+                                                <% 
+                                                    // Filtramos los usuarios según su estado
+                                                    const usuariosEstadoEspera = data.filter(usuario => usuario.estado === 'espera');
+                                                    const usuariosEstadoHabilitado = data.filter(usuario => usuario.estado === 'habilitado');
+                                                    const usuariosEstadoDeshabilitado = data.filter(usuario => usuario.estado === 'deshabilitado');
+                                            
+                                                    // Concatenamos los usuarios en el orden deseado
+                                                    const usuariosOrdenados = [
+                                                        ...usuariosEstadoEspera,
+                                                        ...usuariosEstadoHabilitado,
+                                                        ...usuariosEstadoDeshabilitado
+                                                    ];
+                                                %>
+                                        
+                                                <% usuariosOrdenados.forEach((usuario, index) => { %>
                                                     <tr>
-                                                        <td><%= usuario.id_usuario %></td>
+                                                        <td><%= index + 1 %></td> <!-- Índice autoincrementable -->
                                                         <td><%= usuario.nombre %></td>
                                                         <td><%= usuario.apellido %></td>
                                                         <td><%= usuario.nombre_rol.charAt(0).toUpperCase() + usuario.nombre_rol.slice(1).toLowerCase() %></td>
@@ -150,7 +172,7 @@
                                                             <% } else { %>
                                                                 Sin fecha de nacimiento
                                                             <% } %>
-                                                        </td>                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                        </td>
                                                         <td>
                                                             <% if (usuario.pagos) { %>
                                                                 <%= `Días ${new Date(usuario.pagos).getDate()}` %>
@@ -158,29 +180,56 @@
                                                                 Sin pagos
                                                             <% } %>
                                                         </td>
-                                                        <td><%= usuario.estado.charAt(0).toUpperCase() +  usuario.estado.slice(1).toLowerCase() %></td>
+                                                        <td><%= usuario.estado.charAt(0).toUpperCase() + usuario.estado.slice(1).toLowerCase() %></td>
                                                         <td>
                                                             <!-- Botón para editar -->
                                                             <button type="button" class="icon-btn" data-toggle="modal"
-                                                            data-target="#editModal"
-                                                            data-id_usuario="<%= usuario.id_usuario %>"
-                                                            data-nombre="<%= usuario.nombre %>"
-                                                            data-apellido="<%= usuario.apellido %>"
-                                                            data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
-                                                            data-gmail="<%= usuario.correo %>"
-                                                            data-id_rol="<%= usuario.id_rol %>"
-                                                            data-estado="<%= usuario.estado %>"
-                                                            data-documentacion="<%= usuario.documentacion %>"
-                                                            data-pagos="<%= usuario.pagos %>">
-                                                            <i class="fas fa-edit"></i>
+                                                                data-target="#editModal"
+                                                                data-id_usuario="<%= usuario.id_usuario %>"
+                                                                data-nombre="<%= usuario.nombre %>"
+                                                                data-apellido="<%= usuario.apellido %>"
+                                                                data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
+                                                                data-gmail="<%= usuario.correo %>"
+                                                                data-id_rol="<%= usuario.id_rol %>"
+                                                                data-estado="<%= usuario.estado %>"
+                                                                data-documentacion="<%= usuario.documentacion %>"
+                                                                data-pagos="<%= usuario.pagos %>">
+                                                                <i class="fas fa-edit"></i>
                                                             </button>
+                                            
+                                                            <!-- Botón para deshabilitar (enviar la solicitud directamente) -->
+                                                            <% if (usuario.estado === 'habilitado' || usuario.estado === 'espera') { %>
+                                                                <button type="button" class="icon-btn"
+                                                                        data-id_usuario="<%= usuario.id_usuario %>"
+                                                                        data-nombre="<%= usuario.nombre %>"
+                                                                        data-apellido="<%= usuario.apellido %>"
+                                                                        data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
+                                                                        data-gmail="<%= usuario.correo %>"
+                                                                        data-id_rol="<%= usuario.id_rol %>"
+                                                                        data-estado="deshabilitado"
+                                                                        data-documentacion="<%= usuario.documentacion %>"
+                                                                        data-pagos="<%= usuario.pagos %>"
+                                                                        onclick="cambiarEstado(this)">
+                                                                    <i class="mdi mdi-block-helper"></i>
+                                                                </button>
+                                                            <% } %>
 
-                                        
-                                                            <!-- Botón para eliminar -->
-                                                            <button type="button" class="icon-btn"
-                                                                onclick="confirmarEliminacion(<%= usuario.id_usuario %>)">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
+                                                            <!-- Botón para habilitar (enviar la solicitud directamente) -->
+                                                            <% if (usuario.estado === 'deshabilitado') { %>
+                                                                <button type="button" class="icon-btn"
+                                                                        data-id_usuario="<%= usuario.id_usuario %>"
+                                                                        data-nombre="<%= usuario.nombre %>"
+                                                                        data-apellido="<%= usuario.apellido %>"
+                                                                        data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
+                                                                        data-gmail="<%= usuario.correo %>"
+                                                                        data-id_rol="<%= usuario.id_rol %>"
+                                                                        data-estado="habilitado"
+                                                                        data-documentacion="<%= usuario.documentacion %>"
+                                                                        data-pagos="<%= usuario.pagos %>"
+                                                                        onclick="cambiarEstado(this)">
+                                                                    <i class="mdi mdi-check-circle-outline"></i>
+                                                                </button>
+                                                            <% } %>
                                                         </td>
                                                     </tr>
                                                 <% }) %>
@@ -190,15 +239,14 @@
                                                 </tr>
                                             <% } %>
                                         </tbody>
-                                        
-                                    </table>
+                                    </table>                                                                                                         
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
-
+                    
+                    
+                    
                     <!-- Modal editar -->
                     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
@@ -212,6 +260,22 @@
                                 <div class="modal-body">
                                     <form id="editForm" method="post" action="/editar_usuario">
                                         <input type="hidden" name="id_usuario" id="editIdUsuario" />
+                                        <div class="form-group row">
+                                            <label for="editRol" class="col-sm-3 col-form-label">Rol</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" name="id_rol" id="editRol" required>
+                                                    <% if (roles && roles.length) { %>
+                                                        <% roles.forEach(function(rol) { %>
+                                                            <option value="<%= rol.id_rol %>">
+                                                                <%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %>
+                                                            </option>
+                                                        <% }); %>
+                                                    <% } else { %>
+                                                        <option value="">No hay roles disponibles</option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        </div>
 
                                         <div class="form-group row">
                                             <label for="editNombre" class="col-sm-3 col-form-label">Nombre</label>
@@ -244,22 +308,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group row">
-                                            <label for="editRol" class="col-sm-3 col-form-label">Rol</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" name="id_rol" id="editRol" required>
-                                                    <% if (roles && roles.length) { %>
-                                                        <% roles.forEach(function(rol) { %>
-                                                            <option value="<%= rol.id_rol %>">
-                                                                <%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %>
-                                                            </option>
-                                                        <% }); %>
-                                                    <% } else { %>
-                                                        <option value="">No hay roles disponibles</option>
-                                                    <% } %>
-                                                </select>
-                                            </div>
-                                        </div>
 
                                         <div class="form-group row">
                                             <label for="editEstado" class="col-sm-3 col-form-label">Estado</label>
@@ -315,6 +363,20 @@
                                     <div id="error-message" class="alert alert-danger" style="display: none;"></div>
                                     <form method="post" action="/agregar_usuario" id="addForm">
                                         <div class="form-group row">
+                                            <label for="addRol" class="col-sm-3 col-form-label">Rol</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" name="id_rol" id="addRol" required>
+                                                    <% if (roles && roles.length) { %>
+                                                        <% roles.forEach(function(rol) { %>
+                                                            <option value="<%= rol.id_rol %>"><%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %></option>
+                                                        <% }); %>
+                                                    <% } else { %>
+                                                        <option value="">No hay roles disponibles</option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
                                             <label for="addNombre" class="col-sm-3 col-form-label">Nombre</label>
                                             <div class="col-sm-9">
                                                 <input type="text" name="nombre" class="form-control" id="addNombre" placeholder="Nombre" required>
@@ -341,40 +403,33 @@
                                         <div class="form-group row">
                                             <label for="addContrasena" class="col-sm-3 col-form-label">Contraseña</label>
                                             <div class="col-sm-9">
-                                                <input type="password" name="contrasena" class="form-control" id="addContrasena" placeholder="Contraseña" required minlength="6">
+                                                <div class="input-group">
+                                                    <input type="password" name="contrasena" class="form-control" id="addContrasena" placeholder="Contraseña" required minlength="6">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                                            <i class="fas fa-eye" id="password-eye"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="addConfirmarContrasena" class="col-sm-3 col-form-label">Confirmar Contraseña</label>
                                             <div class="col-sm-9">
-                                                <input type="password" name="confirmar_contrasena" class="form-control" id="addConfirmarContrasena" placeholder="Confirmar Contraseña" required minlength="6">
+                                                <div class="input-group">
+                                                    <input type="password" name="confirmar_contrasena" class="form-control" id="addConfirmarContrasena" placeholder="Confirmar Contraseña" required minlength="6">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text" id="toggleConfirmPassword" style="cursor: pointer;">
+                                                            <i class="fas fa-eye" id="confirm-password-eye"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label for="addRol" class="col-sm-3 col-form-label">Rol</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" name="id_rol" id="addRol" required>
-                                                    <% if (roles && roles.length) { %>
-                                                        <% roles.forEach(function(rol) { %>
-                                                            <option value="<%= rol.id_rol %>"><%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %></option>
-                                                        <% }); %>
-                                                    <% } else { %>
-                                                        <option value="">No hay roles disponibles</option>
-                                                    <% } %>
-                                                </select>
-                                            </div>
+                                            <!-- Estado ya no está visible en el formulario, se envía "habilitado" por defecto -->
+                                            <input type="hidden" name="estado" value="habilitado">
                                         </div>
-                                        <div class="form-group row">
-                                            <label for="addEstado" class="col-sm-3 col-form-label">Estado</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" name="estado" required>
-                                                    <option value="espera">Espera</option>
-                                                    <option value="habilitado">Habilitado</option>
-                                                    <option value="deshabilitado">Deshabilitado</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
                                         <div class="form-group row">
                                             <label for="addDocumentacion" class="col-sm-3 col-form-label">Documentación</label>
                                             <div class="col-sm-3">
@@ -383,7 +438,7 @@
                                                     <span class="slider round"></span>
                                                 </label>
                                             </div>
-                                            
+
                                             <label for="addPagado" class="col-sm-3 col-form-label">Pagado</label>
                                             <div class="col-sm-3">
                                                 <label class="switch">
@@ -431,9 +486,33 @@
         </div>
         <!-- container-scroller -->
         <!-- plugins:js -->
-        <%- include('partials/scripts') %>
             <!-- Asegúrate de tener estos enlaces en el <head> o justo antes de cerrar el body -->
             
+                <script>
+                    // Función para mostrar/ocultar la contraseña
+                    const togglePassword = document.getElementById("togglePassword");
+                    const passwordField = document.getElementById("addContrasena");
+                    const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+                    const confirmPasswordField = document.getElementById("addConfirmarContrasena");
+                
+                    togglePassword.addEventListener("click", function () {
+                        const type = passwordField.type === "password" ? "text" : "password";
+                        passwordField.type = type;
+                
+                        // Cambiar el icono del ojo
+                        const icon = passwordField.type === "password" ? "fa-eye" : "fa-eye-slash";
+                        document.getElementById("password-eye").classList.replace("fa-eye", icon);
+                    });
+                
+                    toggleConfirmPassword.addEventListener("click", function () {
+                        const type = confirmPasswordField.type === "password" ? "text" : "password";
+                        confirmPasswordField.type = type;
+                
+                        // Cambiar el icono del ojo
+                        const icon = confirmPasswordField.type === "password" ? "fa-eye" : "fa-eye-slash";
+                        document.getElementById("confirm-password-eye").classList.replace("fa-eye", icon);
+                    });
+                </script>
 
             <script>
                 document.getElementById('editForm').addEventListener('submit', function(e) {
@@ -594,6 +673,49 @@
                 });
             </script>
             
+
+            <script>
+                function cambiarEstado(button) {
+                    var id_usuario = $(button).data('id_usuario');
+                    var nombre = $(button).data('nombre');
+                    var apellido = $(button).data('apellido');
+                    var fecha_nacimiento = $(button).data('fecha_nacimiento');
+                    var gmail = $(button).data('gmail');
+                    var estado = $(button).data('estado'); // El estado (habilitado o deshabilitado)
+                    var id_rol = $(button).data('id_rol');
+                    var documentacion = $(button).data('documentacion') === 1; // Convertir a booleano
+                    var pagos = $(button).data('pagos').split('T')[0]; // Extraer solo la fecha
+
+                    console.log(id_usuario, nombre, apellido, fecha_nacimiento, gmail, estado, id_rol, documentacion, pagos);
+
+                    // Enviar los datos con AJAX
+                    $.ajax({
+                        url: '/editar_usuario/' + id_usuario,  // Usar la misma ruta que el formulario de edición
+                        type: 'POST',
+                        data: {
+                            id_usuario: id_usuario,
+                            nombre: nombre,
+                            apellido: apellido,
+                            fecha_nacimiento: fecha_nacimiento,
+                            correo: gmail,
+                            estado: estado,  // Estado nuevo (habilitado o deshabilitado)
+                            id_rol: id_rol,
+                            documentacion: documentacion ? 1 : 0, // Convertir a 1 si está marcado
+                            pagos: pagos
+                        },
+                        success: function(response) {
+                            alert('Estado actualizado correctamente');
+                            // Aquí puedes actualizar la vista, recargar la página o modificar algo en el DOM
+                            location.reload();  // Recargar la página (opcional)
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error al cambiar el estado:', error);
+                            alert('Hubo un problema al actualizar el estado.');
+                        }
+                    });
+                }
+
+            </script>
             
             
             
