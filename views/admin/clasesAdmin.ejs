@@ -283,9 +283,6 @@
                         </div>
                         <!-- page-body-wrapper ends -->
                         <!-- plugins:js -->
-
-
-
                     </div>
                     <%- include('partials/scripts') %>
                     <script>
@@ -364,47 +361,47 @@
                                     console.error('Error al obtener estudiantes:', error);
                                 }
                             });
-                            // Código para la modal de edición de estudiantes
-        $('#editEstudiantesModal').on('show.bs.modal', async function(event) {
-            const button = $(event.relatedTarget);
-            const claseId = button.data('id');
+                                                // Código para la modal de edición de estudiantes
+                            $('#editEstudiantesModal').on('show.bs.modal', async function(event) {
+                                const button = $(event.relatedTarget);
+                                const claseId = button.data('id');
 
-            const assignedStudentsContainer = $('#assignedStudentsContainer');
-            const unassignedStudentsContainer = $('#unassignedStudentsContainer');
-            assignedStudentsContainer.empty();
-            unassignedStudentsContainer.empty();
+                                const assignedStudentsContainer = $('#assignedStudentsContainer');
+                                const unassignedStudentsContainer = $('#unassignedStudentsContainer');
+                                assignedStudentsContainer.empty();
+                                unassignedStudentsContainer.empty();
 
-            try {
-                const response = await fetch('/todos_estudiantes');
-                if (!response.ok) throw new Error('Error en la respuesta de estudiantes');
-                const estudiantes = await response.json();
+                                try {
+                                    const response = await fetch('/todos_estudiantes');
+                                    if (!response.ok) throw new Error('Error en la respuesta de estudiantes');
+                                    const estudiantes = await response.json();
 
-                const assignedResponse = await fetch(`/estudiantes_clases/${claseId}`);
-                if (!assignedResponse.ok) throw new Error('Error en la respuesta de estudiantes asignados');
-                const assignedEstudiantes = await assignedResponse.json();
+                                    const assignedResponse = await fetch(`/estudiantes_clases/${claseId}`);
+                                    if (!assignedResponse.ok) throw new Error('Error en la respuesta de estudiantes asignados');
+                                    const assignedEstudiantes = await assignedResponse.json();
 
-                estudiantes.forEach(estudiante => {
-                    const checkboxHtml = `
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="estudiante-${estudiante.id_usuario}" data-estudiante-id="${estudiante.id_usuario}">
-                            <label class="form-check-label" for="estudiante-${estudiante.id_usuario}">
-                                ${estudiante.nombre_completo.charAt(0).toUpperCase() + estudiante.nombre_completo.slice(1)}
-                            </label>
-                        </div>
-                    `;
-                    if (assignedEstudiantes.some(assigned => assigned.id_usuario === estudiante.id_usuario)) {
-                        assignedStudentsContainer.append(checkboxHtml);
-                        $(`#estudiante-${estudiante.id_usuario}`).prop('checked', true);
-                    } else {
-                        unassignedStudentsContainer.append(checkboxHtml);
-                    }
-                });
+                                    estudiantes.forEach(estudiante => {
+                                        const checkboxHtml = `
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="estudiante-${estudiante.id_usuario}" data-estudiante-id="${estudiante.id_usuario}">
+                                                <label class="form-check-label" for="estudiante-${estudiante.id_usuario}">
+                                                    ${estudiante.nombre_completo.charAt(0).toUpperCase() + estudiante.nombre_completo.slice(1)}
+                                                </label>
+                                            </div>
+                                        `;
+                                        if (assignedEstudiantes.some(assigned => assigned.id_usuario === estudiante.id_usuario)) {
+                                            assignedStudentsContainer.append(checkboxHtml);
+                                            $(`#estudiante-${estudiante.id_usuario}`).prop('checked', true);
+                                        } else {
+                                            unassignedStudentsContainer.append(checkboxHtml);
+                                        }
+                                    });
 
-                $('#editEstudiantesModal').data('clase-id', claseId);
-            } catch (error) {
-                console.error('Error al obtener estudiantes:', error);
-            }
-        });
+                                    $('#editEstudiantesModal').data('clase-id', claseId);
+                                } catch (error) {
+                                    console.error('Error al obtener estudiantes:', error);
+                                }
+                            });
 
                     
                             // Evento para guardar estudiantes seleccionados
@@ -481,63 +478,113 @@
                                 })
                                 .catch(error => console.error('Error al actualizar la clase:', error));
                             });
+                                                
+                                                //formulario agregar
+                                                $('#addForm').on('submit', function(event) {
+                        event.preventDefault();
+
                     
-                            $('#addForm').on('submit', function(event) {
-                                event.preventDefault();
+                        const formData = {
+                            id_curso: $('#addIdCurso').val(),
+                            hora_inicio: $('#addHoraInicio').val(),
+                            hora_final: $('#addHoraFinal').val(),
+                            id_usuario: $('#addIdProfesor').val(),
+                            estado: $('#addEstado').val()
+                        };
+
+
+                        if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
+
                     
-                                const formData = {
-                                    id_curso: $('#addIdCurso').val(),
-                                    hora_inicio: $('#addHoraInicio').val(),
-                                    hora_final: $('#addHoraFinal').val(),
-                                    id_usuario: $('#addIdProfesor').val(),
-                                    estado: $('#addEstado').val()
-                                };
-                    
-                                if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
-                    
-                                fetch('/agregar_clase', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(formData)
-                                })
-                                .then(response => response.ok ? response.json() : Promise.reject('Error en la respuesta del servidor'))
-                                .then(data => {
-                                    if (data.success) {
-                                        alert('Clase agregada exitosamente.');
-                                        window.location.reload();
-                                    } else {
-                                        alert('Error: ' + (data.message || 'Error desconocido al agregar'));
-                                    }
-                                })
-                                .catch(error => console.error('Error al agregar la clase:', error));
+                        fetch('/agregar_clase', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                        
+                                return response.json().then(errorData => {
+                                    throw new Error(errorData.message || 'Error al agregar la clase');
+                                });
+                            }
+                            return response.json(); 
+                        })
+                        .then(data => {
+
+                            if (data.success) {
+                        
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Clase agregada exitosamente',
+                                    text: 'La clase se ha agregado correctamente.',
+                                    confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                    window.location.reload();  
+                                });
+                            } else {
+                            
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.message || 'Error desconocido al agregar',
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al agregar la clase:', error);
+                        
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'paila ' + error.message,
+                                confirmButtonText: 'Aceptar'
                             });
                         });
-                         // Función para confirmar eliminación de una clase
-        window.confirmarEliminacion = function(id) {
-            if (confirm('¿Estás seguro de que deseas eliminar esta clase?')) {
-                fetch(`/eliminar_clase/${id}`, {
-                    method: 'DELETE'
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Error en la respuesta del servidor');
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        alert('Clase eliminada exitosamente.');
-                        window.location.reload();
-                    } else {
-                        alert('Error: ' + (data.message || 'Error desconocido al eliminar'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al eliminar la clase:', error);
-                    alert('Error interno del servidor: ' + error.message);
-                });
-            }
-        };
-    
+                    });
+                        });
+                                    // Función para confirmar eliminación de una clase
+                                    window.confirmarEliminacion = function(id) {
+                if (confirm('¿Estás seguro de que deseas eliminar esta clase?')) {
+                    fetch(`/eliminar_clase/${id}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
                         
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Clase eliminada exitosamente',
+                                text: 'La clase se ha eliminado correctamente.',
+                                confirmButtonText: 'Aceptar'
+                            }).then(() => {
+                                window.location.reload(); 
+                            });
+                        } else {
+                        
+                            if (data.error === 'No se puede eliminar la clase porque tiene estudiantes asignados.') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'No se puede eliminar la clase',
+                                    text: 'Esta clase ya tiene estudiantes asignados y no puede ser eliminada.',
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al eliminar la clase:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: '',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    });
+                }
+            };         
                     </script>
                     
 </body>
