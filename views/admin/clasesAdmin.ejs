@@ -3,6 +3,7 @@
 
 <head>
     <%- include('partials/head') %>
+    <%- include('partials/scripts') %>
 </head>
 
 <body>
@@ -284,7 +285,7 @@
                         <!-- page-body-wrapper ends -->
                         <!-- plugins:js -->
                     </div>
-                    <%- include('partials/scripts') %>
+                    
                     <script>
                         $(document).ready(function() {
                             console.log('Documento listo');
@@ -361,48 +362,6 @@
                                     console.error('Error al obtener estudiantes:', error);
                                 }
                             });
-                                                // Código para la modal de edición de estudiantes
-                            $('#editEstudiantesModal').on('show.bs.modal', async function(event) {
-                                const button = $(event.relatedTarget);
-                                const claseId = button.data('id');
-
-                                const assignedStudentsContainer = $('#assignedStudentsContainer');
-                                const unassignedStudentsContainer = $('#unassignedStudentsContainer');
-                                assignedStudentsContainer.empty();
-                                unassignedStudentsContainer.empty();
-
-                                try {
-                                    const response = await fetch('/todos_estudiantes');
-                                    if (!response.ok) throw new Error('Error en la respuesta de estudiantes');
-                                    const estudiantes = await response.json();
-
-                                    const assignedResponse = await fetch(`/estudiantes_clases/${claseId}`);
-                                    if (!assignedResponse.ok) throw new Error('Error en la respuesta de estudiantes asignados');
-                                    const assignedEstudiantes = await assignedResponse.json();
-
-                                    estudiantes.forEach(estudiante => {
-                                        const checkboxHtml = `
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" id="estudiante-${estudiante.id_usuario}" data-estudiante-id="${estudiante.id_usuario}">
-                                                <label class="form-check-label" for="estudiante-${estudiante.id_usuario}">
-                                                    ${estudiante.nombre_completo.charAt(0).toUpperCase() + estudiante.nombre_completo.slice(1)}
-                                                </label>
-                                            </div>
-                                        `;
-                                        if (assignedEstudiantes.some(assigned => assigned.id_usuario === estudiante.id_usuario)) {
-                                            assignedStudentsContainer.append(checkboxHtml);
-                                            $(`#estudiante-${estudiante.id_usuario}`).prop('checked', true);
-                                        } else {
-                                            unassignedStudentsContainer.append(checkboxHtml);
-                                        }
-                                    });
-
-                                    $('#editEstudiantesModal').data('clase-id', claseId);
-                                } catch (error) {
-                                    console.error('Error al obtener estudiantes:', error);
-                                }
-                            });
-
                     
                             // Evento para guardar estudiantes seleccionados
                             $('#saveStudentsButton').on('click', function() {

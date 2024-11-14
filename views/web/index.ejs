@@ -14,6 +14,7 @@
 	<noscript>
 		<link rel="stylesheet" href="css/noscript.css" />
 	</noscript>
+	
 </head>
 
 <body class="is-preload">
@@ -59,7 +60,7 @@
                         <li><a href="/register">Inscribirme</a></li>
                     <% } %>
                     <% if (!permisos || permisos.length > 0) { %>
-                    <li><a href="/logout" id="logout-link">Salir</a></li>
+                    <li><a href="#" id="logout-link">Salir</a></li>
                     <% } %>
                 </ul>
                 <a href="#" class="close">Close</a>
@@ -135,9 +136,36 @@
 	<script src="js/breakpoints.min.js"></script>
 	<script src="js/util.js"></script>
 	<script src="js/main.js"></script>
-
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 	
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var logoutLink = document.getElementById('logout-link');
+
+			if (logoutLink) {
+				logoutLink.addEventListener('click', function (event) {
+					event.preventDefault();
+
+					Swal.fire({
+						title: '¿Estás seguro?',
+						text: "Estás a punto de cerrar sesión.",
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#3085d6',
+						cancelButtonColor: '#d33',
+						confirmButtonText: 'Sí, cerrar sesión',
+						cancelButtonText: 'Cancelar'
+					}).then((result) => {
+						if (result.isConfirmed) {
+							window.location.href = "/logout";
+						}
+					});
+				});
+			}
+		});
+	</script>
 
 </body>
 
