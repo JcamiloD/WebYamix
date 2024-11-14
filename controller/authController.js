@@ -132,6 +132,66 @@ exports.login = async (req, res) => {
 };
 
 
+exports.enviarCodigo = async (req, res, next) => {
+    const { email } = req.body;
+    try {
+        const response = await fetch(`${process.env.pathApi}/enviar-codigo`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+        console.log('API Response:', data);
+
+        if (response.ok) {
+            res.render('web/codigo', { alert: { type: 'success', message: 'Código enviado correctamente.' } });
+        } else {
+            res.render('web/recuperar', { alert: { type: 'error', message: 'Error al enviar el código. Por favor, inténtalo de nuevo.' } });
+        }
+    } catch (error) {
+        console.error('Error al enviar el código de recuperación:', error);
+        res.render('recuperar', { alert: { type: 'error', message: 'Error al enviar el código de recuperación. Inténtalo más tarde.' } });
+    }
+};
+
+
+
+exports.verificarCodigo = async (req, res, next) => {
+    try {
+        const { codigo, nuevaContraseña } = req.body;
+
+        const response = await fetch(`${process.env.pathApi}/verificarCodigo`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ codigo, nuevaContraseña })
+        });
+
+        // Verificar si el contenido es JSON
+        const contentType = response.headers.get('content-type');
+        let result = {};
+
+        if (contentType && contentType.includes('application/json')) {
+            result = await response.json();
+        } else {
+            throw new Error('Respuesta no es JSON');
+        }
+
+        if (response.ok) {
+            res.redirect('/login')
+        } else {
+            res.redirect('/codigo')
+        }
+    } catch (error) {
+        console.error('Error en la verificación del código:', error);
+        res.status(500).json({ message: 'Error en la verificación del código.' });
+    }
+};
+
 
 
 
