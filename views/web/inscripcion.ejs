@@ -3,39 +3,45 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Inscripción</title>
+    <title>YAMIX</title>
     <link rel="stylesheet" href="css/login.css">
+    
 </head>
 
 <body>
     <section id="sec">
         <div class="form-box">
             <div class="form-value">
-                <form action="/registro" method="post">
+                <form  id="restablecerForm" action="/registro" method="post" onsubmit="validarFormulario(event)">
                     <h2>Inscribete</h2>
                     <div class="inputbox">
                         <ion-icon name="person"></ion-icon>
-                        <input name="nombre" type="text" required>
+                        <input name="nombre" type="text" id="nombre" >
                         <label for="">Nombres</label>
                     </div>
                     <div class="inputbox">
                         <ion-icon name="person"></ion-icon>
-                        <input name="apellido" type="text" required>
+                        <input name="apellido" type="text" id="apellido"  >
                         <label for="">Apellidos</label>
                     </div>
                     <div class="inputbox">
                         <ion-icon name="mail-outline"></ion-icon>
-                        <input name="correo" type="email" required>
+                        <input name="correo" id="correo">
                         <label for="">Correo</label>
                     </div>
                     <div class="inputbox">
                         <ion-icon name="calendar"></ion-icon>
-                        <input name="fecha_nacimiento" type="date" required>
+                        <input name="fecha_nacimiento" type="date" id="nacimiento"  >
                     </div>
-                    <div class="inputbox">
-                        <ion-icon name="lock-closed-outline"></ion-icon>
-                        <input name="contraseña" type="password" required>
-                        <label for="">Contraseña</label>
+                    <div class="inputbox"id="confirmarContraseñaBox">
+                        <ion-icon name="eye-off-outline" class="show-password" onclick="togglePassword('contraseña', this)"></ion-icon>
+                        <input name="contraseña" type="password" id="contraseña"  >
+                        <label for="confirmarContraseña">Contraseña</label>
+                    </div>
+                    <div class="inputbox" id="confirmarContraseñaBox">
+                        <input type="password" name="confirmarContraseña" id="confirmarContraseña" >
+                        <label for="confirmarContraseña">Confirmar Contraseña</label>
+                        <ion-icon name="eye-off-outline" class="show-password" onclick="togglePassword('confirmarContraseña', this)"></ion-icon>
                     </div>
                     <button>Registrar</button>
                     <div class="register">
@@ -47,11 +53,115 @@
     </section>
 
     <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'></script>
-    
-    <!-- Script para mostrar alertas -->
-    <!-- Script para mostrar alertas -->
+    <script>
+
+        
+
+        async function validarFormulario(event) {
+            event.preventDefault();
+            const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+            const nombre = document.getElementById('nombre').value.trim();
+            const apellido = document.getElementById('apellido').value;
+            const contraseña = document.getElementById('contraseña').value;
+            const nacimiento = document.getElementById('nacimiento').value;
+            const correo = document.getElementById('correo').value.trim();
+            const confirmarContraseña = document.getElementById('confirmarContraseña').value;
+            
+
+            if (!correo) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El campo correo es obligatorio.'
+                });
+                return;
+            }
+        
+            try {
+                
+                const response = await fetch('http://localhost:4000/api/verificar-correo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ correo })
+                });
+        
+                const result = await response.json();
+        
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Correo en uso.'
+                    });
+                    return;
+                }else {
+                    next()
+                }
+            } catch (error) {
+                console.error('El correo no existe');
+            }
+        
+            // Validación del código
+            
+        
+            // Validación del código
+            if (!nombre || !apellido || !contraseña || !correo) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Todos los campos obligatorio.'
+                });
+                return;
+            }
+
+            if (contraseña != confirmarContraseña) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Las contraseñas no coinciden.'
+                });
+                return;
+            }
+
+            // Validación de contraseñas
+            if (!correo.includes('@')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Correo inválido.'
+                });
+                return;
+            }
+
+            if (!passwordRegex.test(contraseña)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'La contraseña debe tener al menos 6 caracteres, incluyendo letras min o mayus , números y caracteres especiales.'
+                });
+                return;
+            }
+            // Envía el formulario después de que se cierre la alerta
+            document.getElementById('restablecerForm').submit();
+        }
+
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.name = "eye-outline";
+            } else {
+                input.type = "password";
+                icon.name = "eye-off-outline";
+            }
+        }
+    </script>
+
 <script>
     <% if (typeof alert !== 'undefined') { %>
         Swal.fire({
@@ -65,6 +175,20 @@
     <% } %>
 </script>
 
+
+
+<script>
+    function togglePassword(inputId, icon) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.name = "eye-outline";
+        } else {
+            input.type = "password";
+            icon.name = "eye-off-outline";
+        }
+    }
+</script>
 </body>
 
 </html>

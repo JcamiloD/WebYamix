@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restablecer Contraseña</title>
+    <title>YAMIX</title>
     <link rel="stylesheet" href="/css/login.css">
     <style>
         .error {
@@ -113,14 +113,6 @@
                 return;
             }
 
-            // Mostrar mensaje de éxito y luego enviar el formulario
-            await Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'Cambio de contraseña exitoso.',
-                timer: 2000,
-                showConfirmButton: false
-            });
 
             // Envía el formulario después de que se cierre la alerta
             document.getElementById('restablecerForm').submit();
@@ -137,6 +129,16 @@
             }
         }
     </script>
+
+    <script>
+        <% if (typeof alert !== 'undefined') { %>
+            Swal.fire({
+                icon: '<%= alert.type === "success" ? "success" : "error" %>',
+                title: '<%= alert.type === "success" ? "Éxito" : "Error" %>',
+                text: '<%= alert.message %>'
+            });
+        <% } %>
+        </script>
 </body>
 
 </html>

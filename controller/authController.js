@@ -4,35 +4,7 @@ const jwt = require('jsonwebtoken');
 exports.register = async (req, res) => {
     const { nombre, apellido, correo, contraseña, fecha_nacimiento } = req.body;
     console.log(req.body);
-    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
-
     try {
-        // Validaciones de los campos
-        if (!nombre || !apellido || !contraseña || !fecha_nacimiento) {
-            return res.render('web/inscripcion', { alert: 'Por favor completa todos los campos', alertType: 'error', ruta: 'register' });
-        }
-
-        if (!correo.includes('@')) {
-            return res.render('web/inscripcion', { alert: 'Correo inválido', alertType: 'error', ruta: 'register' });
-        }
-
-        if (!passwordRegex.test(contraseña)) {
-            return res.render('web/inscripcion', {
-                alert: 'La contraseña debe tener al menos 6 caracteres, incluyendo letras min y mayus , números y caracteres especiales.',
-                alertType: 'error',
-                ruta: 'register'
-            });
-        }
-
-        // Cálculo de la edad
-        const today = new Date();
-        const birthDate = new Date(fecha_nacimiento);
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDifference = today.getMonth() - birthDate.getMonth();
-        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-
         // Registro del usuario a través de la API
         const userData = { nombre, apellido, correo, contraseña, fecha_nacimiento };
         const apiResponse = await fetch(`${process.env.pathApi}/register`, {
@@ -62,7 +34,7 @@ exports.register = async (req, res) => {
         }
     } catch (error) {
         // Si hay un error en el servidor, redirige a la página de registro con alerta
-        return res.render('web/inscripcion', { alert: 'Ocurrió un error en el servidor', alertType: 'error', ruta: 'register' });
+        return;
     }
 };
 
@@ -72,13 +44,7 @@ exports.login = async (req, res) => {
     console.log(req.body);
 
     try {
-        if (!correo || !contraseña) {
-            return res.render('web/login', {
-                alert: 'Por favor ingresa todos los datos',
-                alertType: 'error',
-                ruta: 'login'
-            });
-        }
+
 
         const loginData = { correo, contraseña };
         const apiResponse = await fetch(`${process.env.pathApi}/login`, {
@@ -147,9 +113,9 @@ exports.enviarCodigo = async (req, res, next) => {
         console.log('API Response:', data);
 
         if (response.ok) {
-            res.render('web/codigo', { alert: { type: 'success', message: 'Código enviado correctamente.' } });
+            res.render('web/codigo', { alert: { type: 'success', message: 'Código enviado correctamente.',ruta: '/codigo'  } });
         } else {
-            res.render('web/recuperar', { alert: { type: 'error', message: 'Error al enviar el código. Por favor, inténtalo de nuevo.' } });
+            res.render('web/recuperar', { alert: { type: 'error', message: 'Error al enviar el código. Por favor, inténtalo de nuevo.', ruta: '/recuperar'  } });
         }
     } catch (error) {
         console.error('Error al enviar el código de recuperación:', error);
@@ -182,10 +148,19 @@ exports.verificarCodigo = async (req, res, next) => {
         }
 
         if (response.ok) {
-            res.redirect('/login')
+            res.render('web/login', { 
+                alertType: 'success', 
+                alert: 'Cambio de contraseña exitoso.', 
+                ruta: 'login' 
+            });
         } else {
-            res.redirect('/codigo')
+            res.render('web/codigo', { 
+                alertType: 'error', 
+                alert: 'Código incorrecto.', 
+                ruta: 'codigo'
+            });
         }
+        
     } catch (error) {
         console.error('Error en la verificación del código:', error);
         res.status(500).json({ message: 'Error en la verificación del código.' });
