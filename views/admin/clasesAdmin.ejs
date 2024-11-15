@@ -287,39 +287,49 @@
                     </div>
                     
                     <script>
-                        $(document).ready(function() {
-                            console.log('Documento listo');
-                    
-                            // Formularios de agregar y editar clases
-                            const addForm = document.getElementById('addForm');
-                            const editForm = document.getElementById('editForm');
-                    
-                            // Horas válidas en bloques de 2 horas
-                            const validHours = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"];
-                    
-                            // Función para validar el tiempo
-                            function validateTime(horaInicio, horaFinal) {
-                                const inicio = new Date(`1970-01-01T${horaInicio}:00`);
-                                const final = new Date(`1970-01-01T${horaFinal}:00`);
-                                const diff = (final - inicio) / (1000 * 60 * 60); // diferencia en horas
-                                const [startHour, startMinute] = horaInicio.split(':').map(Number);
-                                const [endHour, endMinute] = horaFinal.split(':').map(Number);
-                                const calculatedEndHour = (startHour + 2) % 24;
-                    
-                                if (diff !== 2 || !validHours.includes(horaInicio)) {
-                                    alert("La hora debe estar en bloques de 2 horas, de 8 am a 8 pm.");
-                                    return false;
-                                }
-                                if (endHour !== calculatedEndHour || endMinute !== startMinute) {
-                                    alert("La hora final debe ser exactamente 2 horas después de la hora de inicio.");
-                                    return false;
-                                }
-                                if (endHour > 22 || (endHour === 22 && endMinute > 0)) {
-                                    alert("La última clase posible debe terminar a las 10 pm.");
-                                    return false;
-                                }
-                                return true;
-                            }
+                           
+                           $(document).ready(function () {
+    console.log("Documento listo");
+
+    // Guardar valores originales al cargar el formulario
+    let originalHoraInicio = "";
+    let originalHoraFinal = "";
+
+    $('#editForm').on('focusin', function () {
+        // Obtener valores originales
+        originalHoraInicio = $('#editHoraInicio').val();
+        originalHoraFinal = $('#editHoraFinal').val();
+    });
+
+    // Función para validar el tiempo
+    function validateTime(horaInicio, horaFinal) {
+        const startHour = parseInt(horaInicio.split(":")[0], 10);
+        const endHour = parseInt(horaFinal.split(":")[0], 10);
+
+        // Validar si la hora de inicio es antes de las 8 AM o después de las 10 PM
+        if (startHour < 8 || startHour >= 22) {
+            alert("La hora de inicio debe estar entre las 08:00 AM y las 10:00 PM.");
+            return false;
+        }
+
+        // Validar si la hora de finalización es antes de las 8 AM o después de las 10 PM
+        if (endHour < 8 || endHour >= 22) {
+            alert("La hora de finalización debe estar entre las 08:00 AM y las 10:00 PM.");
+            return false;
+        }
+
+        // Validar que la clase dure exactamente 2 horas
+        const inicio = new Date(`1970-01-01T${horaInicio}:00`);
+        const final = new Date(`1970-01-01T${horaFinal}:00`);
+        const diff = (final - inicio) / (1000 * 60 * 60); // Diferencia en horas
+
+        if (diff !== 2) {
+            alert("La clase debe durar exactamente 2 horas.");
+            return false;
+        }
+
+        return true;
+    }
                     
                             
                                                 // Código para la modal de edición de estudiantes
@@ -407,145 +417,262 @@
                     
                                 $('#editModal').modal('show');
                             });
-                    
-                            // Envío de formularios
-                            $('#editForm').on('submit', function(event) {
-                                event.preventDefault();
-                    
-                                const idClase = $('#editIdClase').val();
-                                const formData = {
-                                    id_curso: $('#id_curso').val(),
-                                    hora_inicio: $('#editHoraInicio').val(),
-                                    hora_final: $('#editHoraFinal').val(),
-                                    id_usuario: $('#editIdUsuario').val(),
-                                    estado: $('#editEstado').val()
-                                };
-                    
-                                if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
-                    
-                                fetch(`/actualizar_clase/${idClase}`, {
-                                    method: 'PUT',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(formData)
-                                })
-                                .then(response => response.ok ? response.json() : Promise.reject('Error en la respuesta del servidor'))
-                                .then(data => {
-                                    if (data.success) {
-                                        alert('Clase actualizada exitosamente.');
-                                        window.location.reload();
-                                    } else {
-                                        alert('Error: ' + (data.message || 'Error desconocido al actualizar'));
-                                    }
-                                })
-                                .catch(error => console.error('Error al actualizar la clase:', error));
-                            });
-                                                
-                                                //formulario agregar
-                                                $('#addForm').on('submit', function(event) {
-                        event.preventDefault();
 
-                    
-                        const formData = {
-                            id_curso: $('#addIdCurso').val(),
-                            hora_inicio: $('#addHoraInicio').val(),
-                            hora_final: $('#addHoraFinal').val(),
-                            id_usuario: $('#addIdProfesor').val(),
-                            estado: $('#addEstado').val()
-                        };
+ //editar form                   
+$('#editForm').on('submit', function (event) {
+    event.preventDefault();
+
+    const idClase = $('#editIdClase').val();
+    const formData = {
+        id_curso: $('#id_curso').val(),
+        hora_inicio: $('#editHoraInicio').val(),
+        hora_final: $('#editHoraFinal').val(),
+        id_usuario: $('#editIdUsuario').val(),
+        estado: $('#editEstado').val()
+    };
+
+    if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
+
+    fetch(`/actualizar_clase/${idClase}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || 'Ya hay una clase con el mismo horario.');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Clase actualizada exitosamente',
+                text: 'La clase se ha actualizado correctamente.',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                window.location.reload();  
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Error desconocido al actualizar',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error al actualizar la clase:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Ocurrió un error al actualizar la clase.',
+            confirmButtonText: 'Aceptar'
+        });
+    });
+});
 
 
-                        if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
+function validateTime(horaInicio, horaFinal) {
+    const startHour = parseInt(horaInicio.split(":")[0], 10);
+    const endHour = parseInt(horaFinal.split(":")[0], 10);
 
-                    
-                        fetch('/agregar_clase', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(formData)
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                        
-                                return response.json().then(errorData => {
-                                    throw new Error(errorData.message || 'Error al agregar la clase');
-                                });
-                            }
-                            return response.json(); 
-                        })
-                        .then(data => {
 
-                            if (data.success) {
-                        
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Clase agregada exitosamente',
-                                    text: 'La clase se ha agregado correctamente.',
-                                    confirmButtonText: 'Aceptar'
-                                }).then(() => {
-                                    window.location.reload();  
-                                });
-                            } else {
-                            
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: data.message || 'Error desconocido al agregar',
-                                    confirmButtonText: 'Aceptar'
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error al agregar la clase:', error);
-                        
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'paila ' + error.message,
-                                confirmButtonText: 'Aceptar'
-                            });
-                        });
-                    });
-                        });
-                                    // Función para confirmar eliminación de una clase
-                                    window.confirmarEliminacion = function(id) {
-                if (confirm('¿Estás seguro de que deseas eliminar esta clase?')) {
-                    fetch(`/eliminar_clase/${id}`, {
-                        method: 'DELETE'
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                        
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Clase eliminada exitosamente',
-                                text: 'La clase se ha eliminado correctamente.',
-                                confirmButtonText: 'Aceptar'
-                            }).then(() => {
-                                window.location.reload(); 
-                            });
-                        } else {
-                        
-                            if (data.error === 'No se puede eliminar la clase porque tiene estudiantes asignados.') {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'No se puede eliminar la clase',
-                                    text: 'Esta clase ya tiene estudiantes asignados y no puede ser eliminada.',
-                                    confirmButtonText: 'Aceptar'
-                                });
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al eliminar la clase:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: '',
-                            confirmButtonText: 'Aceptar'
-                        });
-                    });
+    if (startHour < 8 || startHour >= 22) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hora de inicio inválida',
+            text: 'La hora de inicio debe estar entre las 08:00 AM y las 10:00 PM.',
+            confirmButtonText: 'Aceptar'
+        });
+        return false;
+    }
+
+    if (endHour < 8 || endHour >= 22) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hora de finalización inválida',
+            text: 'La hora de finalización debe estar entre las 08:00 AM y las 10:00 PM.',
+            confirmButtonText: 'Aceptar'
+        });
+        return false;
+    }
+
+
+    const inicio = new Date(`1970-01-01T${horaInicio}:00`);
+    const final = new Date(`1970-01-01T${horaFinal}:00`);
+    const diff = (final - inicio) / (1000 * 60 * 60);
+
+    if (diff !== 2) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Duración inválida',
+            text: 'La clase debe durar exactamente 2 horas.',
+            confirmButtonText: 'Aceptar'
+        });
+        return false;
+    }
+
+    return true;
+}
+//agregar form
+$('#addForm').on('submit', function(event) { 
+    event.preventDefault();
+
+    const formData = {
+        id_curso: $('#addIdCurso').val(),
+        hora_inicio: $('#addHoraInicio').val(),
+        hora_final: $('#addHoraFinal').val(),
+        id_usuario: $('#addIdProfesor').val(),
+        estado: $('#addEstado').val()
+    };
+
+
+    if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
+
+    fetch('/agregar_clase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || 'Error al agregar la clase');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Clase agregada exitosamente',
+                text: 'La clase se ha agregado correctamente.',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                window.location.reload();  
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Error desconocido al agregar',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error al agregar la clase:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'paila ' + error.message,
+            confirmButtonText: 'Aceptar'
+        });
+    });
+});
+
+
+function validateTime(horaInicio, horaFinal) {
+    const startHour = parseInt(horaInicio.split(":")[0], 10);
+    const endHour = parseInt(horaFinal.split(":")[0], 10);
+
+    if (startHour < 8 || startHour >= 22) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hora de inicio inválida',
+            text: 'La hora de inicio debe estar entre las 08:00 AM y las 10:00 PM.',
+            confirmButtonText: 'Aceptar'
+        });
+        return false;
+    }
+
+    if (endHour < 8 || endHour >= 22) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hora de finalización inválida',
+            text: 'La hora de finalización debe estar entre las 08:00 AM y las 10:00 PM.',
+            confirmButtonText: 'Aceptar'
+        });
+        return false;
+    }
+
+    const inicio = new Date(`1970-01-01T${horaInicio}:00`);
+    const final = new Date(`1970-01-01T${horaFinal}:00`);
+    
+    if (final <= inicio) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hora de finalización inválida',
+            text: 'La hora de finalización no puede ser inferior a la hora de inicio.',
+            confirmButtonText: 'Aceptar'
+        });
+        return false;
+    }
+
+    return true;
+}
+
+
+});
+//eliminar                                
+window.confirmarEliminacion = function(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta clase?')) {
+        fetch(`/eliminar_clase/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+            
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Clase eliminada exitosamente',
+                    text: 'La clase se ha eliminado correctamente.',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    window.location.reload(); 
+                });
+            } else {
+         
+                let errorMessage = 'Error desconocido al eliminar la clase.';
+                let errorTitle = 'Error';
+
+                if (data.error === 'No se puede eliminar la clase porque tiene estudiantes asignados.') {
+                    errorMessage = 'Esta clase ya tiene estudiantes asignados y no puede ser eliminada.';
+                    errorTitle = 'No se puede eliminar la clase';
+                } else if (data.error === 'No se puede eliminar la clase porque tiene registros en la tabla de asistencias.') {
+                    errorMessage = 'Esta clase tiene registros en la tabla de asistencias, lo cual impide su eliminación.';
+                    errorTitle = 'No se puede eliminar la clase';
                 }
-            };         
+
+
+                Swal.fire({
+                    icon: 'error',
+                    title: errorTitle,
+                    text: errorMessage,
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error al eliminar la clase:', error);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un error al intentar eliminar la clase. Por favor, intenta nuevamente.',
+                confirmButtonText: 'Aceptar'
+            });
+        });
+    }
+};
+
                     </script>
                     
 </body>
