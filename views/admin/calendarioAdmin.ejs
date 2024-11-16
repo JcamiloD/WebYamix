@@ -224,16 +224,46 @@
           },
   
           select: function(start, end) {
-              $('#modalNuevoEvento').load('/modalNuevoEvento', function() {
-                  $('#exampleModal').modal('show');
-  
-                  var fechaInicio = start.format('YYYY-MM-DD HH:mm');
-                  var fechaFin = end.format('YYYY-MM-DD HH:mm');
-  
-                  $("input[name='fecha_inicio']").val(fechaInicio);
-                  $("input[name='fecha_fin']").val(fechaFin);
-              });
-          },
+    // Cargar el contenido del modal
+    $('#modalNuevoEvento').load('/modalNuevoEvento', function() {
+        $('#exampleModal').modal('show');
+
+        // Formatear las fechas de inicio y fin en el formato correcto
+        var fechaInicio = start.format('YYYY-MM-DD HH:mm');
+        var fechaFin = end.format('YYYY-MM-DD HH:mm');
+
+        // Asignar las fechas al formulario
+        $("input[name='fecha_inicio']").val(fechaInicio);
+        $("input[name='fecha_fin']").val(fechaFin);
+
+        // Calcular la duración automáticamente
+        function calcularDuracion() {
+            var fechaInicio = $("input[name=fecha_inicio]").val();
+            var fechaFin = $("input[name=fecha_fin]").val();
+
+            if (fechaInicio && fechaFin) {
+                var inicio = moment(fechaInicio, 'YYYY-MM-DD HH:mm');
+                var fin = moment(fechaFin, 'YYYY-MM-DD HH:mm');
+
+                // Calcular la diferencia entre las dos fechas en horas y minutos
+                var duracion = moment.duration(fin.diff(inicio));
+
+                // Obtener horas y minutos de la duración
+                var horas = duracion.hours();
+                var minutos = duracion.minutes();
+
+                // Asignar la duración al campo de duración
+                $('#duracion').val(horas + ' horas ' + minutos + ' minutos');
+            }
+        }
+
+        // Calcular la duración al cambiar las fechas de inicio o fin
+        $('input[name=fecha_inicio], input[name=fecha_fin]').on('change', calcularDuracion);
+
+        // Llamar a la función para calcular la duración cuando se cargan las fechas
+        calcularDuracion();
+    });
+},
   
           // Renderizar eventos con el botón de eliminar
           eventRender: function(event, element) {
@@ -268,116 +298,151 @@
                   });
               });
           },
+// Actualizar evento con drag & drop
+eventDrop: function(event) {
+    var idEvento = event._id; // Usamos el ID del evento
+    var start = event.start ? event.start.format('YYYY-MM-DDTHH:mm:ss') : '';
+    var end = event.end ? event.end.format('YYYY-MM-DDTHH:mm:ss') : start;
+    var fechaActual = moment().format('YYYY-MM-DDTHH:mm:ss');
+
+    // Validaciones de fechas
+    if (start < fechaActual) {
+        Swal.fire('Error', 'La fecha de inicio no puede ser anterior a la fecha actual.', 'error');
+        $('#calendar').fullCalendar('refetchEvents'); // Refrescar los eventos para revertir el cambio
+        return; // No permite el cambio
+    }
+
+    if (end < start) {
+        Swal.fire('Error', 'La fecha de finalización no puede ser anterior a la fecha de inicio.', 'error');
+        $('#calendar').fullCalendar('refetchEvents'); // Refrescar los eventos para revertir el cambio
+        return; // No permite el cambio
+    }
+
+    // Enviar solicitud AJAX para actualizar el evento
+    $.ajax({
+        url: `http://localhost:4000/api/actualizar_evento/${idEvento}`, // La URL del endpoint
+        type: 'POST',
+        data: {
+            fecha_hora_inicio: start,   // La nueva fecha de inicio
+            fecha_hora_final: end,      // La nueva fecha de finalización
+            id_curso: event.id_curso,   // Asegurarnos de enviar el id_curso al actualizar
+            nombre_evento: event.title, // Aquí se pueden incluir otros campos si es necesario
+            descripcion: event.description, // Descripción del evento
+            tipo_evento: event.tipo_evento, // Tipo de evento
+            ubicacion: event.location, // Ubicación del evento
+            color_evento: event.color, // Color del evento
+            duracion: event.duracion, // Duración del evento
+            notificar: event.notificar, // Si se debe notificar
+            descripcion_notificacion: event.descripcion_notificacion, // Descripción de la notificación (si aplica)
+            estado: event.estado // Estado del evento
+        },
+        success: function(response) {
+            if (response.success) {
+                Swal.fire('Actualizado', 'El evento fue actualizado correctamente.', 'success');
+                $('#calendar').fullCalendar('refetchEvents'); 
+            } else {
+              
+                Swal.fire('Error', response.message, 'error');
+                $('#calendar').fullCalendar('refetchEvents'); 
+            }
+        },
+        error: function(xhr) {
+            // Error general si algo falla en la solicitud AJAX
+            Swal.fire('Error', 'Error al actualizar el evento: El curso ya tiene un evento programado en este rango de fechas ' , 'error');
+            $('#calendar').fullCalendar('refetchEvents'); 
+        }
+    });
+},
+
+
   
-          // Actualizar evento con drag & drop
-          eventDrop: function(event) {
-              var idEvento = event._id;
-              var start = event.start ? event.start.format('YYYY-MM-DDTHH:mm:ss') : '';
-              var end = event.end ? event.end.format('YYYY-MM-DDTHH:mm:ss') : start;
-              var fechaActual = moment().format('YYYY-MM-DDTHH:mm:ss');
-  
-              if (start < fechaActual) {
-                  Swal.fire('Error', 'La fecha de inicio no puede ser anterior a la fecha actual.', 'error');
-                  $('#calendar').fullCalendar('refetchEvents');
-                  return;
-              }
-  
-              if (end < start) {
-                  Swal.fire('Error', 'La fecha de finalización no puede ser anterior a la fecha de inicio.', 'error');
-                  $('#calendar').fullCalendar('refetchEvents');
-                  return;
-              }
-  
-              $.ajax({
-                  url: `http://localhost:4000/api/actualizar_evento/${idEvento}`,
-                  type: 'POST',
-                  data: {
-                      fecha_hora_inicio: start,
-                      fecha_hora_final: end,
-                      id_curso: event.id_curso // Asegurarnos de enviar el id_curso al actualizar
-                  },
-                  success: function(response) {
-                      Swal.fire('Actualizado', 'El evento fue actualizado correctamente.', 'success');
-                  },
-                  error: function(xhr) {
-                      Swal.fire('Error', 'Error al actualizar el evento: ' + xhr.responseText, 'error');
-                  }
-              });
-          },
-  
-          // Cargar modal para editar evento
+    
           eventClick: function(event) {
               if (isDeleting) {
                   return; // No abrir la modal de editar si se está eliminando
               }
   
-              $('#modalUpdateEvento').remove(); // Eliminar el modal existente si ya está presente
-  
-              $.get('/modalUpdateEvento', { id: event._id }, function(response) {
-                  $('body').append(response); // Agregar el modal al cuerpo del documento
-                  $('#modalUpdateEvento').modal('show'); // Mostrar el modal
-  
-                  // Rellenar los campos del modal con los datos del evento
-                  $('#idEventoUpdate').val(event._id || '');
-                  $('#nombre_eventoUpdate').val(event.title || '');
-                  $('#descripcionUpdate').val(event.descripcion || '');
-                  $('#tipo_eventoUpdate').val(event.tipo_evento || '');
-                  $('#ubicacionUpdate').val(event.ubicacion || '');
-                  $('#fecha_inicioUpdate').val(event.start ? event.start.format('YYYY-MM-DDTHH:mm') : '');
-                  $('#fecha_finUpdate').val(event.end ? event.end.format('YYYY-MM-DDTHH:mm') : '');
+             
+      
+// Eliminar el modal existente si ya está presente
+$('#modalUpdateEvento').remove();
 
-                  $('#duracionUpdate').val(event.duracion || '');
-                  $('#id_curso').val(event.id_curso || ''); // Rellenar el id_curso
-                  $('#estadoUpdate').val(event.estado || ''); // Rellenar el campo estado
-              }).fail(function() {
-                  Swal.fire('Error', 'Error al cargar el contenido del modal', 'error');
-              });
-          }
-      });
-  
-      // Manejo del formulario de creación de eventos
-      $(document).on('submit', '#formEvento', function(event) {
-          event.preventDefault();
-  
-          var fechaInicio = $("input[name=fecha_inicio]").val();
-          var fechaFin = $("input[name=fecha_fin]").val();
-          var fechaActual = moment().format('YYYY-MM-DD HH:mm');
-  
-          // Comparar las fechas convertidas a formato momento
-          if (moment(fechaInicio, 'YYYY-MM-DD HH:mm').isBefore(moment(fechaActual))) {
-              Swal.fire('Error', 'La fecha de inicio no puede ser anterior a la fecha actual.', 'error');
-              return;
-          }
-  
-          if (moment(fechaFin, 'YYYY-MM-DD HH:mm').isBefore(moment(fechaInicio))) {
-              Swal.fire('Error', 'La fecha de finalización no puede ser anterior a la fecha de inicio.', 'error');
-              return;
-          }
-  
-          // Continuar con la solicitud AJAX
-          $.ajax({
-              type: $(this).attr('method'),
-              url: $(this).attr('action'),
-              data: $(this).serialize(),
-              success: function() {
-                  $('#exampleModal').modal('hide');
-                  $('#calendar').fullCalendar('refetchEvents');
-                  Swal.fire('Registrado', 'El evento fue registrado correctamente.', 'success');
-              },
-              error: function() {
-                  Swal.fire('Error', 'Error al guardar el evento', 'error');
-              }
-          });
-      });
-  
-      $(document).on('submit', '#formUpdateEvento', function(event) {
+// Realizar una solicitud para obtener el contenido del modal
+$.get('/modalUpdateEvento', { id: event._id }, function(response) {
+    // Mostrar el modal
+    $('body').append(response);
+    $('#modalUpdateEvento').modal('show');
+
+    
+
+    // Rellenar los campos del modal con los datos del evento
+    $('#idEventoUpdate').val(event._id || '');
+    $('#nombre_eventoUpdate').val(event.title || '');
+    $('#descripcionUpdate').val(event.descripcion || '');
+    $('#tipo_eventoUpdate').val(event.tipo_evento || '');
+    $('#ubicacionUpdate').val(event.ubicacion || '');
+
+   
+
+    // Formatear las fechas a 'YYYY-MM-DD HH:mm' antes de asignarlas al campo
+    var fechaInicio = event.start ? moment(event.start).format('YYYY-MM-DD HH:mm') : '';
+    var fechaFin = event.end ? moment(event.end).format('YYYY-MM-DD HH:mm') : '';
+
+    // Asignar las fechas formateadas al modal
+    $('#fecha_inicioUpdate').val(fechaInicio);
+    $('#fecha_finUpdate').val(fechaFin);
+
+
+
+    // Rellenar los otros campos del modal
+    $('#duracionUpdate').val(event.duracion || '');
+    $('#id_curso').val(event.id_curso || '');
+    $('#estadoUpdate').val(event.estado || ''); // Si el estado es parte del evento
+
+    // Función para calcular la duración automáticamente
+    function calcularDuracion() {
+        var fechaInicio = $('#fecha_inicioUpdate').val();
+        var fechaFin = $('#fecha_finUpdate').val();
+
+        if (fechaInicio && fechaFin) {
+            var inicio = moment(fechaInicio, 'YYYY-MM-DD HH:mm');
+            var fin = moment(fechaFin, 'YYYY-MM-DD HH:mm');
+
+            // Calcular la diferencia entre las dos fechas en horas y minutos
+            var duracion = moment.duration(fin.diff(inicio));
+
+            // Obtener horas y minutos de la duración
+            var horas = duracion.hours();
+            var minutos = duracion.minutes();
+
+            // Asignar la duración al campo de duración
+            $('#duracionUpdate').val(horas + ' horas ' + minutos + ' minutos');
+        }
+    }
+
+    // Calcular la duración al cambiar las fechas de inicio o fin
+    $('#fecha_inicioUpdate, #fecha_finUpdate').on('change', calcularDuracion);
+
+    // Llamar a la función para calcular la duración cuando se carga el modal
+    calcularDuracion();
+
+}).fail(function() {
+    Swal.fire('Error', 'Error al cargar el contenido del modal', 'error');
+});
+
+
+    }
+});
+
+// Manejo del formulario de creación de eventos
+$(document).on('submit', '#formEvento', function(event) {
     event.preventDefault();
 
     var fechaInicio = $("input[name=fecha_inicio]").val();
     var fechaFin = $("input[name=fecha_fin]").val();
-    var fechaActual = moment().format('YYYY-MM-DD HH:mm'); // Cambia el formato aquí
+    var fechaActual = moment().format('YYYY-MM-DD HH:mm');
 
-    // Usa moment para comparar las fechas
+    // Comparar las fechas convertidas a formato momento
     if (moment(fechaInicio, 'YYYY-MM-DD HH:mm').isBefore(moment(fechaActual))) {
         Swal.fire('Error', 'La fecha de inicio no puede ser anterior a la fecha actual.', 'error');
         return;
@@ -388,22 +453,76 @@
         return;
     }
 
+    // Continuar con la solicitud AJAX
     $.ajax({
         type: $(this).attr('method'),
-        url: $(this).attr('action') + '/' + $('#idEventoUpdate').val(),
+        url: $(this).attr('action'),
         data: $(this).serialize(),
-        success: function() {
-            $('#actualizarEvento').modal('hide');
-            $('#calendar').fullCalendar('refetchEvents');
-            Swal.fire('Actualizado', 'El evento fue actualizado correctamente.', 'success');
+        success: function(response) {
+            if (response.message && response.message === 'Evento agregado exitosamente') {
+                $('#exampleModal').modal('hide');
+                $('#calendar').fullCalendar('refetchEvents');
+                Swal.fire('Registrado', 'El evento fue registrado correctamente.', 'success');
+            } else {
+                Swal.fire('Error', 'No se pudo registrar el evento, por favor intente nuevamente.', 'error');
+            }
         },
-        error: function() {
-            Swal.fire('Error', 'Error al actualizar el evento', 'error');
+        error: function(xhr, status, error) {
+            // Verifica el código de estado y muestra el mensaje correspondiente
+            if (xhr.status === 400) {
+                // Si el error es 400, muestra el mensaje de solapamiento de eventos
+                Swal.fire('Error', 'Ya existe un evento para este curso en el rango de fechas seleccionado.', 'error');
+            } else {
+                // Si el error es otro, muestra un mensaje genérico
+                Swal.fire('Error', 'Hubo un error al procesar la solicitud. Por favor, intente nuevamente.', 'error');
+            }
         }
     });
 });
 
+
+  
+$(document).on('submit', '#formUpdateEvento', function(event) {
+    event.preventDefault();
+
+    var fechaInicio = $("input[name=fecha_inicio]").val();
+    var fechaFin = $("input[name=fecha_fin]").val();
+    var fechaActual = moment().format('YYYY-MM-DD HH:mm'); // Cambia el formato aquí
+
+    // Usa moment para comparar las fechas
+    if (moment(fechaInicio, 'YYYY-MM-DD HH:mm').isBefore(moment(fechaActual))) {
+        Swal.fire('Error', 'La fecha de inicio no puede ser anterior a la fecha actual.', 'error');
+        return; // Detener la acción si la fecha de inicio es inválida
+    }
+
+    if (moment(fechaFin, 'YYYY-MM-DD HH:mm').isBefore(moment(fechaInicio))) {
+        Swal.fire('Error', 'La fecha de finalización no puede ser anterior a la fecha de inicio.', 'error');
+        return; // Detener la acción si la fecha de fin es inválida
+    }
+
+    $.ajax({
+        type: $(this).attr('method'),
+        url: $(this).attr('action') + '/' + $('#idEventoUpdate').val(),
+        data: $(this).serialize(),
+        success: function(response) {
+            // Cerrar el modal
+            $('#modalUpdateEvento').modal('hide');
+            
+            // Recargar el calendario para reflejar los cambios
+            $('#calendar').fullCalendar('refetchEvents');
+            
+            // Mostrar mensaje de éxito
+            Swal.fire('Actualizado', 'El evento fue actualizado correctamente.', 'success');
+        },
+        error: function() {
+            // Manejo de errores
+            Swal.fire('Error', 'ya existe un evento para este curso en el rango de fechas seleccionado', 'error');
+        }
+    });
+});
   });
+
+  
   </script>
 
   

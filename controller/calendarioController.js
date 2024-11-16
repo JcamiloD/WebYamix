@@ -4,7 +4,7 @@ const fetch = (...args) =>
 // Función para obtener todos los cursos
 exports.obtenerCursoss = async (req, res, next) => {
     try {
-        const response = await fetch(`${process.env.pathApi}/obtener_cursos`);
+        const response = await fetch(`${process.env.pathApi}/obtener_cursoss`);
         const cursoss = await response.json();
 
         if (response.ok) {

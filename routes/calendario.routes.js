@@ -21,15 +21,15 @@ router.get('/calendarioAdmin',
         });
     }
 );
-router.get('/modalUpdateEvento', 
-    eventos.obtenerCursoss, 
-    (req, res) => {
-     
-        res.render('admin/modalUpdateEvento', { 
-            cursos: res.locals.cursoss 
-        });
-    }
-);
+    router.get('/modalUpdateEvento', 
+        eventos.obtenerCursoss, 
+        (req, res) => {
+        
+            res.render('admin/modalUpdateEvento', { 
+                cursos: res.locals.cursoss 
+            });
+        }
+    );
 
 
 router.get('/cargar_evento/:id', eventos.cargarEventoParaActualizar);
