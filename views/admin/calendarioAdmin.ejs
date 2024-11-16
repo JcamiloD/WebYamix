@@ -224,16 +224,46 @@
           },
   
           select: function(start, end) {
-              $('#modalNuevoEvento').load('/modalNuevoEvento', function() {
-                  $('#exampleModal').modal('show');
-  
-                  var fechaInicio = start.format('YYYY-MM-DD HH:mm');
-                  var fechaFin = end.format('YYYY-MM-DD HH:mm');
-  
-                  $("input[name='fecha_inicio']").val(fechaInicio);
-                  $("input[name='fecha_fin']").val(fechaFin);
-              });
-          },
+    // Cargar el contenido del modal
+    $('#modalNuevoEvento').load('/modalNuevoEvento', function() {
+        $('#exampleModal').modal('show');
+
+        // Formatear las fechas de inicio y fin en el formato correcto
+        var fechaInicio = start.format('YYYY-MM-DD HH:mm');
+        var fechaFin = end.format('YYYY-MM-DD HH:mm');
+
+        // Asignar las fechas al formulario
+        $("input[name='fecha_inicio']").val(fechaInicio);
+        $("input[name='fecha_fin']").val(fechaFin);
+
+        // Calcular la duración automáticamente
+        function calcularDuracion() {
+            var fechaInicio = $("input[name=fecha_inicio]").val();
+            var fechaFin = $("input[name=fecha_fin]").val();
+
+            if (fechaInicio && fechaFin) {
+                var inicio = moment(fechaInicio, 'YYYY-MM-DD HH:mm');
+                var fin = moment(fechaFin, 'YYYY-MM-DD HH:mm');
+
+                // Calcular la diferencia entre las dos fechas en horas y minutos
+                var duracion = moment.duration(fin.diff(inicio));
+
+                // Obtener horas y minutos de la duración
+                var horas = duracion.hours();
+                var minutos = duracion.minutes();
+
+                // Asignar la duración al campo de duración
+                $('#duracion').val(horas + ' horas ' + minutos + ' minutos');
+            }
+        }
+
+        // Calcular la duración al cambiar las fechas de inicio o fin
+        $('input[name=fecha_inicio], input[name=fecha_fin]').on('change', calcularDuracion);
+
+        // Llamar a la función para calcular la duración cuando se cargan las fechas
+        calcularDuracion();
+    });
+},
   
           // Renderizar eventos con el botón de eliminar
           eventRender: function(event, element) {
@@ -332,30 +362,78 @@ eventDrop: function(event) {
                   return; // No abrir la modal de editar si se está eliminando
               }
   
-              $('#modalUpdateEvento').remove(); // Eliminar el modal existente si ya está presente
-  
-              $.get('/modalUpdateEvento', { id: event._id }, function(response) {
-                  $('body').append(response); // Agregar el modal al cuerpo del documento
-                  $('#modalUpdateEvento').modal('show'); // Mostrar el modal
-  
-                  // Rellenar los campos del modal con los datos del evento
-                  $('#idEventoUpdate').val(event._id || '');
-                  $('#nombre_eventoUpdate').val(event.title || '');
-                  $('#descripcionUpdate').val(event.descripcion || '');
-                  $('#tipo_eventoUpdate').val(event.tipo_evento || '');
-                  $('#ubicacionUpdate').val(event.ubicacion || '');
-                  $('#fecha_inicioUpdate').val(event.start ? event.start.format('YYYY-MM-DDTHH:mm') : '');
-                  $('#fecha_finUpdate').val(event.end ? event.end.format('YYYY-MM-DDTHH:mm') : '');
+             
+      
+// Eliminar el modal existente si ya está presente
+$('#modalUpdateEvento').remove();
 
-                  $('#duracionUpdate').val(event.duracion || '');
-                  $('#id_curso').val(event.id_curso || ''); // Rellenar el id_curso
-                  $('#estadoUpdate').val(event.estado || ''); // Rellenar el campo estado
-              }).fail(function() {
-                  Swal.fire('Error', 'Error al cargar el contenido del modal', 'error');
-              });
-          }
-      });
-  
+// Realizar una solicitud para obtener el contenido del modal
+$.get('/modalUpdateEvento', { id: event._id }, function(response) {
+    // Mostrar el modal
+    $('body').append(response);
+    $('#modalUpdateEvento').modal('show');
+
+    
+
+    // Rellenar los campos del modal con los datos del evento
+    $('#idEventoUpdate').val(event._id || '');
+    $('#nombre_eventoUpdate').val(event.title || '');
+    $('#descripcionUpdate').val(event.descripcion || '');
+    $('#tipo_eventoUpdate').val(event.tipo_evento || '');
+    $('#ubicacionUpdate').val(event.ubicacion || '');
+
+   
+
+    // Formatear las fechas a 'YYYY-MM-DD HH:mm' antes de asignarlas al campo
+    var fechaInicio = event.start ? moment(event.start).format('YYYY-MM-DD HH:mm') : '';
+    var fechaFin = event.end ? moment(event.end).format('YYYY-MM-DD HH:mm') : '';
+
+    // Asignar las fechas formateadas al modal
+    $('#fecha_inicioUpdate').val(fechaInicio);
+    $('#fecha_finUpdate').val(fechaFin);
+
+
+
+    // Rellenar los otros campos del modal
+    $('#duracionUpdate').val(event.duracion || '');
+    $('#id_curso').val(event.id_curso || '');
+    $('#estadoUpdate').val(event.estado || ''); // Si el estado es parte del evento
+
+    // Función para calcular la duración automáticamente
+    function calcularDuracion() {
+        var fechaInicio = $('#fecha_inicioUpdate').val();
+        var fechaFin = $('#fecha_finUpdate').val();
+
+        if (fechaInicio && fechaFin) {
+            var inicio = moment(fechaInicio, 'YYYY-MM-DD HH:mm');
+            var fin = moment(fechaFin, 'YYYY-MM-DD HH:mm');
+
+            // Calcular la diferencia entre las dos fechas en horas y minutos
+            var duracion = moment.duration(fin.diff(inicio));
+
+            // Obtener horas y minutos de la duración
+            var horas = duracion.hours();
+            var minutos = duracion.minutes();
+
+            // Asignar la duración al campo de duración
+            $('#duracionUpdate').val(horas + ' horas ' + minutos + ' minutos');
+        }
+    }
+
+    // Calcular la duración al cambiar las fechas de inicio o fin
+    $('#fecha_inicioUpdate, #fecha_finUpdate').on('change', calcularDuracion);
+
+    // Llamar a la función para calcular la duración cuando se carga el modal
+    calcularDuracion();
+
+}).fail(function() {
+    Swal.fire('Error', 'Error al cargar el contenido del modal', 'error');
+});
+
+
+    }
+});
+
 // Manejo del formulario de creación de eventos
 $(document).on('submit', '#formEvento', function(event) {
     event.preventDefault();
@@ -426,18 +504,25 @@ $(document).on('submit', '#formUpdateEvento', function(event) {
         type: $(this).attr('method'),
         url: $(this).attr('action') + '/' + $('#idEventoUpdate').val(),
         data: $(this).serialize(),
-        success: function() {
-            $('#actualizarEvento').modal('hide');
+        success: function(response) {
+            // Cerrar el modal
+            $('#modalUpdateEvento').modal('hide');
+            
+            // Recargar el calendario para reflejar los cambios
             $('#calendar').fullCalendar('refetchEvents');
+            
+            // Mostrar mensaje de éxito
             Swal.fire('Actualizado', 'El evento fue actualizado correctamente.', 'success');
         },
         error: function() {
-            Swal.fire('Error', 'Error al actualizar el evento', 'error');
+            // Manejo de errores
+            Swal.fire('Error', 'ya existe un evento para este curso en el rango de fechas seleccionado', 'error');
         }
     });
 });
-
   });
+
+  
   </script>
 
   
