@@ -155,78 +155,111 @@
             <!-- page-body-wrapper ends -->
             <script>
                 
-                $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function() {
-                    const idCurso = $(this).data('id');
-                    const nombreCurso = $(this).data('nombre');
-                    const descripcion = $(this).data('descripcion');
-                    const estado = $(this).data('estado');
-            
-                    $('#editIdCurso').val(idCurso);
-                    $('#editNombreCurso').val(nombreCurso);
-                    $('#editDescripcionCurso').val(descripcion);
-                    $('#editEstadoCurso').val(estado);
-            
-                    $('#editModal').modal('show');
-                });
-            
-                $('#editForm').on('submit', function(event) {
-                    event.preventDefault();
-                    
-                    const idCurso = $('#editIdCurso').val();
-                    const formData = {
-                        nombre_curso: $('#editNombreCurso').val(),
-                        descripcion: $('#editDescripcionCurso').val(),
-                        estado: $('#editEstadoCurso').val()
-                    };
-            
-                    fetch(`/actualizar_curso/${idCurso}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.reload();
-                        } else {
-                            alert('Error: ' + data.message || 'Error desconocido al actualizar');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al actualizar el curso:', error);
-                        alert('Error interno del servidor');
-                    });
-                });
-            
-                $('#addForm').on('submit', function(event) {
-                    event.preventDefault();
-            
-                    const formData = {
-                        nombre_curso: $('#addNombreCurso').val(),
-                        descripcion: $('#addDescripcionCurso').val(),
-                        estado: $('#addEstadoCurso').val()
-                    };
-            
-                    fetch('/agregar_curso', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.reload();
-                        } else {
-                            alert('Error: ' + data.message || 'Error desconocido al agregar');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al agregar el curso:', error);
-                        alert('Error interno del servidor');
-                    });
-                });
-            
-                function confirmarEliminacion(idCurso) {
+             // Expresión regular para validar el nombre del curso (solo letras y espacios)
+const nombreCursoValido = /^[a-zA-Z\s]+$/;
+
+$('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function() {
+    const idCurso = $(this).data('id');
+    const nombreCurso = $(this).data('nombre');
+    const descripcion = $(this).data('descripcion');
+    const estado = $(this).data('estado');
+
+    $('#editIdCurso').val(idCurso);
+    $('#editNombreCurso').val(nombreCurso);
+    $('#editDescripcionCurso').val(descripcion);
+    $('#editEstadoCurso').val(estado);
+
+    $('#editModal').modal('show');
+});
+
+$('#editForm').on('submit', function(event) {
+    event.preventDefault(); // Evita el envío del formulario por defecto
+
+    const nombreCurso = $('#editNombreCurso').val();
+
+    // Validación para el nombre del curso (solo letras y espacios)
+    if (!nombreCursoValido.test(nombreCurso)) {
+        // SweetAlert para mostrar el error
+        Swal.fire({
+            icon: 'error',
+            title: 'Nombre del curso inválido',
+            text: 'El nombre del curso solo puede contener letras y espacios.',
+            confirmButtonText: 'Aceptar'
+        });
+        return; // Detiene la ejecución si el nombre no es válido
+    }
+
+    // Si la validación pasa, se continúa con la actualización del curso
+    const idCurso = $('#editIdCurso').val();
+    const formData = {
+        nombre_curso: nombreCurso,
+        descripcion: $('#editDescripcionCurso').val(),
+        estado: $('#editEstadoCurso').val()
+    };
+
+    fetch(`/actualizar_curso/${idCurso}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Error: ' + data.message || 'Error desconocido al actualizar');
+        }
+    })
+    .catch(error => {
+        console.error('Error al actualizar el curso:', error);
+        alert('Error interno del servidor');
+    });
+});
+
+$('#addForm').on('submit', function(event) {
+    event.preventDefault(); // Evita el envío del formulario por defecto
+
+    const nombreCurso = $('#addNombreCurso').val();
+
+    // Validación para el nombre del curso (solo letras y espacios)
+    if (!nombreCursoValido.test(nombreCurso)) {
+        // SweetAlert para mostrar el error
+        Swal.fire({
+            icon: 'error',
+            title: 'Nombre del curso inválido',
+            text: 'El nombre del curso solo puede contener letras y espacios.',
+            confirmButtonText: 'Aceptar'
+        });
+        return; // Detiene la ejecución si el nombre no es válido
+    }
+
+    // Si la validación pasa, se continúa con la creación del curso
+    const formData = {
+        nombre_curso: nombreCurso,
+        descripcion: $('#addDescripcionCurso').val(),
+        estado: $('#addEstadoCurso').val()
+    };
+
+    fetch('/agregar_curso', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Error: ' + data.message || 'Error desconocido al agregar');
+        }
+    })
+    .catch(error => {
+        console.error('Error al agregar el curso:', error);
+        alert('Error interno del servidor');
+    });
+});
+
+function confirmarEliminacion(idCurso) {
     if (confirm('¿Estás seguro de que deseas eliminar este curso?')) {
         fetch(`/eliminar_curso/${idCurso}`, {
             method: 'DELETE'
@@ -236,7 +269,6 @@
             if (data.success) {
                 window.location.reload();
             } else {
-          
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -250,6 +282,7 @@
         });
     }
 }
+
 
             </script>
             
