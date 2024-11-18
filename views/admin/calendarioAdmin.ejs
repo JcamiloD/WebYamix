@@ -15,9 +15,28 @@
 
 </div>
 <body>
+    <%- include('partials/head') %>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <%- include('partials/sidebar') %>
 
-<div class="mt-5"></div>
-<div id="calendar"></div>
+        <!-- Main Content -->
+        <div class="main-content flex-grow-1">
+        
+
+            <!-- Espaciador y Contenedor del Calendario -->
+            <div class="container mt-5">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <div id="modalNuevoEvento"></div>
+    <div id="actualizarEvento"></div>
+
+    <%- include('partials/scripts') %>
+</body>
 
 
 <!-- Modales -->
@@ -55,12 +74,7 @@
                           <textarea class="form-control" name="descripcion" id="descripcion" placeholder="Descripción del Evento" rows="3"></textarea>
                       </div>
                   </div>
-                  <div class="form-group">
-                      <label for="tipo_evento" class="col-sm-12 control-label">Tipo de Evento</label>
-                      <div class="col-sm-10">
-                          <input type="text" class="form-control" name="tipo_evento" id="tipo_evento" placeholder="Tipo de Evento" required>
-                      </div>
-                  </div>
+                  
                   <div class="form-group">
                       <label for="ubicacion" class="col-sm-12 control-label">Ubicación</label>
                       <div class="col-sm-10">
@@ -73,8 +87,8 @@
                           <iframe 
                               src="https://maps.google.com/maps?q=copacabana&amp;t=&amp;z=12&amp;ie=UTF8&amp;iwloc=&amp;output=embed" 
                               frameborder="0" 
-                              scrolling="no" 
-                              style="width: 400px; height: 240px;">
+                              scrolling="yes" 
+                              style="width: 380px; height: 200px;">
                           </iframe>
                       </div>
                   </div>
@@ -149,7 +163,8 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-success">Guardar Evento</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Salir</button>
+
             </div>
         </form>
     </div>
@@ -207,7 +222,7 @@
                               end: event.fecha_hora_final ? moment(event.fecha_hora_final).format('YYYY-MM-DDTHH:mm') : '',
                               color: event.color_evento || '#378006',
                               descripcion: event.descripcion,
-                              tipo_evento: event.tipo_evento,
+                            
                               ubicacion: event.ubicacion,
                               duracion: event.duracion || '',
                               id_curso: event.id_curso,
@@ -328,7 +343,7 @@ eventDrop: function(event) {
             id_curso: event.id_curso,   // Asegurarnos de enviar el id_curso al actualizar
             nombre_evento: event.title, // Aquí se pueden incluir otros campos si es necesario
             descripcion: event.description, // Descripción del evento
-            tipo_evento: event.tipo_evento, // Tipo de evento
+           
             ubicacion: event.location, // Ubicación del evento
             color_evento: event.color, // Color del evento
             duracion: event.duracion, // Duración del evento
@@ -379,7 +394,7 @@ $.get('/modalUpdateEvento', { id: event._id }, function(response) {
     $('#idEventoUpdate').val(event._id || '');
     $('#nombre_eventoUpdate').val(event.title || '');
     $('#descripcionUpdate').val(event.descripcion || '');
-    $('#tipo_eventoUpdate').val(event.tipo_evento || '');
+  
     $('#ubicacionUpdate').val(event.ubicacion || '');
 
    
@@ -527,6 +542,26 @@ $(document).on('submit', '#formUpdateEvento', function(event) {
 
   
 
+<style>.fc .fc-button-group .fc-button.fc-state-active {
+    color: #000000;
+  }
+  .fc .fc-button-group .fc-button {
+    background-color: #000000;
+    margin: 0;
+  }.fc button {
+    height: auto;
+    background-image: none;
+    text-shadow: none;
+    font-weight: normal;
+    background-color: #000000;
+    border-color: #2c2e33;
+    text-transform: capitalize;
+    color: #ffffff;
+}
+.fc-unthemed td.fc-today {
+    background: #333333;
+}
+</style>
 
 
 </body>
