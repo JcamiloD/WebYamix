@@ -270,7 +270,7 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-dark mr-2"
-                                                    data-bs-dismiss="modal">Cancelar</button>
+                                                    data-dismiss="modal">Cancelar</button>
                                                     <button type="submit" class="btn btn-dark">Actualizar</button>
                                                 </div>
                                             </form>
@@ -301,35 +301,10 @@
         originalHoraFinal = $('#editHoraFinal').val();
     });
 
-    // Función para validar el tiempo
-    function validateTime(horaInicio, horaFinal) {
-        const startHour = parseInt(horaInicio.split(":")[0], 10);
-        const endHour = parseInt(horaFinal.split(":")[0], 10);
 
-        // Validar si la hora de inicio es antes de las 8 AM o después de las 10 PM
-        if (startHour < 8 || startHour >= 22) {
-            alert("La hora de inicio debe estar entre las 08:00 AM y las 10:00 PM.");
-            return false;
-        }
 
-        // Validar si la hora de finalización es antes de las 8 AM o después de las 10 PM
-        if (endHour < 8 || endHour >= 22) {
-            alert("La hora de finalización debe estar entre las 08:00 AM y las 10:00 PM.");
-            return false;
-        }
 
-        // Validar que la clase dure exactamente 2 horas
-        const inicio = new Date(`1970-01-01T${horaInicio}:00`);
-        const final = new Date(`1970-01-01T${horaFinal}:00`);
-        const diff = (final - inicio) / (1000 * 60 * 60); // Diferencia en horas
 
-        if (diff !== 2) {
-            alert("La clase debe durar exactamente 2 horas.");
-            return false;
-        }
-
-        return true;
-    }
                     
                             
                                                 // Código para la modal de edición de estudiantes
@@ -419,8 +394,10 @@
                             });
 
  //editar form                   
-$('#editForm').on('submit', function (event) {
-    event.preventDefault();
+
+ $('#editForm').on('submit', function (event) {
+    event.preventDefault(); 
+
 
     const idClase = $('#editIdClase').val();
     const formData = {
@@ -431,41 +408,70 @@ $('#editForm').on('submit', function (event) {
         estado: $('#editEstado').val()
     };
 
-    if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
 
+    if (!formData.id_curso || !formData.hora_inicio || !formData.hora_final || !formData.id_usuario || !formData.estado) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Campos incompletos',
+            text: 'Por favor, complete todos los campos.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+   
+    if (!validateTime(formData.hora_inicio, formData.hora_final)) {
+        return; 
+    }
+
+   
+    $('#spinner').show();
+
+   
     fetch(`/actualizar_clase/${idClase}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
     })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(errorData => {
-                throw new Error(errorData.message || 'Ya hay una clase con el mismo horario.');
-            });
-        }
-        return response.json();
-    })
+    .then(response => response.json()) 
     .then(data => {
+        $('#spinner').hide(); 
+
+        console.log('Respuesta del servidor:', data);
+
         if (data.success) {
+        
             Swal.fire({
                 icon: 'success',
                 title: 'Clase actualizada exitosamente',
-                text: 'La clase se ha actualizado correctamente.',
+                text: data.message || 'La clase se ha actualizado correctamente.',
                 confirmButtonText: 'Aceptar'
             }).then(() => {
-                window.location.reload();  
+                window.location.reload(); 
             });
         } else {
+           
+            let errorMessage = data.message || 'Conflicto de horario con otra clase';
+
+           
+            if (data.message && typeof data.message === 'string') {
+               
+                if (data.message.includes('hora de finalización') || data.message.includes('Conflicto de horario')) {
+                    errorMessage = data.message; 
+                }
+            }
+
+       
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: data.message || 'Error desconocido al actualizar',
+                text: errorMessage,
                 confirmButtonText: 'Aceptar'
             });
         }
     })
     .catch(error => {
+        $('#spinner').hide(); 
         console.error('Error al actualizar la clase:', error);
         Swal.fire({
             icon: 'error',
@@ -480,7 +486,6 @@ $('#editForm').on('submit', function (event) {
 function validateTime(horaInicio, horaFinal) {
     const startHour = parseInt(horaInicio.split(":")[0], 10);
     const endHour = parseInt(horaFinal.split(":")[0], 10);
-
 
     if (startHour < 8 || startHour >= 22) {
         Swal.fire({
@@ -502,16 +507,14 @@ function validateTime(horaInicio, horaFinal) {
         return false;
     }
 
-
     const inicio = new Date(`1970-01-01T${horaInicio}:00`);
     const final = new Date(`1970-01-01T${horaFinal}:00`);
-    const diff = (final - inicio) / (1000 * 60 * 60);
 
-    if (diff !== 2) {
+    if (final <= inicio) {
         Swal.fire({
             icon: 'error',
-            title: 'Duración inválida',
-            text: 'La clase debe durar exactamente 2 horas.',
+            title: 'Hora de finalización inválida',
+            text: 'La hora de finalización no puede ser inferior a la hora de inicio.',
             confirmButtonText: 'Aceptar'
         });
         return false;
@@ -519,6 +522,19 @@ function validateTime(horaInicio, horaFinal) {
 
     return true;
 }
+
+
+$('#editModal').on('hidden.bs.modal', function() {
+    $('#editForm')[0].reset();  
+    $('#spinner').hide();  
+});
+
+
+$('.btn-dark[data-dismiss="modal"]').on('click', function() {
+ 
+    $('#editModal').modal('hide');
+});
+
 //agregar form
 $('#addForm').on('submit', function(event) { 
     event.preventDefault();
@@ -672,6 +688,34 @@ window.confirmarEliminacion = function(id) {
         });
     }
 };
+document.addEventListener("DOMContentLoaded", () => {
+
+        function sumarDosHoras(horaInicio) {
+            const [horas, minutos] = horaInicio.split(':').map(Number);
+            let horasFinal = horas + 2;
+            if (horasFinal >= 24) horasFinal -= 24; 
+            return `${String(horasFinal).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
+        }
+
+
+        const addHoraInicio = document.getElementById("addHoraInicio");
+        const addHoraFinal = document.getElementById("addHoraFinal");
+        addHoraInicio.addEventListener("input", () => {
+            if (addHoraInicio.value) {
+                addHoraFinal.value = sumarDosHoras(addHoraInicio.value);
+            }
+        });
+
+   
+        const editHoraInicio = document.getElementById("editHoraInicio");
+        const editHoraFinal = document.getElementById("editHoraFinal");
+        editHoraInicio.addEventListener("input", () => {
+            if (editHoraInicio.value) {
+                editHoraFinal.value = sumarDosHoras(editHoraInicio.value);
+            }
+        });
+    });
+    
 
                     </script>
                     
