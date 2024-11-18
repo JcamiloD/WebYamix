@@ -60,7 +60,7 @@
                         <div class="col-sm-10">
                             <select name="id_curso" class="form-control" id="id_curso" required>
                                 <% cursoss.forEach(curso => { %>
-                                    <option value="<%= curso.id_curso %>" <%= curso.id_curso == curso.id_curso ? 'selected' : '' %>><%= curso.nombre_curso %></option>
+                                    <option value="<%= curso.id_curso %>" ><%= curso.nombre_curso %></option>
                                 <% }); %>
                             </select>
                         </div>

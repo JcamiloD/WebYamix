@@ -25,9 +25,9 @@ router.get('/calendarioAdmin',
         eventos.obtenerCursoss,
        
         (req, res) => {
-        
             res.render('admin/modalUpdateEvento', { 
-                cursos: res.locals.cursoss
+                cursos: res.locals.cursoss,
+               
                
             });
         }
