@@ -164,6 +164,10 @@
                                                             <% if (usuario.fecha_nacimiento) { %>
                                                                 <% 
                                                                     const fechaNacimiento = new Date(usuario.fecha_nacimiento);
+                                                                    
+                                                                    // Sumar un día a la fecha
+                                                                    fechaNacimiento.setDate(fechaNacimiento.getDate() + 1);
+                                                                    
                                                                     const dia = fechaNacimiento.getDate();
                                                                     const mes = fechaNacimiento.toLocaleString('es-ES', { month: 'long' }).charAt(0).toUpperCase() + fechaNacimiento.toLocaleString('es-ES', { month: 'long' }).slice(1);
                                                                     const año = fechaNacimiento.getFullYear();
@@ -175,7 +179,7 @@
                                                             <% } else { %>
                                                                 Sin fecha de nacimiento
                                                             <% } %>
-                                                        </td>
+                                                        </td>                                                        
                                                         <td>
                                                             <% if (usuario.pagos) { %>
                                                                 <%= `Días ${new Date(usuario.pagos).getDate()}` %>
@@ -251,102 +255,107 @@
                     
                     
                     <!-- Modal editar -->
-                    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editModalLabel">Editar Usuario</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="editForm" method="post" action="/editar_usuario">
-                                        <input type="hidden" name="id_usuario" id="editIdUsuario" />
-                                        <div class="form-group row">
-                                            <label for="editRol" class="col-sm-3 col-form-label">Rol</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" name="id_rol" id="editRol" required>
-                                                    <% if (roles && roles.length) { %>
-                                                        <% roles.forEach(function(rol) { %>
-                                                            <option value="<%= rol.id_rol %>">
-                                                                <%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %>
-                                                            </option>
-                                                        <% }); %>
-                                                    <% } else { %>
-                                                        <option value="">No hay roles disponibles</option>
-                                                    <% } %>
-                                                </select>
-                                            </div>
-                                        </div>
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Usuario</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="post" action="/editar_usuario">
+                    <input type="hidden" name="id_usuario" id="editIdUsuario" />
+                    <div class="form-group row">
+                        <label for="editRol" class="col-sm-3 col-form-label">Rol</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="id_rol" id="editRol" required>
+                                <% if (roles && roles.length) { %>
+                                    <% roles.forEach(function(rol) { %>
+                                        <option value="<%= rol.id_rol %>">
+                                            <%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %>
+                                        </option>
+                                    <% }); %>
+                                <% } else { %>
+                                    <option value="">No hay roles disponibles</option>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
 
-                                        <div class="form-group row">
-                                            <label for="editNombre" class="col-sm-3 col-form-label">Nombre</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" name="nombre" class="form-control" id="editNombre" placeholder="Nombre" required>
-                                            </div>
-                                        </div>
+                    <div class="form-group row">
+                        <label for="editNombre" class="col-sm-3 col-form-label">Nombre</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="nombre" class="form-control" id="editNombre" placeholder="Nombre" required>
+                        </div>
+                    </div>
 
-                                        <div class="form-group row">
-                                            <label for="editApellido" class="col-sm-3 col-form-label">Apellidos</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" name="apellido" class="form-control" id="editApellido" placeholder="Apellidos" required>
-                                            </div>
-                                        </div>
+                    <div class="form-group row">
+                        <label for="editApellido" class="col-sm-3 col-form-label">Apellidos</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="apellido" class="form-control" id="editApellido" placeholder="Apellidos" required>
+                        </div>
+                    </div>
 
-                                        <div class="form-group row">
-                                            <label for="editFechaNacimiento" class="col-sm-3 col-form-label">Fecha de nacimiento</label>
-                                            <div class="col-sm-9">
-                                                <input type="date" name="fecha_nacimiento" class="form-control" id="editFechaNacimiento" required>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <label for="editCorreo" class="col-sm-3 col-form-label">Correo</label>
-                                            <div class="col-sm-9">
-                                                <input type="email" name="correo" class="form-control" id="editCorreo" placeholder="Correo" required>
-                                                <div id="editCorreoError" class="invalid-feedback" style="display: none;">
-                                                    El correo ya está en uso.
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        <div class="form-group row">
-                                            <label for="editEstado" class="col-sm-3 col-form-label">Estado</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="editEstado" name="estado" required>
-                                                    <option value="espera">Espera</option>
-                                                    <option value="habilitado">Habilitado</option>
-                                                    <option value="deshabilitado">Deshabilitado</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <label for="editDocumentacion" class="col-sm-3 col-form-label">Documentación</label>
-                                            <div class="col-sm-3">
-                                                <label class="switch">
-                                                    <input type="checkbox" id="editDocumentacion" name="documentacion" value="1"> <!-- Valor del checkbox -->
-                                                    <span class="slider round"></span>
-                                                </label>
-                                            </div>
-                                            
-                                            <label for="editPagos" class="col-sm-3 col-form-label d-none">Pagos</label>
-                                            <div class="col-sm-3">
-                                                <input type="date" name="pagos" class="form-control d-none" id="editPagos" required> <!-- Agrega la clase d-none -->
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-dark">Guardar Cambios</button>
-                                        </div>
-                                    </form>
-                                </div>
+                    <div class="form-group row">
+                        <label for="editFechaNacimiento" class="col-sm-3 col-form-label">Fecha de nacimiento</label>
+                        <div class="col-sm-9">
+                            <input type="date" name="fecha_nacimiento" class="form-control" id="editFechaNacimiento" required>
+                            <div id="editEdadError" class="invalid-feedback" style="display: none;">
+                                La edad debe estar entre 8 y 65 años.
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-group row">
+                        <label for="editCorreo" class="col-sm-3 col-form-label">Correo</label>
+                        <div class="col-sm-9">
+                            <input type="email" name="correo" class="form-control" id="editCorreo" placeholder="Correo" required>
+                            <div id="editCorreoError" class="invalid-feedback" style="display: none;">
+                                El correo ya está en uso.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="editEstado" class="col-sm-3 col-form-label">Estado</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="editEstado" name="estado" required>
+                                <option value="espera">Espera</option>
+                                <option value="habilitado">Habilitado</option>
+                                <option value="deshabilitado">Deshabilitado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Documentación y Pagos -->
+                    <div class="form-group row" id="documentacionRow" style="display:none;">
+                        <label for="editDocumentacion" class="col-sm-3 col-form-label">Documentación</label>
+                        <div class="col-sm-3">
+                            <label class="switch">
+                                <input type="checkbox" id="editDocumentacion" name="documentacion" value="1">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="pagosRow" style="display:none;">
+                        <label for="editPagos" class="col-sm-3 col-form-label">Pagos</label>
+                        <div class="col-sm-3">
+                            <input type="date" name="pagos" class="form-control" id="editPagos">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
                     
@@ -363,15 +372,21 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
+                                    <!-- Contenedor para mensajes de error -->
                                     <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+                                    <!-- Formulario -->
                                     <form method="post" action="/agregar_usuario" id="addForm">
+                                        <!-- Selección de rol -->
                                         <div class="form-group row">
                                             <label for="addRol" class="col-sm-3 col-form-label">Rol</label>
                                             <div class="col-sm-9">
                                                 <select class="form-control" name="id_rol" id="addRol" required>
                                                     <% if (roles && roles.length) { %>
                                                         <% roles.forEach(function(rol) { %>
-                                                            <option value="<%= rol.id_rol %>"><%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %></option>
+                                                            <option value="<%= rol.id_rol %>">
+                                                                <%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %>
+                                                            </option>
                                                         <% }); %>
                                                     <% } else { %>
                                                         <option value="">No hay roles disponibles</option>
@@ -379,6 +394,8 @@
                                                 </select>
                                             </div>
                                         </div>
+
+                                        <!-- Campos de usuario -->
                                         <div class="form-group row">
                                             <label for="addNombre" class="col-sm-3 col-form-label">Nombre</label>
                                             <div class="col-sm-9">
@@ -433,21 +450,24 @@
                                             <!-- Estado ya no está visible en el formulario, se envía "habilitado" por defecto -->
                                             <input type="hidden" name="estado" value="habilitado">
                                         </div>
-                                        <div class="form-group row">
-                                            <label for="addDocumentacion" class="col-sm-3 col-form-label">Documentación</label>
-                                            <div class="col-sm-3">
-                                                <label class="switch">
-                                                    <input type="checkbox" id="addDocumentacion">
-                                                    <span class="slider round"></span>
-                                                </label>
-                                            </div>
 
-                                            <label for="addPagado" class="col-sm-3 col-form-label">Pagado</label>
-                                            <div class="col-sm-3">
-                                                <label class="switch">
-                                                    <input type="checkbox" id="addPagado">
-                                                    <span class="slider round"></span>
-                                                </label>
+                                        <!-- Opciones específicas de estudiantes -->
+                                        <div id="studentOptions" style="display: none;">
+                                            <div class="form-group row">
+                                                <label for="addDocumentacion" class="col-sm-3 col-form-label">Documentación</label>
+                                                <div class="col-sm-3">
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="addDocumentacion">
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <label for="addPagado" class="col-sm-3 col-form-label">Pagado</label>
+                                                <div class="col-sm-3">
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="addPagado">
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -458,6 +478,7 @@
                                             </div>
                                         </div>
 
+                                        <!-- Botones del modal -->
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
                                             <button type="submit" class="btn btn-dark">Guardar</button>
@@ -467,6 +488,8 @@
                             </div>
                         </div>
                     </div>
+
+
 
 
 
@@ -492,277 +515,329 @@
             <!-- Asegúrate de tener estos enlaces en el <head> o justo antes de cerrar el body -->
             
                 <script>
-                    // Función para mostrar/ocultar la contraseña
-                    const togglePassword = document.getElementById("togglePassword");
-                    const passwordField = document.getElementById("addContrasena");
-                    const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
-                    const confirmPasswordField = document.getElementById("addConfirmarContrasena");
-                
-                    togglePassword.addEventListener("click", function () {
-                        const type = passwordField.type === "password" ? "text" : "password";
-                        passwordField.type = type;
-                
-                        // Cambiar el icono del ojo
-                        const icon = passwordField.type === "password" ? "fa-eye" : "fa-eye-slash";
-                        document.getElementById("password-eye").classList.replace("fa-eye", icon);
-                    });
-                
-                    toggleConfirmPassword.addEventListener("click", function () {
-                        const type = confirmPasswordField.type === "password" ? "text" : "password";
-                        confirmPasswordField.type = type;
-                
-                        // Cambiar el icono del ojo
-                        const icon = confirmPasswordField.type === "password" ? "fa-eye" : "fa-eye-slash";
-                        document.getElementById("confirm-password-eye").classList.replace("fa-eye", icon);
-                    });
-                </script>
-
-            <script>
-                document.getElementById('editForm').addEventListener('submit', function(e) {
-                    e.preventDefault(); // Evita que el formulario se envíe automáticamente
-            
-                    const email = document.getElementById('editCorreo').value;
-                    const idUsuario = document.getElementById('editIdUsuario').value;
-            
-                    // Lógica para verificar si el correo ya está en uso
-                    fetch('http://localhost:4000/api/verificar_correo_editar', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ correo: email, id_usuario: idUsuario })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.existe) {
-                            // Si el correo ya está en uso, mostrar mensaje de error
-                            document.getElementById('editCorreoError').style.display = 'block';
-                            document.getElementById('editCorreo').classList.add('is-invalid');
-                        } else {
-                            // Si el correo está disponible, enviar el formulario
-                            document.getElementById('editForm').submit();
+                    document.addEventListener('DOMContentLoaded', function () {
+                        // Elementos del DOM
+                        const togglePassword = document.getElementById("togglePassword");
+                        const passwordField = document.getElementById("addContrasena");
+                        const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+                        const confirmPasswordField = document.getElementById("addConfirmarContrasena");
+                        const rolSelect = document.getElementById('addRol');
+                        const studentOptions = document.getElementById('studentOptions');
+                        const fechaNacimientoInput = document.getElementById('addFechaNacimiento');
+                        const errorMessage = document.getElementById('error-message');
+                        const addForm = document.getElementById('addForm');
+                        const documentacionCheckbox = document.getElementById('addDocumentacion');
+                        const pagadoCheckbox = document.getElementById('addPagado');
+                        const fechaPagosText = document.getElementById('fechaPagosText');
+                        const fechaPagosMensaje = document.getElementById('fechaPagosMensaje');
+                        
+                        // Validación de contraseñas
+                        togglePassword.addEventListener("click", function () {
+                            const type = passwordField.type === "password" ? "text" : "password";
+                            passwordField.type = type;
+                            const icon = passwordField.type === "password" ? "fa-eye" : "fa-eye-slash";
+                            document.getElementById("password-eye").classList.replace("fa-eye", icon);
+                        });
+                        
+                        toggleConfirmPassword.addEventListener("click", function () {
+                            const type = confirmPasswordField.type === "password" ? "text" : "password";
+                            confirmPasswordField.type = type;
+                            const icon = confirmPasswordField.type === "password" ? "fa-eye" : "fa-eye-slash";
+                            document.getElementById("confirm-password-eye").classList.replace("fa-eye", icon);
+                        });
+                        
+                        // Función para verificar el rol seleccionado
+                        function checkStudentRole() {
+                            const selectedOption = rolSelect.options[rolSelect.selectedIndex].text.toLowerCase();
+                            studentOptions.style.display = selectedOption === 'estudiante' ? 'block' : 'none';
                         }
-                    });
-                });
-            </script>
-
-            <script>
-                document.getElementById('addForm').addEventListener('submit', function(e) {
-                    const contrasena = document.getElementById('addContrasena').value;
-                    const mensajeError = document.getElementById('error-message');
-
-                    // Verifica la longitud mínima de la contraseña
-                    if (contrasena.length < 6) {
-                        e.preventDefault(); // Evita el envío del formulario
-                        mensajeError.innerText = 'La contraseña debe tener al menos 6 caracteres.';
-                        mensajeError.style.display = 'block'; // Muestra el mensaje de error
-                        return; // Sale de la función
-                    } else {
-                        mensajeError.style.display = 'none'; // Oculta el mensaje de error si la contraseña es válida
-                    }
-
-                    // Aquí puedes añadir más validaciones si es necesario
-                });
-            </script>
-            
-
-            <script>
-                $(document).ready(function() {
-                    $('#addForm').on('submit', function(event) {
-                        event.preventDefault(); // Evitar el envío del formulario
-            
-                        // Obtener la referencia al formulario
-                        const form = $(this);
-            
-                        // Obtener el correo del input
-                        const correo = $('#addCorreo').val();
-            
-                        // Hacer la llamada AJAX para verificar el correo
-                        $.ajax({
-                            url: 'http://localhost:4000/api/verificar_correo',
-                            type: 'POST',
-                            data: { correo: correo },
-                            success: function(response) {
-                                if (response.existe) {
-                                    // Mostrar un mensaje de error si el correo ya está en uso
-                                    $('#error-message').text('El correo ya está en uso.').show();
-                                } else {
-                                    // Si el correo es válido, enviar el formulario
-                                    $.ajax({
-                                        url: form.attr('action'), // Usar la referencia guardada al formulario
-                                        type: 'POST',
-                                        data: form.serialize(), // Serializar todos los datos del formulario
-                                        success: function() {
-                                            // Aquí puedes agregar lógica para manejar la respuesta del servidor
-                                            $('#addModal').modal('hide'); // Cerrar la modal
-                                            location.reload(); // Recargar la página si es necesario
-                                        },
-                                        error: function() {
-                                            // Manejar errores en la solicitud de agregar usuario
-                                            $('#error-message').text('Ocurrió un error al agregar el usuario.').show();
-                                        }
-                                    });
-                                }
-                            },
-                            error: function() {
-                                // Manejar errores en la verificación de correo
-                                $('#error-message').text('Ocurrió un error al verificar el correo.').show();
+                        
+                        // Ejecutar al cargar la página
+                        checkStudentRole();
+                        rolSelect.addEventListener('change', checkStudentRole);
+                        
+                        // Validación de la edad
+                        const minAge = 8;
+                        const maxAge = 65;
+                        
+                        function validateAge() {
+                            const fechaNacimiento = new Date(fechaNacimientoInput.value);
+                            if (isNaN(fechaNacimiento)) {
+                                errorMessage.style.display = 'block';
+                                errorMessage.textContent = 'Por favor, introduce una fecha válida.';
+                                return false;
+                            }
+                        
+                            const hoy = new Date();
+                            let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+                            const mesDiferencia = hoy.getMonth() - fechaNacimiento.getMonth();
+                            if (mesDiferencia < 0 || (mesDiferencia === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                                edad--;
+                            }
+                        
+                            if (edad < minAge || edad > maxAge) {
+                                errorMessage.style.display = 'block';
+                                errorMessage.textContent = `La edad debe estar entre ${minAge} y ${maxAge} años.`;
+                                return false;
+                            } else {
+                                errorMessage.style.display = 'none';
+                                return true;
+                            }
+                        }
+                        
+                        fechaNacimientoInput.addEventListener('input', validateAge);
+                        
+                        // Mostrar mensaje dinámico si el checkbox de "pagado" está marcado
+                        pagadoCheckbox.addEventListener('change', function () {
+                            if (this.checked) {
+                                const fechaActual = new Date();
+                                fechaPagosMensaje.textContent = `La fecha de pagos se establecerá el ${fechaActual.getDate()} de cada mes.`;
+                                fechaPagosText.style.display = 'block';
+                            } else {
+                                fechaPagosText.style.display = 'none';
                             }
                         });
+                        
+                        // Verificación de correo (AJAX)
+                        addForm.addEventListener('submit', function (event) {
+                            event.preventDefault(); // Evitar el envío del formulario
+                        
+                            const correo = document.getElementById('addCorreo').value;
+                        
+                            // Validación de la contraseña
+                            const contrasena = passwordField.value;
+                            const confirmPassword = confirmPasswordField.value;
+                        
+                            // Verifica la longitud de la contraseña
+                            if (contrasena.length < 6) {
+                                errorMessage.innerText = 'La contraseña debe tener al menos 6 caracteres.';
+                                errorMessage.style.display = 'block';
+                                return;
+                            }
+                        
+                            // Verifica si las contraseñas coinciden
+                            if (contrasena !== confirmPassword) {
+                                errorMessage.innerText = 'Las contraseñas no coinciden. Por favor, inténtalo de nuevo.';
+                                errorMessage.style.display = 'block';
+                                return;
+                            }
+                        
+                            // Validar la edad antes de enviar el formulario
+                            if (!validateAge()) {
+                                return;
+                            }
+                        
+                            // Verificación del correo
+                            $.ajax({
+                                url: 'http://localhost:4000/api/verificar_correo',
+                                type: 'POST',
+                                data: { correo: correo },
+                                success: function (response) {
+                                    if (response.existe) {
+                                        $('#error-message').text('El correo ya está en uso.').show();
+                                    } else {
+                                        // Si el correo no existe, continuar con el envío del formulario
+                                        const hiddenDocumentacionInput = document.createElement('input');
+                                        hiddenDocumentacionInput.type = 'hidden';
+                                        hiddenDocumentacionInput.name = 'documentacion';
+                                        hiddenDocumentacionInput.value = documentacionCheckbox.checked ? 'true' : 'false';
+                                        addForm.appendChild(hiddenDocumentacionInput);
+                        
+                                        if (pagadoCheckbox.checked) {
+                                            const fechaActual = new Date();
+                                            const fechaString = `${fechaActual.getFullYear()}-${(fechaActual.getMonth() + 1).toString().padStart(2, '0')}-${fechaActual.getDate().toString().padStart(2, '0')}`;
+                                            const hiddenPagadoInput = document.createElement('input');
+                                            hiddenPagadoInput.type = 'hidden';
+                                            hiddenPagadoInput.name = 'fecha_pagado';
+                                            hiddenPagadoInput.value = fechaString;
+                                            addForm.appendChild(hiddenPagadoInput);
+                                        }
+                        
+                                        // Enviar el formulario una vez todo esté validado
+                                        $.ajax({
+                                            url: addForm.getAttribute('action'),
+                                            type: 'POST',
+                                            data: $(addForm).serialize(),
+                                            success: function () {
+                                                $('#addModal').modal('hide');
+                                                location.reload();
+                                            },
+                                            error: function () {
+                                                $('#error-message').text('Ocurrió un error al agregar el usuario.').show();
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function () {
+                                    $('#error-message').text('Ocurrió un error al verificar el correo.').show();
+                                }
+                            });
+                        });
                     });
-                });
-            </script>
-            
-            
-            <script>
-                document.getElementById('addPagado').addEventListener('change', function() {
-                    const fechaPagosText = document.getElementById('fechaPagosText');
-                    const fechaPagosMensaje = document.getElementById('fechaPagosMensaje');
-            
-                    if (this.checked) {
-                        // Obtener el día actual
-                        const fechaActual = new Date();
-                        const diaActual = fechaActual.getDate(); // Número del día actual
-            
-                        // Mostrar el mensaje dinámico con la fecha
-                        fechaPagosMensaje.textContent = `La fecha de pagos se establecerá el ${diaActual} de cada mes.`;
-                        fechaPagosText.style.display = 'block'; // Mostrar el texto
-                    } else {
-                        fechaPagosText.style.display = 'none'; // Ocultar el texto si se desactiva
-                    }
-                });
-            
-                // Validación de contraseñas y envío del formulario
-                document.getElementById('addForm').addEventListener('submit', function(event) {
-                    const password = document.getElementById('addContrasena').value;
-                    const confirmPassword = document.getElementById('addConfirmarContrasena').value;
-            
-                    if (password !== confirmPassword) {
-                        event.preventDefault(); // Evitar el envío del formulario
-                        alert("Las contraseñas no coinciden. Por favor, inténtalo de nuevo."); // Mensaje de error
-                        return; // Detener el resto del script si hay error en las contraseñas
-                    }
-            
-                    // Obtener el valor del switch de Documentación
-                    const documentacionCheckbox = document.getElementById('addDocumentacion');
-                    const documentacionValue = documentacionCheckbox.checked ? true : false;
-            
-                    // Crear un input oculto para enviar el valor booleano del switch de Documentación
-                    const hiddenDocumentacionInput = document.createElement('input');
-                    hiddenDocumentacionInput.type = 'hidden';
-                    hiddenDocumentacionInput.name = 'documentacion';
-                    hiddenDocumentacionInput.value = documentacionValue;
-                    document.getElementById('addForm').appendChild(hiddenDocumentacionInput);
-            
-                    // Obtener el valor del switch de Pagado y la fecha del sistema
-                    const pagadoCheckbox = document.getElementById('addPagado');
-                    if (pagadoCheckbox.checked) {
-                        // Obtener la fecha actual
-                        const fechaActual = new Date();
-                        const diaActual = fechaActual.getDate();
-                        const mesActual = fechaActual.getMonth() + 1; // Recuerda que los meses inician desde 0
-                        const añoActual = fechaActual.getFullYear();
-            
-                        // Crear un string de fecha en formato 'YYYY-MM-DD'
-                        const fechaString = `${añoActual}-${mesActual < 10 ? '0' : ''}${mesActual}-${diaActual < 10 ? '0' : ''}${diaActual}`;
-            
-                        // Crear un input oculto para enviar la fecha si el switch de Pagado está activado
-                        const hiddenPagadoInput = document.createElement('input');
-                        hiddenPagadoInput.type = 'hidden';
-                        hiddenPagadoInput.name = 'fecha_pagado';
-                        hiddenPagadoInput.value = fechaString;
-                        document.getElementById('addForm').appendChild(hiddenPagadoInput);
-                    }
-                });
-            </script>
+                </script>
+                          
             
 
-            <script>
-                function cambiarEstado(button) {
-                    var id_usuario = $(button).data('id_usuario');
-                    var nombre = $(button).data('nombre');
-                    var apellido = $(button).data('apellido');
-                    var fecha_nacimiento = $(button).data('fecha_nacimiento');
-                    var gmail = $(button).data('gmail');
-                    var estado = $(button).data('estado'); // El estado (habilitado o deshabilitado)
-                    var id_rol = $(button).data('id_rol');
-                    var documentacion = $(button).data('documentacion') === 1; // Convertir a booleano
-                    var pagos = $(button).data('pagos').split('T')[0]; // Extraer solo la fecha
-
-                    console.log(id_usuario, nombre, apellido, fecha_nacimiento, gmail, estado, id_rol, documentacion, pagos);
-
-                    // Enviar los datos con AJAX
-                    $.ajax({
-                        url: '/editar_usuario/' + id_usuario,  // Usar la misma ruta que el formulario de edición
-                        type: 'POST',
-                        data: {
-                            id_usuario: id_usuario,
-                            nombre: nombre,
-                            apellido: apellido,
-                            fecha_nacimiento: fecha_nacimiento,
-                            correo: gmail,
-                            estado: estado,  // Estado nuevo (habilitado o deshabilitado)
-                            id_rol: id_rol,
-                            documentacion: documentacion ? 1 : 0, // Convertir a 1 si está marcado
-                            pagos: pagos
-                        },
-                        success: function(response) {
-                            alert('Estado actualizado correctamente');
-                            // Aquí puedes actualizar la vista, recargar la página o modificar algo en el DOM
-                            location.reload();  // Recargar la página (opcional)
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error al cambiar el estado:', error);
-                            alert('Hubo un problema al actualizar el estado.');
-                        }
-                    });
-                }
-
-            </script>
+                          <script>
+                            function cambiarEstado(button) {
+                                var id_usuario = $(button).data('id_usuario');
+                                var nombre = $(button).data('nombre');
+                                var apellido = $(button).data('apellido');
+                                var fecha_nacimiento = $(button).data('fecha_nacimiento');
+                                var gmail = $(button).data('gmail');
+                                var estado = $(button).data('estado'); // El estado (habilitado o deshabilitado)
+                                var id_rol = $(button).data('id_rol');
+                                var documentacion = $(button).data('documentacion') === 1; // Convertir a booleano
+                                var pagos = $(button).data('pagos'); // Obtener el valor de pagos directamente
+                        
+                                // Verificar si pagos es null, si es así, asignarlo como null
+                                if (pagos === null) {
+                                    pagos = null;
+                                } else {
+                                    pagos = pagos.split('T')[0]; // Extraer solo la fecha si no es null
+                                }
+                        
+                                // Crear un objeto con los datos a enviar
+                                var dataToSend = {
+                                    id_usuario: id_usuario,
+                                    nombre: nombre,
+                                    apellido: apellido,
+                                    fecha_nacimiento: fecha_nacimiento,
+                                    correo: gmail,
+                                    estado: estado,  // Estado nuevo (habilitado o deshabilitado)
+                                    id_rol: id_rol,
+                                    documentacion: documentacion ? 1 : 0, // Convertir a 1 si está marcado
+                                };
+                        
+                                // Si pagos no es null, agregarlo al objeto
+                                if (pagos !== null) {
+                                    dataToSend.pagos = pagos;
+                                }
+                        
+                                console.log(id_usuario, nombre, apellido, fecha_nacimiento, gmail, estado, id_rol, documentacion, pagos);
+                        
+                                // Enviar los datos con AJAX
+                                $.ajax({
+                                    url: '/editar_usuario/' + id_usuario,  // Usar la misma ruta que el formulario de edición
+                                    type: 'POST',
+                                    data: dataToSend, // Enviar solo los campos que tienen valores válidos
+                                    success: function(response) {
+                                        alert('Estado actualizado correctamente');
+                                        // Aquí puedes actualizar la vista, recargar la página o modificar algo en el DOM
+                                        location.reload();  // Recargar la página (opcional)
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Error al cambiar el estado:', error);
+                                        alert('Hubo un problema al actualizar el estado.');
+                                    }
+                                });
+                            }
+                        </script>
+                        
+                        
             
             
             
-            
-            
-            
-
-            <script>
-                $(document).ready(function () {
-                    $('#editModal').on('show.bs.modal', function (event) {
-                        var button = $(event.relatedTarget); // Botón que activó el modal
-                        var id_usuario = button.data('id_usuario');
-                        var nombre = button.data('nombre');
-                        var apellido = button.data('apellido');
-                        var fecha_nacimiento = button.data('fecha_nacimiento');
-                        var gmail = button.data('gmail');
-                        var estado = button.data('estado');
-                        var id_rol = button.data('id_rol');
-                        var documentacion = button.data('documentacion') === 1; // Convertir a booleano
-                        var pagos = button.data('pagos').split('T')[0]; // Extraer solo la fecha
-            
-                        console.log(id_usuario, nombre, apellido, fecha_nacimiento, gmail, estado, id_rol, documentacion, pagos); // Verifica que los valores están bien
-            
-                        var modal = $(this);
-            
-                        // Asignar los valores al modal
-                        modal.find('.modal-body #editIdUsuario').val(id_usuario);
-                        modal.find('.modal-body #editNombre').val(nombre);
-                        modal.find('.modal-body #editApellido').val(apellido);
-                        modal.find('.modal-body #editFechaNacimiento').val(fecha_nacimiento);
-                        modal.find('.modal-body #editCorreo').val(gmail);
-                        modal.find('.modal-body #editEstado').val(estado);
-                        modal.find('.modal-body #editRol').val(id_rol); // Establecer el rol seleccionado
-                        modal.find('.modal-body #editDocumentacion').prop('checked', documentacion); // controlar el estado del switch
-                        modal.find('.modal-body #editPagos').val(pagos); // Establecer la fecha de pagos
-            
-                        // Establecer el valor del campo oculto para documentacion
-                        modal.find('.modal-body #documentacionHidden').val(documentacion ? 1 : 0); // 1 si está marcado, 0 si no
-            
-                        // Establecer la acción del formulario para incluir el ID del usuario
-                        modal.find('#editForm').attr('action', '/editar_usuario/' + id_usuario);
-                    });
-                });
-            </script>
+                        <script>
+                            $(document).ready(function () {
+                                // Manejo del evento para abrir la modal y llenar los campos
+                                $('#editModal').on('show.bs.modal', function (event) {
+                                    var button = $(event.relatedTarget); // Botón que activó el modal
+                                    var id_usuario = button.data('id_usuario');
+                                    var nombre = button.data('nombre');
+                                    var apellido = button.data('apellido');
+                                    var fecha_nacimiento = button.data('fecha_nacimiento');
+                                    var gmail = button.data('gmail');
+                                    var estado = button.data('estado');
+                                    var id_rol = button.data('id_rol');
+                                    var documentacion = button.data('documentacion') === 1; // Convertir a booleano
+                                    var pagos = button.data('pagos').split('T')[0]; // Extraer solo la fecha
+                        
+                                    var modal = $(this);
+                        
+                                    // Asignar los valores al modal
+                                    modal.find('.modal-body #editIdUsuario').val(id_usuario);
+                                    modal.find('.modal-body #editNombre').val(nombre);
+                                    modal.find('.modal-body #editApellido').val(apellido);
+                                    modal.find('.modal-body #editFechaNacimiento').val(fecha_nacimiento);
+                                    modal.find('.modal-body #editCorreo').val(gmail);
+                                    modal.find('.modal-body #editEstado').val(estado);
+                                    modal.find('.modal-body #editRol').val(id_rol); // Establecer el rol seleccionado
+                                    modal.find('.modal-body #editDocumentacion').prop('checked', documentacion); // controlar el estado del switch
+                                    modal.find('.modal-body #editPagos').val(pagos); // Establecer la fecha de pagos
+                        
+                                    // Mostrar u ocultar los campos de documentación y pagos según el rol
+                                    if (id_rol === 'estudiante') {
+                                        $('#documentacionRow').show();
+                                        $('#pagosRow').show();
+                                    } else {
+                                        $('#documentacionRow').hide();
+                                        $('#pagosRow').hide();
+                                    }
+                        
+                                    // Establecer la acción del formulario para incluir el ID del usuario
+                                    modal.find('#editForm').attr('action', '/editar_usuario/' + id_usuario);
+                                });
+                        
+                                // Manejo del evento para enviar el formulario de edición
+                                document.getElementById('editForm').addEventListener('submit', function(e) {
+                                    e.preventDefault(); // Evita que el formulario se envíe automáticamente
+                        
+                                    const fechaNacimiento = document.getElementById('editFechaNacimiento').value;
+                                    const email = document.getElementById('editCorreo').value;
+                                    const idUsuario = document.getElementById('editIdUsuario').value;
+                        
+                                    // Validación de la edad
+                                    const edad = calcularEdad(fechaNacimiento);
+                        
+                                    if (edad < 8 || edad > 65) {
+                                        document.getElementById('editEdadError').style.display = 'block';
+                                        document.getElementById('editFechaNacimiento').classList.add('is-invalid');
+                                        return; // No continuar con el envío del formulario si la edad no es válida
+                                    } else {
+                                        document.getElementById('editEdadError').style.display = 'none';
+                                        document.getElementById('editFechaNacimiento').classList.remove('is-invalid');
+                                    }
+                        
+                                    // Lógica para verificar si el correo ya está en uso
+                                    fetch('http://localhost:4000/api/verificar_correo_editar', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({ correo: email, id_usuario: idUsuario })
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.existe) {
+                                            // Si el correo ya está en uso, mostrar mensaje de error
+                                            document.getElementById('editCorreoError').style.display = 'block';
+                                            document.getElementById('editCorreo').classList.add('is-invalid');
+                                        } else {
+                                            // Si el correo está disponible, enviar el formulario
+                                            document.getElementById('editForm').submit();
+                                        }
+                                    })
+                                    .catch(error => console.error('Error al verificar el correo:', error));
+                                });
+                            });
+                        
+                            // Función para calcular la edad
+                            function calcularEdad(fechaNacimiento) {
+                                const hoy = new Date();
+                                const nacimiento = new Date(fechaNacimiento);
+                                let edad = hoy.getFullYear() - nacimiento.getFullYear();
+                                const mes = hoy.getMonth();
+                                const dia = hoy.getDate();
+                        
+                                if (mes < nacimiento.getMonth() || (mes === nacimiento.getMonth() && dia < nacimiento.getDate())) {
+                                    edad--;
+                                }
+                        
+                                return edad;
+                            }
+                        </script>
+                        
             
             
             

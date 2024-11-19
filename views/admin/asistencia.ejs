@@ -109,7 +109,6 @@
                                                                 data-fecha-asistencia="<%= asistencia.fecha_asistencia %>">
                                                             <i class="fas fa-edit"></i>
                                                         </button>
-
                                                     </td>
                                                 </tr>
                                                 <% }) %>
@@ -179,26 +178,30 @@
                                                 <option value="" disabled selected>Seleccione una clase</option> <!-- Opción por defecto -->
                                                 <% if (dataClases && dataClases.length) { %>
                                                     <% dataClases.forEach(function(clase) { 
-                                                        // Convertir las horas a formato 12 horas
-                                                        function formatTimeTo12Hour(time) {
-                                                            let [hours, minutes] = time.split(":");
-                                                            let suffix = hours >= 12 ? "p.m." : "a.m.";
-                                                            hours = hours % 12 || 12; // Convertir a formato 12 horas
-                                                            return `${hours}:${minutes} ${suffix}`;
-                                                        }
+                                                        // Verificar si la clase está activa
+                                                        if (clase.estado === 'activo') {
+                                                            // Convertir las horas a formato 12 horas
+                                                            function formatTimeTo12Hour(time) {
+                                                                let [hours, minutes] = time.split(":");
+                                                                let suffix = hours >= 12 ? "p.m." : "a.m.";
+                                                                hours = hours % 12 || 12; // Convertir a formato 12 horas
+                                                                return `${hours}:${minutes} ${suffix}`;
+                                                            }
                                         
-                                                        let startTime = formatTimeTo12Hour(clase.hora_inicio);
-                                                        let endTime = formatTimeTo12Hour(clase.hora_final);
+                                                            let startTime = formatTimeTo12Hour(clase.hora_inicio);
+                                                            let endTime = formatTimeTo12Hour(clase.hora_final);
                                                     %>
-                                                        <option value="<%= clase.id_clase %>">
-                                                            <%= clase.nombre_curso %> - <%= startTime %> a <%= endTime %>
-                                                        </option>
-                                                    <% }); %>
+                                                            <option value="<%= clase.id_clase %>">
+                                                                <%= clase.nombre_curso %> - <%= startTime %> a <%= endTime %>
+                                                            </option>
+                                                    <% 
+                                                        } // Cierra la condición de estado activo
+                                                    }); %>
                                                 <% } else { %>
                                                     <option value="">No hay clases disponibles</option>
                                                 <% } %>
                                             </select>
-                                        </div>                                                                                
+                                        </div>                                                                                                                        
 
                                         <!-- Lista de estudiantes con checkboxes, se llenará dinámicamente -->
                                         <div id="estudiantes_container" class="form-group">
@@ -250,15 +253,15 @@
             // Llenar las clases en el select dinámicamente
             document.getElementById('id_clase').addEventListener('change', async function () {
                 const idClase = this.value;
-            
+    
                 try {
                     const response = await fetch(`http://localhost:4000/api/claseEstudiante/${idClase}`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
-            
+    
                     const estudiantes = await response.json();
-            
+    
                     // Limpiar la lista de estudiantes
                     const estudiantesContainer = document.getElementById('estudiantes_container');
                     if (!estudiantesContainer) {
@@ -266,57 +269,49 @@
                         return;
                     }
                     estudiantesContainer.innerHTML = '';
-            
+    
                     // Llenar la lista con los estudiantes obtenidos
                     estudiantes.forEach(estudiante => {
-                        const checkboxContainer = document.createElement('div');
-                        checkboxContainer.classList.add('checkbox-container');
-            
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.classList.add('form-check-input');
-                        checkbox.id = `estudiante${estudiante.id_usuario}`;
-                        checkbox.value = estudiante.id_usuario;
-                        checkbox.name = 'estudiantes';
-            
-                        const label = document.createElement('label');
-                        label.htmlFor = checkbox.id;
-                        label.textContent = `${estudiante.nombre} ${estudiante.apellido}`;
-            
-                        checkboxContainer.appendChild(checkbox);
-                        checkboxContainer.appendChild(label);
-            
-                        estudiantesContainer.appendChild(checkboxContainer);
+                        const checkboxHtml = `
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="estudiantes" id="estudiante-${estudiante.id_usuario}" data-estudiante-id="${estudiante.id_usuario}">
+                                <label class="form-check-label" for="estudiante-${estudiante.id_usuario}">
+                                    ${estudiante.nombre} ${estudiante.apellido}
+                                </label>
+                            </div>
+                        `;
+                        estudiantesContainer.innerHTML += checkboxHtml;
                     });
                 } catch (error) {
                     console.error('Error al obtener los estudiantes:', error);
                 }
             });
-            
+    
             document.getElementById('addForm').addEventListener('submit', async function (event) {
                 event.preventDefault();
-            
+    
                 const id_clase = document.getElementById('id_clase').value;
                 const fecha_asistencia = document.getElementById('fecha_asistencia').value;
-            
+    
                 // Obtener los estudiantes de los checkboxes seleccionados
                 const allCheckboxes = document.querySelectorAll('input[name="estudiantes"]');
                 const estudiantes = Array.from(allCheckboxes).map(checkbox => ({
-                    id_usuario: checkbox.value,
+                    id_usuario: checkbox.dataset.estudianteId, // Usamos el data-estudiante-id para obtener el ID
                     presente: checkbox.checked ? 1 : 0
                 }));
-            
+    
+                // Verificar que los campos no estén vacíos
                 if (!id_clase || !fecha_asistencia) {
                     alert('Por favor, complete todos los campos.');
                     return;
                 }
-            
+    
                 const data = {
                     id_clase,
                     fecha_asistencia,
                     estudiantes
                 };
-            
+    
                 try {
                     const response = await fetch('/crear_asistencia', {
                         method: 'POST',
@@ -325,18 +320,18 @@
                         },
                         body: JSON.stringify(data)
                     });
-            
+    
                     const result = await response.json();
                     if (!response.ok) {
                         throw new Error(result.message || 'Error en el servidor');
                     }
-            
+    
                     alert(result.message);
-            
+    
                     // Limpiar el formulario y la lista de estudiantes
                     document.getElementById('addForm').reset();
                     document.getElementById('estudiantes_container').innerHTML = '';
-            
+    
                     window.location.reload();
                 } catch (error) {
                     console.error('Error al enviar datos:', error);
@@ -344,116 +339,114 @@
                 }
             });
         });
-    </script>
+    </script>    
+    
     
     <script>
         $(document).ready(function() {
-        $('#miTabla').DataTable();
-
-        // Modal para editar estudiantes por asistencia
-        $('#editEstudiantesModal').on('show.bs.modal', async function (event) {
-            const button = $(event.relatedTarget); // Capturar el botón que abrió la modal
-            const id_asistencia = button.data('id'); // Obtener el id_asistencia del botón
-
-            // Guardar el id_asistencia en los datos de la modal
-            $(this).data('id', id_asistencia); // Esto permite acceder a id_asistencia más tarde
-
-            try {
-                const response = await fetch(`http://localhost:4000/api/estudiantesPorAsistencia/${id_asistencia}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                const estudiantesPresentesContainer = document.getElementById('presentStudentsContainer');
-                const estudiantesAusentesContainer = document.getElementById('absentStudentsContainer');
-
-                // Verificar si los contenedores de estudiantes existen en el DOM
-                if (!estudiantesPresentesContainer || !estudiantesAusentesContainer) {
-                    console.error('Error: Uno o ambos contenedores de estudiantes no se encontraron');
-                    return;
-                }
-
-                // Limpiar contenedores de estudiantes
-                estudiantesPresentesContainer.innerHTML = '';
-                estudiantesAusentesContainer.innerHTML = '';
-
-                // Separar estudiantes en presentes y ausentes según el valor de "presente"
-                data.estudiantes.forEach(estudiante => {
-                    const checkboxContainer = document.createElement('div');
-                    checkboxContainer.classList.add('checkbox-container');
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.classList.add('form-check-input');
-                    checkbox.id = `estudiante${estudiante.id_usuario}`;
-                    checkbox.value = estudiante.id_usuario;
-                    checkbox.name = 'estudiantes';
-
-                    // Si el estudiante está presente, marcar el checkbox
-                    if (estudiante.presente === 1) {
-                        checkbox.checked = true;
+            $('#miTabla').DataTable();
+    
+            // Modal para editar estudiantes por asistencia
+            $('#editEstudiantesModal').on('show.bs.modal', async function(event) {
+                const button = $(event.relatedTarget); // Capturar el botón que abrió la modal
+                const id_asistencia = button.data('id'); // Obtener el id_asistencia del botón
+    
+                // Guardar el id_asistencia en los datos de la modal
+                $(this).data('id', id_asistencia); // Esto permite acceder a id_asistencia más tarde
+    
+                try {
+                    const response = await fetch(`http://localhost:4000/api/estudiantesPorAsistencia/${id_asistencia}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
                     }
-
-                    const label = document.createElement('label');
-                    label.htmlFor = checkbox.id;
-                    label.textContent = `${estudiante.nombre} ${estudiante.apellido}`;
-
-                    checkboxContainer.appendChild(checkbox);
-                    checkboxContainer.appendChild(label);
-
-                    // Dividir entre estudiantes presentes y ausentes
-                    if (estudiante.presente === 1) {
-                        estudiantesPresentesContainer.appendChild(checkboxContainer);
-                    } else {
-                        estudiantesAusentesContainer.appendChild(checkboxContainer);
+    
+                    const data = await response.json();
+                    const estudiantesPresentesContainer = document.getElementById('presentStudentsContainer');
+                    const estudiantesAusentesContainer = document.getElementById('absentStudentsContainer');
+    
+                    // Verificar si los contenedores de estudiantes existen en el DOM
+                    if (!estudiantesPresentesContainer || !estudiantesAusentesContainer) {
+                        console.error('Error: Uno o ambos contenedores de estudiantes no se encontraron');
+                        return;
                     }
-                });
-            } catch (error) {
-                console.error('Error al obtener los estudiantes de la asistencia:', error);
-            }
-        });
-
-        // Guardar cambios cuando se haga clic en el botón "Guardar cambios"
-        document.getElementById('saveChangesButton').addEventListener('click', async function () {
-            const id_asistencia = $('#editEstudiantesModal').data('id'); // Obtener id_asistencia guardado en la modal
-            const checkboxes = document.querySelectorAll('input[name="estudiantes"]');
-            const cambios = [];
-
-            // Recolectar el estado de los checkboxes (presente o ausente)
-            checkboxes.forEach(checkbox => {
-                cambios.push({
-                    id_usuario: checkbox.value,
-                    presente: checkbox.checked ? 1 : 0
-                });
+    
+                    // Limpiar contenedores de estudiantes
+                    estudiantesPresentesContainer.innerHTML = '';
+                    estudiantesAusentesContainer.innerHTML = '';
+    
+                    // Separar estudiantes en presentes y ausentes según el valor de "presente"
+                    data.estudiantes.forEach(estudiante => {
+                        const checkboxHtml = `
+                            <div class="form-check">
+                                <input 
+                                    type="checkbox" 
+                                    class="form-check-input" 
+                                    name="estudiantes" 
+                                    id="estudiante-${estudiante.id_usuario}" 
+                                    value="${estudiante.id_usuario}" 
+                                    ${estudiante.presente === 1 ? 'checked' : ''}
+                                >
+                                <label 
+                                    class="form-check-label" 
+                                    for="estudiante-${estudiante.id_usuario}">
+                                    ${estudiante.nombre} ${estudiante.apellido}
+                                </label>
+                            </div>
+                        `;
+    
+                        // Dividir entre estudiantes presentes y ausentes
+                        if (estudiante.presente === 1) {
+                            estudiantesPresentesContainer.innerHTML += checkboxHtml;
+                        } else {
+                            estudiantesAusentesContainer.innerHTML += checkboxHtml;
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error al obtener los estudiantes de la asistencia:', error);
+                }
             });
-
-            // Verificar los datos antes de enviarlos
-            console.log("Datos enviados:", { id_asistencia, cambios });
-
-            try {
-                const response = await fetch(`http://localhost:4000/api/actualizar_asistencia_estudiantes`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id_asistencia, cambios })
+    
+            // Guardar cambios cuando se haga clic en el botón "Guardar cambios"
+            document.getElementById('saveChangesButton').addEventListener('click', async function() {
+                const id_asistencia = $('#editEstudiantesModal').data('id'); // Obtener id_asistencia guardado en la modal
+                const checkboxes = document.querySelectorAll('input[name="estudiantes"]');
+                const cambios = [];
+    
+                // Recolectar el estado de los checkboxes (presente o ausente)
+                checkboxes.forEach(checkbox => {
+                    cambios.push({
+                        id_usuario: checkbox.value,
+                        presente: checkbox.checked ? 1 : 0
+                    });
                 });
-
-                if (!response.ok) {
-                    throw new Error('Error al actualizar la asistencia de los estudiantes');
+    
+                // Verificar los datos antes de enviarlos
+                console.log("Datos enviados:", { id_asistencia, cambios });
+    
+                try {
+                    const response = await fetch(`http://localhost:4000/api/actualizar_asistencia_estudiantes`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id_asistencia, cambios })
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error('Error al actualizar la asistencia de los estudiantes');
+                    }
+    
+                    const result = await response.json();
+                    alert(result.message); // Mostrar mensaje de éxito
+                    $('#editEstudiantesModal').modal('hide'); // Cerrar la modal
+                } catch (error) {
+                    console.error('Error al guardar los cambios:', error);
+                    alert('Error al guardar los cambios');
                 }
-
-                const result = await response.json();
-                alert(result.message); // Mostrar mensaje de éxito
-                $('#editEstudiantesModal').modal('hide'); // Cerrar la modal
-            } catch (error) {
-                console.error('Error al guardar los cambios:', error);
-                alert('Error al guardar los cambios');
-            }
+            });
         });
-    });
-</script>
+    </script>
+    
     
 <script>
     $(document).ready(function() {
