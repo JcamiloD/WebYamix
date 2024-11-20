@@ -8,8 +8,8 @@ exports.obtenerCursoss = async (req, res, next) => {
         const cursoss = await response.json();
 
         if (response.ok) {
-            res.locals.cursoss = cursoss;
-            next();
+            res.locals.cursoss = cursoss; // Pasamos los cursos a res.locals
+            return next(); // Aseguramos que el middleware continúe
         } else {
             console.error('Error al traer cursos:', cursoss);
             res.status(response.status).send(cursoss.message || 'Error al obtener cursos');
@@ -19,6 +19,7 @@ exports.obtenerCursoss = async (req, res, next) => {
         res.status(500).send('Error al obtener cursos');
     }
 };
+
 
 // Función para traer eventos por nombre de curso
 exports.traerEventosPorNombreCurso = async (req, res) => {
@@ -43,7 +44,7 @@ exports.traerEventosPorNombreCurso = async (req, res) => {
 };
 
 // Función para traer todos los eventos
-exports.traerEventos = async (req, res) => {
+exports.traerEventos = async (req, res, next) => {
     try {
         const response = await fetch(`${process.env.pathApi}/traer_eventos`, {
             method: 'GET',
@@ -57,7 +58,9 @@ exports.traerEventos = async (req, res) => {
         }
 
         const data = await response.json();
-        return res.json(data);
+        res.locals.eventos = data;  // Asignamos los eventos a res.locals
+        
+        next();  // Continuamos con el siguiente middleware o controlador
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
