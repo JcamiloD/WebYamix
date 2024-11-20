@@ -41,12 +41,11 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     const { correo, contraseña } = req.body;
-    console.log(req.body);
 
     try {
-
-
         const loginData = { correo, contraseña };
+
+        // Solicitud a la API
         const apiResponse = await fetch(`${process.env.pathApi}/login`, {
             method: 'POST',
             headers: {
@@ -57,49 +56,51 @@ exports.login = async (req, res) => {
         });
 
         const responseData = await apiResponse.json();
-        console.log('Respuesta de la API:', responseData);
 
         if (apiResponse.ok) {
             const { token } = responseData;
+
+            // Configuración de la cookie
             const cookieOptions = {
-                expires: new Date(Date.now() + parseInt(process.env.JWT_COOKIE_EXPIRE) * 24 * 60 * 60 * 1000),
+                expires: new Date(
+                    Date.now() + parseInt(process.env.JWT_COOKIE_EXPIRE) * 24 * 60 * 60 * 1000
+                ),
                 httpOnly: true
             };
             res.cookie('jwt', token, cookieOptions);
 
+            // Decodificar el token y determinar el rol
             const decodedToken = jwt.decode(token);
             const userRole = decodedToken.rol;
 
             let ruta = '';
             if (userRole === 'administrador') {
-                ruta = 'dashboard';
+                ruta = '/dashboard';
             }
 
-            return res.render('web/login', {
-                alert: 'Login correcto',
-                alertType: 'success',
-                ruta: ruta
-            });
+            // Responder al frontend con la ruta
+            return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', ruta });
         } else {
-            return res.render('web/login', {
-                alert: responseData.message || 'Credenciales incorrectas, intenta nuevamente',
-                alertType: 'error',
-                ruta: 'login'
+            // Responder con un mensaje de error
+            return res.status(apiResponse.status).json({
+                mensaje: responseData.mensaje || 'Credenciales incorrectas'
             });
         }
     } catch (error) {
-        console.log('Error en el proceso de login:', error);
-        return res.status(500).render('web/login', {
-            alert: 'Error en el servidor, intenta más tarde',
-            alertType: 'error',
-            ruta: 'login'
+        console.error('Error en el proceso de login:', error);
+
+        // Responder con un error genérico
+        return res.status(500).json({
+            mensaje: 'Error en el servidor. Intenta más tarde.'
         });
     }
 };
 
-
-exports.enviarCodigo = async (req, res, next) => {
+exports.enviarCodigo = async (req, res) => {
+    
     const { email } = req.body;
+    console.log(email)
+
     try {
         const response = await fetch(`${process.env.pathApi}/enviar-codigo`, {
             method: 'POST',
@@ -113,22 +114,30 @@ exports.enviarCodigo = async (req, res, next) => {
         console.log('API Response:', data);
 
         if (response.ok) {
-            res.render('web/codigo', { alert: { type: 'success', message: 'Código enviado correctamente.',ruta: '/codigo'  } });
+            return res.status(200).json({
+                mensaje: 'Código enviado correctamente.',
+                ruta: '/codigo'
+            });
         } else {
-            res.render('web/recuperar', { alert: { type: 'error', message: 'Error al enviar el código. Por favor, inténtalo de nuevo.', ruta: '/recuperar'  } });
+            return res.status(response.status).json({
+                mensaje: data.mensaje || 'Error al enviar el código. Por favor, inténtalo de nuevo.'
+            });
         }
     } catch (error) {
         console.error('Error al enviar el código de recuperación:', error);
-        res.render('recuperar', { alert: { type: 'error', message: 'Error al enviar el código de recuperación. Inténtalo más tarde.' } });
+
+        return res.status(500).json({
+            mensaje: 'Error en el servidor. Inténtalo más tarde.'
+        });
     }
 };
 
 
-
-exports.verificarCodigo = async (req, res, next) => {
+exports.verificarCodigo = async (req, res) => {
     try {
         const { codigo, nuevaContraseña } = req.body;
 
+        // Solicitud a la API externa
         const response = await fetch(`${process.env.pathApi}/verificarCodigo`, {
             method: 'POST',
             headers: {
@@ -144,26 +153,27 @@ exports.verificarCodigo = async (req, res, next) => {
         if (contentType && contentType.includes('application/json')) {
             result = await response.json();
         } else {
-            throw new Error('Respuesta no es JSON');
+            throw new Error('La respuesta de la API no es JSON.');
         }
 
+        // Manejar respuesta de la API
         if (response.ok) {
-            res.render('web/login', { 
-                alertType: 'success', 
-                alert: 'Cambio de contraseña exitoso.', 
-                ruta: 'login' 
+            return res.status(200).json({
+                mensaje: 'Cambio de contraseña exitoso.',
+                ruta: '/login' // Redirección al login
             });
         } else {
-            res.render('web/codigo', { 
-                alertType: 'error', 
-                alert: 'Código incorrecto.', 
-                ruta: 'codigo'
+            return res.status(response.status).json({
+                mensaje: 'Código incorrecto.'
             });
         }
-        
     } catch (error) {
         console.error('Error en la verificación del código:', error);
-        res.status(500).json({ message: 'Error en la verificación del código.' });
+
+        // Respuesta en caso de error del servidor
+        return res.status(500).json({
+            mensaje: 'Hubo un problema con el servidor. Inténtalo más tarde.'
+        });
     }
 };
 

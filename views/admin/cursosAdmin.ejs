@@ -82,7 +82,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addForm">
+                <form id="addForm" action="" method="post">
                     <div class="form-group">
                         <label for="addNombreCurso">Nombre del Curso</label>
                         <input type="text" name="nombre_curso" class="form-control" id="addNombreCurso" required>
@@ -268,7 +268,60 @@ $('.btn-dark[data-dismiss="modal"]').on('click', function() {
     <!-- plugins:js -->
     <%- include('partials/scripts') %>
 
-
+    <script>
+        function confirmarEliminacion(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si el usuario confirma, realiza la eliminación
+                    fetch(`http://localhost:4000/api/eliminar_curso/${id}`, {
+                        method: 'DELETE',
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            // Manejo de errores del servidor
+                            throw new Error(`Error HTTP: ${response.status}`);
+                        }
+                        return response.json(); // Parsear la respuesta
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                '¡Eliminado!',
+                                'La clase ha sido eliminada correctamente.',
+                                'success'
+                            ).then(() => {
+                                window.location.reload(); // Recargar la página
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                data.message || 'Ocurrió un problema al eliminar la clase.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        // Manejo de errores en la conexión o parsing
+                        console.error('Error al eliminar la clase:', error);
+                        Swal.fire(
+                            'Error interno del servidor',
+                            error.message,
+                            'error'
+                        );
+                    });
+                }
+            });
+        }
+    </script>
         <!-- End custom js for this page -->
 </body>
 
