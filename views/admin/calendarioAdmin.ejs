@@ -110,13 +110,7 @@
                                 placeholder="Fecha Final" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="duracion" class="col-sm-12 control-label">Duración</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="duracion" id="duracion"
-                                placeholder="Duración del Evento (en horas)" required>
-                        </div>
-                    </div>
+                    
                     <div class="form-group">
                         <label for="id_curso" class="col-sm-12 control-label">Cursos</label>
                         <div class="col-sm-10">
@@ -238,7 +232,7 @@
                                 descripcion: event.descripcion,
 
                                 ubicacion: event.ubicacion,
-                                duracion: event.duracion || '',
+                              
                                 id_curso: event.id_curso,
                                 estado: event.estado // Agregar estado aquí
                             };
@@ -266,31 +260,7 @@
                     $("input[name='fecha_fin']").val(fechaFin);
 
                     // Calcular la duración automáticamente
-                    function calcularDuracion() {
-                        var fechaInicio = $("input[name=fecha_inicio]").val();
-                        var fechaFin = $("input[name=fecha_fin]").val();
-
-                        if (fechaInicio && fechaFin) {
-                            var inicio = moment(fechaInicio, 'YYYY-MM-DD HH:mm');
-                            var fin = moment(fechaFin, 'YYYY-MM-DD HH:mm');
-
-                            // Calcular la diferencia entre las dos fechas en horas y minutos
-                            var duracion = moment.duration(fin.diff(inicio));
-
-                            // Obtener horas y minutos de la duración
-                            var horas = duracion.hours();
-                            var minutos = duracion.minutes();
-
-                            // Asignar la duración al campo de duración
-                            $('#duracion').val(horas + ' horas ' + minutos + ' minutos');
-                        }
-                    }
-
-                    // Calcular la duración al cambiar las fechas de inicio o fin
-                    $('input[name=fecha_inicio], input[name=fecha_fin]').on('change', calcularDuracion);
-
-                    // Llamar a la función para calcular la duración cuando se cargan las fechas
-                    calcularDuracion();
+                  
                 });
             },
 
@@ -360,7 +330,7 @@
 
                         ubicacion: event.location, // Ubicación del evento
                         color_evento: event.color, // Color del evento
-                        duracion: event.duracion, // Duración del evento
+           
                         notificar: event.notificar, // Si se debe notificar
                         descripcion_notificacion: event.descripcion_notificacion, // Descripción de la notificación (si aplica)
                         estado: event.estado // Estado del evento
@@ -401,7 +371,7 @@
                     // Mostrar el modal
                     $('body').append(response);
                     $('#modalUpdateEvento').modal('show');
-
+                    $('#id_curso').val(event.id_curso || '');
 
 
                     // Rellenar los campos del modal con los datos del evento
@@ -424,36 +394,12 @@
 
 
                     // Rellenar los otros campos del modal
-                    $('#duracionUpdate').val(event.duracion || '');
-                    $('#id_curso').val(event.id_curso || '');
+              
+                
                     $('#estadoUpdate').val(event.estado || ''); // Si el estado es parte del evento
 
                     // Función para calcular la duración automáticamente
-                    function calcularDuracion() {
-                        var fechaInicio = $('#fecha_inicioUpdate').val();
-                        var fechaFin = $('#fecha_finUpdate').val();
-
-                        if (fechaInicio && fechaFin) {
-                            var inicio = moment(fechaInicio, 'YYYY-MM-DD HH:mm');
-                            var fin = moment(fechaFin, 'YYYY-MM-DD HH:mm');
-
-                            // Calcular la diferencia entre las dos fechas en horas y minutos
-                            var duracion = moment.duration(fin.diff(inicio));
-
-                            // Obtener horas y minutos de la duración
-                            var horas = duracion.hours();
-                            var minutos = duracion.minutes();
-
-                            // Asignar la duración al campo de duración
-                            $('#duracionUpdate').val(horas + ' horas ' + minutos + ' minutos');
-                        }
-                    }
-
-                    // Calcular la duración al cambiar las fechas de inicio o fin
-                    $('#fecha_inicioUpdate, #fecha_finUpdate').on('change', calcularDuracion);
-
-                    // Llamar a la función para calcular la duración cuando se carga el modal
-                    calcularDuracion();
+           
 
                 }).fail(function () {
                     Swal.fire('Error', 'Error al cargar el contenido del modal', 'error');

@@ -420,10 +420,11 @@
                                 $('#editModal').modal('show');
                             });
 
- //editar form                   
+// Editar formulario
 $('#editForm').on('submit', function (event) {
-    event.preventDefault();
+    event.preventDefault(); // Evitar el envío del formulario por defecto
 
+    // Obtener los datos del formulario
     const idClase = $('#editIdClase').val();
     const formData = {
         id_curso: $('#id_curso').val(),
@@ -433,8 +434,13 @@ $('#editForm').on('submit', function (event) {
         estado: $('#editEstado').val()
     };
 
+    // Validación de horarios
     if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
 
+    // Mostrar el spinner mientras se procesa la solicitud
+    $('#spinner').show();
+
+    // Realizar la solicitud de actualización
     fetch(`/actualizar_clase/${idClase}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -449,6 +455,9 @@ $('#editForm').on('submit', function (event) {
         return response.json();
     })
     .then(data => {
+        // Ocultar el spinner después de recibir la respuesta
+        $('#spinner').hide();
+
         if (data.success) {
             Swal.fire({
                 icon: 'success',
@@ -456,7 +465,7 @@ $('#editForm').on('submit', function (event) {
                 text: 'La clase se ha actualizado correctamente.',
                 confirmButtonText: 'Aceptar'
             }).then(() => {
-                window.location.reload();  
+                window.location.reload(); // Recargar la página para reflejar los cambios
             });
         } else {
             Swal.fire({
@@ -468,6 +477,9 @@ $('#editForm').on('submit', function (event) {
         }
     })
     .catch(error => {
+        // Ocultar el spinner en caso de error
+        $('#spinner').hide();
+
         console.error('Error al actualizar la clase:', error);
         Swal.fire({
             icon: 'error',
@@ -478,49 +490,17 @@ $('#editForm').on('submit', function (event) {
     });
 });
 
+// Limpiar el modal y cerrar cuando se cierre el modal
+$('#editModal').on('hidden.bs.modal', function() {
+    $('#editForm')[0].reset();  // Resetea los valores del formulario
+    $('#spinner').hide();  // Ocultar el spinner al cerrar el modal
+});
 
-function validateTime(horaInicio, horaFinal) {
-    const startHour = parseInt(horaInicio.split(":")[0], 10);
-    const endHour = parseInt(horaFinal.split(":")[0], 10);
+// Botón "Cancelar" para cerrar el modal
+$('.btn-dark[data-dismiss="modal"]').on('click', function() {
+    $('#editModal').modal('hide');
+});
 
-
-    if (startHour < 8 || startHour >= 22) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Hora de inicio inválida',
-            text: 'La hora de inicio debe estar entre las 08:00 AM y las 10:00 PM.',
-            confirmButtonText: 'Aceptar'
-        });
-        return false;
-    }
-
-    if (endHour < 8 || endHour >= 22) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Hora de finalización inválida',
-            text: 'La hora de finalización debe estar entre las 08:00 AM y las 10:00 PM.',
-            confirmButtonText: 'Aceptar'
-        });
-        return false;
-    }
-
-
-    const inicio = new Date(`1970-01-01T${horaInicio}:00`);
-    const final = new Date(`1970-01-01T${horaFinal}:00`);
-    const diff = (final - inicio) / (1000 * 60 * 60);
-
-    if (diff !== 2) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Duración inválida',
-            text: 'La clase debe durar exactamente 2 horas.',
-            confirmButtonText: 'Aceptar'
-        });
-        return false;
-    }
-
-    return true;
-}
 //agregar form
 $('#addForm').on('submit', function(event) { 
     event.preventDefault();
@@ -581,6 +561,7 @@ $('#addForm').on('submit', function(event) {
 
 
 function validateTime(horaInicio, horaFinal) {
+    console.log('Validando horas...');
     const startHour = parseInt(horaInicio.split(":")[0], 10);
     const endHour = parseInt(horaFinal.split(":")[0], 10);
 
@@ -619,8 +600,6 @@ function validateTime(horaInicio, horaFinal) {
 
     return true;
 }
-
-
 });
 //eliminar                                
 window.confirmarEliminacion = function(id) {
@@ -674,7 +653,6 @@ window.confirmarEliminacion = function(id) {
         });
     }
 };
-
                     </script>
                     
 </body>
