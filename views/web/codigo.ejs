@@ -32,7 +32,7 @@
     <section id="sec">
         <div class="form-box">
             <div class="form-value">
-                <form id="restablecerForm" method="post" action="/restablecer" onsubmit="validarFormulario(event)">
+                <form id="restablecerForm" method="post" action="/restablecer" onsubmit="verificarCodigo(event)">
                     <h2>Restablecer Contraseña</h2>
 
                     <!-- Campo de código -->
@@ -67,13 +67,14 @@
     <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'></script>
     <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'></script>
     <script>
-        async function validarFormulario(event) {
+        async function verificarCodigo(event) {
             event.preventDefault();
+    
             const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
             const codigo = document.getElementById('codigo').value.trim();
             const nuevaContraseña = document.getElementById('nuevaContraseña').value;
             const confirmarContraseña = document.getElementById('confirmarContraseña').value;
-
+    
             // Validación del código
             if (codigo === '') {
                 Swal.fire({
@@ -83,7 +84,7 @@
                 });
                 return;
             }
-
+    
             // Validación de contraseñas
             if (nuevaContraseña === '' || confirmarContraseña === '') {
                 Swal.fire({
@@ -93,17 +94,16 @@
                 });
                 return;
             }
-
+    
             if (!passwordRegex.test(nuevaContraseña)) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'La contraseña debe tener al menos 6 caracteres, incluyendo letras min y mayus , números y caracteres especiales.'
+                    text: 'La contraseña debe tener al menos 6 caracteres, incluyendo letras, números y caracteres especiales.'
                 });
                 return;
             }
-
-
+    
             if (nuevaContraseña !== confirmarContraseña) {
                 Swal.fire({
                     icon: 'error',
@@ -112,12 +112,49 @@
                 });
                 return;
             }
-
-
-            // Envía el formulario después de que se cierre la alerta
-            document.getElementById('restablecerForm').submit();
+    
+            try {
+                // Enviar datos al controlador de la API
+                const response = await fetch('http://localhost:3000/restablecer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ codigo, nuevaContraseña })
+                });
+    
+                const resultado = await response.json();
+    
+                if (response.ok) {
+                    // Alerta de éxito y redirección
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: 'Cambio de contraseña exitoso.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = '/login'; // Cambia a la ruta de inicio de sesión
+                    });
+                } else {
+                    // Alerta de error: código incorrecto
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Código incorrecto.'
+                    });
+                }
+            } catch (error) {
+                // Manejo de errores generales
+                console.error('Error en la solicitud:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un problema con el servidor. Inténtalo más tarde.'
+                });
+            }
         }
-
+    
         function togglePassword(inputId, icon) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
@@ -129,6 +166,7 @@
             }
         }
     </script>
+    
 
     <script>
         <% if (typeof alert !== 'undefined') { %>

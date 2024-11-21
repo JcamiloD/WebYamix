@@ -5,23 +5,23 @@
     <meta charset="UTF-8">
     <title>YAMIX</title>
     <link rel="stylesheet" href="css/login.css">
-    
+
 </head>
 
 <body>
     <section id="sec">
         <div class="form-box">
             <div class="form-value">
-                <form  id="restablecerForm" action="/registro" method="post" onsubmit="validarFormulario(event)">
+                <form id="restablecerForm" action="/registro" method="post" onsubmit="validarFormulario(event)">
                     <h2>Inscribete</h2>
                     <div class="inputbox">
                         <ion-icon name="person"></ion-icon>
-                        <input name="nombre" type="text" id="nombre" >
+                        <input name="nombre" type="text" id="nombre">
                         <label for="">Nombres</label>
                     </div>
                     <div class="inputbox">
                         <ion-icon name="person"></ion-icon>
-                        <input name="apellido" type="text" id="apellido"  >
+                        <input name="apellido" type="text" id="apellido">
                         <label for="">Apellidos</label>
                     </div>
                     <div class="inputbox">
@@ -31,17 +31,19 @@
                     </div>
                     <div class="inputbox">
                         <ion-icon name="calendar"></ion-icon>
-                        <input name="fecha_nacimiento" type="date" id="nacimiento"  >
+                        <input name="fecha_nacimiento" type="date" id="nacimiento">
                     </div>
-                    <div class="inputbox"id="confirmarContraseñaBox">
-                        <ion-icon name="eye-off-outline" class="show-password" onclick="togglePassword('contraseña', this)"></ion-icon>
-                        <input name="contraseña" type="password" id="contraseña"  >
+                    <div class="inputbox" id="confirmarContraseñaBox">
+                        <ion-icon name="eye-off-outline" class="show-password"
+                            onclick="togglePassword('contraseña', this)"></ion-icon>
+                        <input name="contraseña" type="password" id="contraseña">
                         <label for="confirmarContraseña">Contraseña</label>
                     </div>
                     <div class="inputbox" id="confirmarContraseñaBox">
-                        <input type="password" name="confirmarContraseña" id="confirmarContraseña" >
+                        <input type="password" name="confirmarContraseña" id="confirmarContraseña">
                         <label for="confirmarContraseña">Confirmar Contraseña</label>
-                        <ion-icon name="eye-off-outline" class="show-password" onclick="togglePassword('confirmarContraseña', this)"></ion-icon>
+                        <ion-icon name="eye-off-outline" class="show-password"
+                            onclick="togglePassword('confirmarContraseña', this)"></ion-icon>
                     </div>
                     <button>Registrar</button>
                     <div class="register">
@@ -58,7 +60,7 @@
     <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'></script>
     <script>
 
-        
+
 
         async function validarFormulario(event) {
             event.preventDefault();
@@ -69,7 +71,7 @@
             const nacimiento = document.getElementById('nacimiento').value;
             const correo = document.getElementById('correo').value.trim();
             const confirmarContraseña = document.getElementById('confirmarContraseña').value;
-            
+
 
             if (!correo) {
                 Swal.fire({
@@ -79,9 +81,9 @@
                 });
                 return;
             }
-        
+
             try {
-                
+
                 const response = await fetch('http://localhost:4000/api/verificar-correo', {
                     method: 'POST',
                     headers: {
@@ -89,9 +91,9 @@
                     },
                     body: JSON.stringify({ correo })
                 });
-        
+
                 const result = await response.json();
-        
+
                 if (response.ok) {
                     Swal.fire({
                         icon: 'error',
@@ -99,16 +101,33 @@
                         text: 'Correo en uso.'
                     });
                     return;
-                }else {
+                } else {
                     next()
                 }
             } catch (error) {
                 console.error('El correo no existe');
             }
-        
-            // Validación del código
-            
-        
+
+         
+            // Calcular la edad
+            const fechaNacimiento = new Date(nacimiento);
+            const hoy = new Date();
+            const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+            const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+
+            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+                edad--; // Ajustar la edad si el cumpleaños no ha ocurrido este año
+            }
+
+            // Validar el rango de edad
+            if (edad < 8 || edad > 65) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'La edad debe estar entre 8 y 65 años.'
+                });
+                return;
+            }
             // Validación del código
             if (!nombre || !apellido || !contraseña || !correo) {
                 Swal.fire({
@@ -162,33 +181,33 @@
         }
     </script>
 
-<script>
+    <script>
     <% if (typeof alert !== 'undefined') { %>
-        Swal.fire({
-            icon: '<%= alertType %>',
-            title: '<%= alertType === "success" ? "¡Éxito!" : "¡Error!" %>',
-            text: '<%= alert %>',
-            confirmButtonText: 'Aceptar'
-        }).then(() => {
-            window.location = '/<%= ruta %>';  // Redirige después de cerrar la alerta
-        });
+            Swal.fire({
+                icon: '<%= alertType %>',
+                title: '<%= alertType === "success" ? "¡Éxito!" : "¡Error!" %>',
+                text: '<%= alert %>',
+                confirmButtonText: 'Aceptar'
+            }).then(() => {
+                window.location = '/<%= ruta %>';  // Redirige después de cerrar la alerta
+            });
     <% } %>
-</script>
+    </script>
 
 
 
-<script>
-    function togglePassword(inputId, icon) {
-        const input = document.getElementById(inputId);
-        if (input.type === "password") {
-            input.type = "text";
-            icon.name = "eye-outline";
-        } else {
-            input.type = "password";
-            icon.name = "eye-off-outline";
-        }
-    }
-</script>
+    <script>
+            function togglePassword(inputId, icon) {
+                const input = document.getElementById(inputId);
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.name = "eye-outline";
+                } else {
+                    input.type = "password";
+                    icon.name = "eye-off-outline";
+                }
+            }
+    </script>
 </body>
 
 </html>

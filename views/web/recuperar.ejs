@@ -13,7 +13,7 @@
     <section id="sec">
         <div class="form-box">
             <div class="form-value">
-                <form action="/enviar_codigo" method="POST">
+                <form action="/enviar_codigo" method="POST" onsubmit="enviarCodigo(event)">
                     <h2>Recuperar Contraseña</h2>
                     <div class="inputbox" id="emailBox">
                         <ion-icon name="mail-outline"></ion-icon>
@@ -30,7 +30,65 @@
     </section>
     <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'></script>
     <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'></script>
-
+    <script>
+        async function enviarCodigo(event) {
+            event.preventDefault();
+    
+            const email = document.getElementById('email').value.trim();
+    
+            // Validación de campo vacío
+            if (!email) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El correo electrónico es obligatorio.'
+                });
+                return;
+            }
+    
+            try {
+                // Enviar datos al controlador de la API
+                const response = await fetch('http://localhost:3000/enviar_codigo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+    
+                const resultado = await response.json();
+                
+                if (response.ok) {
+                    // Mostrar éxito y redirigir
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: resultado.mensaje,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = resultado.ruta; // Redirigir según lo indicado por la API
+                    });
+                } else {
+                    // Manejo de errores desde la API
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Correo no registrado'
+                    });
+                }
+            } catch (error) {
+                // Manejo de errores generales
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un problema con el servidor. Inténtalo más tarde.'
+                });
+            }
+        }
+    </script>
+    
+    
     <script>
         // Mostrar alerta si existe
         <% if (typeof alert !== 'undefined') { %>

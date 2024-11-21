@@ -49,29 +49,64 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'></script>
   <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js'></script>
+
   <script>
-
-        
-
     async function validarFormulario(event) {
         event.preventDefault();
-        const contraseña = document.getElementById('contraseña').value; 
+
+        const contraseña = document.getElementById('contraseña').value.trim();
         const correo = document.getElementById('correo').value.trim();
 
-
+        // Validación de campos vacíos
         if (!correo || !contraseña) {
-          Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Todos los campos son necesarios.'
-          });
-          return;
-      }
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Todos los campos son necesarios.'
+            });
+            return;
+        }
 
+        try {
+            // Enviar datos al controlador
+            const response = await fetch('http://localhost:3000/logueo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ correo, contraseña })
+            });
 
-       
-        // Envía el formulario después de que se cierre la alerta
-        document.getElementById('restablecerForm').submit();
+            // Procesar respuesta del controlador
+            const resultado = await response.json();
+
+            if (response.ok) {
+                // Mostrar éxito y redirigir
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Inicio de sesión exitoso',
+                    text: 'Redirigiendo...',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = resultado.ruta; // Redirige a la ruta del backend
+                });
+            } else {
+                // Manejo de errores desde el servidor
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: resultado.mensaje || 'Credenciales incorrectas. Intenta nuevamente.'
+                });
+            }
+        } catch (error) {
+            // Manejo de errores de conexión o excepciones
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema con el servidor. Intenta más tarde.'
+            });
+        }
     }
 
     function togglePassword(inputId, icon) {
@@ -85,6 +120,8 @@
         }
     }
 </script>
+
+
 
   <script>
   <% if (typeof alert !== 'undefined') { %>
