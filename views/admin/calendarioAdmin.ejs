@@ -192,13 +192,179 @@
         }
     });
 </script>
+<!-- Modal para actualizar evento -->
+<div class="modal fade" id="modalUpdateEvento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Editar Evento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formUpdateEvento" action="http://localhost:4000/api/actualizar_evento" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" id="idEventoUpdate" name="id" value="">
+
+                    <div class="form-group">
+                        <label for="nombre_eventoUpdate" class="col-sm-12 control-label">Nombre del Evento</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="nombre_eventoUpdate" name="nombre_evento" placeholder="Nombre del Evento">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcionUpdate" class="col-sm-12 control-label">Descripción</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" id="descripcionUpdate" name="descripcion" placeholder="Descripción del Evento" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ubicacionUpdate" class="col-sm-12 control-label">Ubicación</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="ubicacionUpdate" name="ubicacion" placeholder="Ubicación del Evento">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha_inicioUpdate" class="col-sm-12 control-label">Fecha de Inicio</label>
+                        <div class="col-sm-10">
+                            <input type="datetime-local" class="form-control" id="fecha_inicioUpdate" name="fecha_hora_inicio">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha_finUpdate" class="col-sm-12 control-label">Fecha de Fin</label>
+                        <div class="col-sm-10">
+                            <input type="datetime-local" class="form-control" id="fecha_finUpdate" name="fecha_hora_final">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="claseUpdate" class="col-sm-12 control-label">Curso</label>
+                        <div class="col-sm-10">
+                            <select name="id_curso" class="form-control" id="id_cursoUpdate" required>
+                                <% cursos.forEach(curso => { %>
+                                    <option value="<%= curso.id_curso %>" ><%= curso.nombre_curso %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estadoUpdate" class="col-sm-12 control-label">Estado</label>
+                        <div class="col-sm-10">
+                            <select name="estado" class="form-control" id="estadoUpdate" required>
+                                <option value="" disabled selected>Seleccione el estado</option>
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notificar" class="col-sm-12 control-label">Notificar a Usuarios</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="notificar" id="notificar" required>
+                                <option value="no">No</option>
+                                <option value="si">Sí</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="descripcionNotificacionDiv" style="display:none;">
+                        <label for="descripcion_notificacion" class="col-sm-12 control-label">Descripción de la Notificación</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" name="descripcion_notificacion" id="descripcion_notificacion" placeholder="Mensaje que será enviado a los usuarios" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="color_eventoUpdate" class="col-sm-12 control-label">Color del Evento</label>
+                        <div class="col-md-12">
+                            <input type="radio" name="color_evento" id="orangeUpdate" value="#FF5722">
+                            <label for="orangeUpdate" class="circu" style="background-color: #FF5722;"></label>
+
+                            <input type="radio" name="color_evento" id="amberUpdate" value="#FFC107">
+                            <label for="amberUpdate" class="circu" style="background-color: #FFC107;"></label>
+
+                            <input type="radio" name="color_evento" id="limeUpdate" value="#8BC34A">
+                            <label for="limeUpdate" class="circu" style="background-color: #8BC34A;"></label>
+
+                            <input type="radio" name="color_evento" id="tealUpdate" value="#009688">
+                            <label for="tealUpdate" class="circu" style="background-color: #009688;"></label>
+
+                            <input type="radio" name="color_evento" id="blueUpdate" value="#2196F3">
+                            <label for="blueUpdate" class="circu" style="background-color: #2196F3;"></label>
+
+                            <input type="radio" name="color_evento" id="indigoUpdate" value="#9c27b0">
+                            <label for="indigoUpdate" class="circu" style="background-color: #9c27b0;"></label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Actualizar Evento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function openModalUpdateEvento(evento) {
+        document.getElementById('idEventoUpdate').value = evento.id_evento;
+        document.getElementById('nombre_eventoUpdate').value = evento.nombre_evento;
+        document.getElementById('descripcionUpdate').value = evento.descripcion;
+        document.getElementById('ubicacionUpdate').value = evento.ubicacion;
+        document.getElementById('fecha_inicioUpdate').value = evento.fecha_hora_inicio;
+        document.getElementById('fecha_finUpdate').value = evento.fecha_hora_final;
+        document.getElementById('id_cursoUpdate').value = evento.id_curso; 
+        document.getElementById('estadoUpdate').value = evento.estado;
+        document.getElementById('notificar').value = evento.notificar;
+
+      
+        var notificarValue = evento.notificar;
+        var descripcionNotificacionDiv = document.getElementById('descripcionNotificacionDiv');
+        var descripcionNotificacionField = document.getElementById('descripcion_notificacion');
+
+        if (notificarValue === 'si') {
+            descripcionNotificacionDiv.style.display = 'block';  
+            descripcionNotificacionField.required = true;  
+            descripcionNotificacionField.value = evento.descripcion_notificacion;  
+        } else {
+            descripcionNotificacionDiv.style.display = 'none';  
+            descripcionNotificacionField.required = false;  
+        }
+    }
+
+  
+    document.getElementById('notificar').addEventListener('change', function() {
+        var notificarValue = this.value;
+        var descripcionNotificacionDiv = document.getElementById('descripcionNotificacionDiv');
+        var descripcionNotificacionField = document.getElementById('descripcion_notificacion');
+
+        if (notificarValue === 'si') {
+            descripcionNotificacionDiv.style.display = 'block';  
+            descripcionNotificacionField.required = true; 
+        } else {
+            descripcionNotificacionDiv.style.display = 'none'; 
+            descripcionNotificacionField.required = false;  
+            descripcionNotificacionField.value = '';  
+        }
+    });
+</script>
+
 
 <script type="text/javascript">
     $(document).ready(function () {
-        // Variable para controlar la apertura de la modal de eliminar
+ 
         let isDeleting = false;
 
-        // Inicialización de FullCalendar
+       
         var calendar = $('#calendar').fullCalendar({
             header: {
                 left: 'prev,next today',
@@ -210,9 +376,9 @@
         navLinks: true,
         editable: true,
         selectable: true, 
-        eventDisplay: 'block', // Mostrar eventos como bloques
-        dayMaxEvents: 4, // Máximo de eventos visibles
-        dayMaxEventRows: true, // Filas adicionales para más eventos
+        eventDisplay: 'block', 
+        dayMaxEvents: 4, 
+        dayMaxEventRows: true, 
         height: 'auto',
 
 
@@ -234,7 +400,7 @@
                                 ubicacion: event.ubicacion,
                               
                                 id_curso: event.id_curso,
-                                estado: event.estado // Agregar estado aquí
+                                estado: event.estado 
                             };
                         });
                         callback(events);
@@ -247,29 +413,28 @@
             },
 
             select: function (start, end) {
-                // Cargar el contenido del modal
+             
                 $('#modalNuevoEvento').load('/modalNuevoEvento', function () {
                     $('#exampleModal').modal('show');
 
-                    // Formatear las fechas de inicio y fin en el formato correcto
                     var fechaInicio = start.format('YYYY-MM-DD HH:mm');
                     var fechaFin = end.format('YYYY-MM-DD HH:mm');
 
-                    // Asignar las fechas al formulario
+              
                     $("input[name='fecha_inicio']").val(fechaInicio);
                     $("input[name='fecha_fin']").val(fechaFin);
 
-                    // Calcular la duración automáticamente
+                 
                   
                 });
             },
 
-            // Renderizar eventos con el botón de eliminar
+       
             eventRender: function (event, element) {
                 element.find(".fc-content").prepend("<span class='closeon material-icons'>&#xe5cd;</span>");
                 element.find(".closeon").on("click", function () {
                     $('#actualizarEvento').modal('hide');
-                    isDeleting = true; // Indicar que se está eliminando
+                    isDeleting = true; 
 
                     Swal.fire({
                         title: '¿Deseas borrar este evento?',
@@ -280,7 +445,7 @@
                         confirmButtonText: 'Sí, borrar',
                         cancelButtonText: 'Cancelar'
                     }).then((result) => {
-                        isDeleting = false; // Resetear variable después de la confirmación
+                        isDeleting = false; 
                         if (result.isConfirmed) {
                             $('#calendar').fullCalendar("removeEvents", event._id);
                             $.ajax({
@@ -297,9 +462,9 @@
                     });
                 });
             },
-            // Actualizar evento con drag & drop
+ 
             eventDrop: function (event) {
-                var idEvento = event._id; // Usamos el ID del evento
+                var idEvento = event._id; 
                 var start = event.start ? event.start.format('YYYY-MM-DDTHH:mm:ss') : '';
                 var end = event.end ? event.end.format('YYYY-MM-DDTHH:mm:ss') : start;
                 var fechaActual = moment().format('YYYY-MM-DDTHH:mm:ss');
@@ -307,33 +472,33 @@
                 // Validaciones de fechas
                 if (start < fechaActual) {
                     Swal.fire('Error', 'La fecha de inicio no puede ser anterior a la fecha actual.', 'error');
-                    $('#calendar').fullCalendar('refetchEvents'); // Refrescar los eventos para revertir el cambio
-                    return; // No permite el cambio
+                    $('#calendar').fullCalendar('refetchEvents'); 
+                    return; 
                 }
 
                 if (end < start) {
                     Swal.fire('Error', 'La fecha de finalización no puede ser anterior a la fecha de inicio.', 'error');
-                    $('#calendar').fullCalendar('refetchEvents'); // Refrescar los eventos para revertir el cambio
-                    return; // No permite el cambio
+                    $('#calendar').fullCalendar('refetchEvents'); 
+                    return; 
                 }
 
-                // Enviar solicitud AJAX para actualizar el evento
+              
                 $.ajax({
-                    url: `http://localhost:4000/api/actualizar_evento/${idEvento}`, // La URL del endpoint
+                    url: `http://localhost:4000/api/actualizar_evento/${idEvento}`, 
                     type: 'POST',
                     data: {
-                        fecha_hora_inicio: start,   // La nueva fecha de inicio
-                        fecha_hora_final: end,      // La nueva fecha de finalización
-                        id_curso: event.id_curso,   // Asegurarnos de enviar el id_curso al actualizar
-                        nombre_evento: event.title, // Aquí se pueden incluir otros campos si es necesario
-                        descripcion: event.description, // Descripción del evento
+                        fecha_hora_inicio: start,  
+                        fecha_hora_final: end,      
+                        id_curso: event.id_curso,  
+                        nombre_evento: event.title,
+                        descripcion: event.description, 
 
-                        ubicacion: event.location, // Ubicación del evento
-                        color_evento: event.color, // Color del evento
+                        ubicacion: event.location, 
+                        color_evento: event.color, 
            
-                        notificar: event.notificar, // Si se debe notificar
-                        descripcion_notificacion: event.descripcion_notificacion, // Descripción de la notificación (si aplica)
-                        estado: event.estado // Estado del evento
+                        notificar: event.notificar, 
+                        descripcion_notificacion: event.descripcion_notificacion, 
+                        estado: event.estado 
                     },
                     success: function (response) {
                         if (response.success) {
@@ -346,7 +511,7 @@
                         }
                     },
                     error: function (xhr) {
-                        // Error general si algo falla en la solicitud AJAX
+
                         Swal.fire('Error', 'Error al actualizar el evento: El curso ya tiene un evento programado en este rango de fechas ', 'error');
                         $('#calendar').fullCalendar('refetchEvents');
                     }
@@ -357,56 +522,39 @@
 
 
             eventClick: function (event) {
-                if (isDeleting) {
-                    return; // No abrir la modal de editar si se está eliminando
-                }
+    if (isDeleting) {
+        return;
+    }
+
+    $('#idEventoUpdate').val(event._id || '');
+    $('#nombre_eventoUpdate').val(event.title || '');
+    $('#descripcionUpdate').val(event.descripcion || '');
+    $('#ubicacionUpdate').val(event.ubicacion || '');
+
+    var fechaInicio = event.start ? moment(event.start).format('YYYY-MM-DD HH:mm') : '';
+    var fechaFin = event.end ? moment(event.end).format('YYYY-MM-DD HH:mm') : '';
 
 
+    $('#fecha_inicioUpdate').val(fechaInicio);
+    $('#fecha_finUpdate').val(fechaFin);
 
-                // Eliminar el modal existente si ya está presente
-                $('#modalUpdateEvento').remove();
+  
+    $('#estadoUpdate').val(event.estado || ''); 
 
-                // Realizar una solicitud para obtener el contenido del modal
-                $.get('/modalUpdateEvento', { id: event._id }, function (response) {
-                    // Mostrar el modal
-                    $('body').append(response);
-                    $('#modalUpdateEvento').modal('show');
-                    $('#id_curso').val(event.id_curso || '');
+    $('#id_cursoUpdate').val(event.id_curso || '');
 
-
-                    // Rellenar los campos del modal con los datos del evento
-                    $('#idEventoUpdate').val(event._id || '');
-                    $('#nombre_eventoUpdate').val(event.title || '');
-                    $('#descripcionUpdate').val(event.descripcion || '');
-
-                    $('#ubicacionUpdate').val(event.ubicacion || '');
+    
+    if (event.notificar === 'sí') {
+        $('#notificacion_description').show(); 
+    } else {
+        $('#notificacion_description').hide(); 
+    }
 
 
+    $('body').append($('#modalUpdateEvento').clone()); 
+    $('#modalUpdateEvento').modal('show');
+}
 
-                    // Formatear las fechas a 'YYYY-MM-DD HH:mm' antes de asignarlas al campo
-                    var fechaInicio = event.start ? moment(event.start).format('YYYY-MM-DD HH:mm') : '';
-                    var fechaFin = event.end ? moment(event.end).format('YYYY-MM-DD HH:mm') : '';
-
-                    // Asignar las fechas formateadas al modal
-                    $('#fecha_inicioUpdate').val(fechaInicio);
-                    $('#fecha_finUpdate').val(fechaFin);
-
-
-
-                    // Rellenar los otros campos del modal
-              
-                
-                    $('#estadoUpdate').val(event.estado || ''); // Si el estado es parte del evento
-
-                    // Función para calcular la duración automáticamente
-           
-
-                }).fail(function () {
-                    Swal.fire('Error', 'Error al cargar el contenido del modal', 'error');
-                });
-
-
-            }
         });
 
         // Manejo del formulario de creación de eventos
