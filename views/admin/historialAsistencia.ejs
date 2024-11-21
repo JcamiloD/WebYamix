@@ -18,10 +18,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h3 class="card-title">Asistencia</h3>
-                                    <button class="btn btn-outline-secondary btn-fw" data-toggle="modal" data-target="#addModal">
-                                        <i class="fas fa-plus"></i> Agregar
-                                    </button>
+                                    <h3 class="card-title">Historial de la Asistencia</h3>
                                 </div>
                                 <div class="table-responsive">
                                     <table id="miTabla" class="table table-bordered">
@@ -37,40 +34,41 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% 
-                                            const hoy = new Date();
-                                            const haceUnMes = new Date();
-                                            haceUnMes.setMonth(hoy.getMonth() - 1);
-                                    
-                                            const asistenciasFiltradas = dataAsistencias.filter(asistencia => {
-                                                const fechaAsistencia = new Date(asistencia.fecha_asistencia);
-                                                return fechaAsistencia <= hoy && fechaAsistencia >= haceUnMes;
-                                            });
-                                            %>
-                                            <% if (asistenciasFiltradas.length > 0) { %>
-                                                <% asistenciasFiltradas.forEach(function(asistencia) { %>
+                                            <% if (dataAsistencias && dataAsistencias.length > 0) { %>
+                                                <% 
+                                                const fechaLimite = new Date();
+                                                fechaLimite.setMonth(fechaLimite.getMonth() - 1); // Hace un mes
+                                                dataAsistencias
+                                                    .filter(asistencia => new Date(asistencia.fecha_asistencia) < fechaLimite) // Filtra los registros
+                                                    .forEach(function(asistencia) { 
+                                                %>
                                                 <tr>
                                                     <td><%= asistencia.nombre_curso %></td>
                                                     <td>
-                                                        <% 
-                                                        const fechaAsistencia = new Date(asistencia.fecha_asistencia);
-                                                        const dia = fechaAsistencia.getDate();
-                                                        const mes = fechaAsistencia.toLocaleString('es-ES', { month: 'long' }).charAt(0).toUpperCase() + fechaAsistencia.toLocaleString('es-ES', { month: 'long' }).slice(1);
-                                                        const año = fechaAsistencia.getFullYear();
-                                                        const fechaFinal = `${dia} de ${mes} del ${año}`;
-                                                        %>
-                                                        <%= fechaFinal %>
+                                                        <% if (asistencia.fecha_asistencia) { %>
+                                                            <% 
+                                                                const fechaAsistencia = new Date(asistencia.fecha_asistencia);
+                                                                const dia = fechaAsistencia.getDate();
+                                                                const mes = fechaAsistencia.toLocaleString('es-ES', { month: 'long' }).charAt(0).toUpperCase() + fechaAsistencia.toLocaleString('es-ES', { month: 'long' }).slice(1);
+                                                                const año = fechaAsistencia.getFullYear();
+                                                                const fechaFinal = `${dia} de ${mes} del ${año}`;
+                                                            %>
+                                                            <%= fechaFinal %>
+                                                        <% } else { %>
+                                                            Sin fecha de asistencia
+                                                        <% } %>
                                                     </td>
                                                     <td>
                                                         <% if (asistencia.hora_inicio) { %>
                                                             <% 
-                                                            const horaInicio = new Date(`1970-01-01T${asistencia.hora_inicio}`);
-                                                            let horaInicioFormatted = horaInicio.getHours();
-                                                            let minutosInicio = horaInicio.getMinutes();
-                                                            const ampmInicio = horaInicioFormatted >= 12 ? 'p.m.' : 'a.m.';
-                                                            horaInicioFormatted = horaInicioFormatted % 12 || 12;
-                                                            minutosInicio = minutosInicio < 10 ? '0' + minutosInicio : minutosInicio;
-                                                            const horaInicioFinal = `${horaInicioFormatted}:${minutosInicio} ${ampmInicio}`;
+                                                                const horaInicio = new Date(`1970-01-01T${asistencia.hora_inicio}`);
+                                                                let horaInicioFormatted = horaInicio.getHours();
+                                                                let minutosInicio = horaInicio.getMinutes();
+                                                                const ampmInicio = horaInicioFormatted >= 12 ? 'p.m.' : 'a.m.';
+                                                                horaInicioFormatted = horaInicioFormatted % 12;
+                                                                horaInicioFormatted = horaInicioFormatted ? horaInicioFormatted : 12;
+                                                                minutosInicio = minutosInicio < 10 ? '0' + minutosInicio : minutosInicio;
+                                                                const horaInicioFinal = `${horaInicioFormatted}:${minutosInicio} ${ampmInicio}`;
                                                             %>
                                                             <%= horaInicioFinal %>
                                                         <% } else { %>
@@ -80,19 +78,20 @@
                                                     <td>
                                                         <% if (asistencia.hora_final) { %>
                                                             <% 
-                                                            const horaFinal = new Date(`1970-01-01T${asistencia.hora_final}`);
-                                                            let horaFinalFormatted = horaFinal.getHours();
-                                                            let minutosFinal = horaFinal.getMinutes();
-                                                            const ampmFinal = horaFinalFormatted >= 12 ? 'p.m.' : 'a.m.';
-                                                            horaFinalFormatted = horaFinalFormatted % 12 || 12;
-                                                            minutosFinal = minutosFinal < 10 ? '0' + minutosFinal : minutosFinal;
-                                                            const horaFinalFormattedFinal = `${horaFinalFormatted}:${minutosFinal} ${ampmFinal}`;
+                                                                const horaFinal = new Date(`1970-01-01T${asistencia.hora_final}`);
+                                                                let horaFinalFormatted = horaFinal.getHours();
+                                                                let minutosFinal = horaFinal.getMinutes();
+                                                                const ampmFinal = horaFinalFormatted >= 12 ? 'p.m.' : 'a.m.';
+                                                                horaFinalFormatted = horaFinalFormatted % 12;
+                                                                horaFinalFormatted = horaFinalFormatted ? horaFinalFormatted : 12;
+                                                                minutosFinal = minutosFinal < 10 ? '0' + minutosFinal : minutosFinal;
+                                                                const horaFinalFormattedFinal = `${horaFinalFormatted}:${minutosFinal} ${ampmFinal}`;
                                                             %>
                                                             <%= horaFinalFormattedFinal %>
                                                         <% } else { %>
                                                             Sin hora final
                                                         <% } %>
-                                                    </td>
+                                                    </td>                                                                                                      
                                                     <td><%= asistencia.nombre_instructor %></td>
                                                     <td>
                                                         <button class="button-iconn" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal" data-id="<%= asistencia.id_asistencia %>">
@@ -115,16 +114,16 @@
                                                 <% }) %>
                                             <% } else { %>
                                                 <tr>
-                                                    <td colspan="8" class="text-center">No hay asistencias en el rango de fechas especificado</td>
+                                                    <td colspan="8" class="text-center">No hay asistencias disponibles</td>
                                                 </tr>
                                             <% } %>
                                         </tbody>
-                                    </table>                                                                                                          
+                                    </table>                                                                                                            
                                 </div>
-                                <!-- Botón para Ver Historial -->
+                                <!-- Botón para Regresar -->
                                 <div class="d-flex justify-content-between mt-3">
-                                    <a href="/historialAsistencia" class="btn btn-outline-primary">
-                                        <i class="fas fa-history"></i> Ver Historial
+                                    <a href="/asistencia" class="btn btn-outline-primary">
+                                        <i class="fas fa-arrow-left"></i> Regresar
                                     </a>
                                 </div>
                             </div>
@@ -161,64 +160,6 @@
                         </div>
                     </div>
 
-
-                    <!-- Modal para agregar asistencia -->
-                    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="addModalLabel">Agregar Asistencia</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="addForm">
-                                        <div class="form-group">
-                                            <label for="fecha_asistencia">Fecha:</label>
-                                            <input type="date" class="form-control" id="fecha_asistencia" name="fecha_asistencia" required>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="id_clase">Clase:</label>
-                                            <select class="form-control" id="id_clase" name="id_clase" required>
-                                                <option value="" disabled selected>Seleccione una clase</option>
-                                                <% if (dataClases && dataClases.length) { %>
-                                                    <% dataClases.forEach(function(clase) { 
-                                                        if (clase.estado === 'activo') {
-                                                            function formatTimeTo12Hour(time) {
-                                                                let [hours, minutes] = time.split(":");
-                                                                let suffix = hours >= 12 ? "p.m." : "a.m.";
-                                                                hours = hours % 12 || 12; // Convertir a formato 12 horas
-                                                                return `${hours}:${minutes} ${suffix}`;
-                                                            }
-
-                                                            let startTime = formatTimeTo12Hour(clase.hora_inicio);
-                                                            let endTime = formatTimeTo12Hour(clase.hora_final);
-                                                    %>
-                                                            <option value="<%= clase.id_clase %>">
-                                                                <%= clase.nombre_curso %> - <%= startTime %> a <%= endTime %>
-                                                            </option>
-                                                    <% 
-                                                        } 
-                                                    }); %>
-                                                <% } else { %>
-                                                    <option value="">No hay clases disponibles</option>
-                                                <% } %>
-                                            </select>
-                                        </div>                                                                                                                        
-
-                                        <div id="estudiantes_container" class="form-group">
-                                            <!-- Los checkboxes de estudiantes se agregarán aquí -->
-                                        </div>
-
-                                        <button type="submit" class="btn btn-dark">Agregar Asistencia</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Modal para editar la fecha de la asistencia -->
                     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
@@ -245,14 +186,11 @@
                             </div>
                         </div>
                     </div>
-
-
-                    
-                    
                 </div>
             </div>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Obtener la fecha actual en formato 'YYYY-MM-DD'
@@ -262,45 +200,28 @@
             const todayString = today.toISOString().split('T')[0];  // 'YYYY-MM-DD'
     
             // Configurar el atributo 'max' en los campos de fecha
-            const fechaAsistencia = document.getElementById('fecha_asistencia');
             const editFecha = document.getElementById('editFecha');
-    
-            if (fechaAsistencia) {
-                fechaAsistencia.setAttribute('max', todayString);
-            }
     
             if (editFecha) {
                 editFecha.setAttribute('max', todayString);
             }
-    
-            // Validación adicional al intentar enviar el formulario
-            document.getElementById('addForm').addEventListener('submit', function (event) {
-                const fechaSeleccionada = fechaAsistencia.value;
-    
-                if (fechaSeleccionada > todayString) {
-                    alert('La fecha de asistencia no puede ser en el futuro.');
-                    event.preventDefault();  // Detener el envío del formulario si la fecha es incorrecta
-                }
-            });
         });
     </script>
-    
-    
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Llenar las clases en el select dinámicamente
             document.getElementById('id_clase').addEventListener('change', async function () {
                 const idClase = this.value;
-                
+    
                 try {
                     const response = await fetch(`http://localhost:4000/api/claseEstudiante/${idClase}`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
-                    
+    
                     const estudiantes = await response.json();
-                    
+    
                     // Limpiar la lista de estudiantes
                     const estudiantesContainer = document.getElementById('estudiantes_container');
                     if (!estudiantesContainer) {
@@ -308,7 +229,7 @@
                         return;
                     }
                     estudiantesContainer.innerHTML = '';
-                    
+    
                     // Llenar la lista con los estudiantes obtenidos
                     estudiantes.forEach(estudiante => {
                         const checkboxHtml = `
@@ -325,66 +246,13 @@
                     console.error('Error al obtener los estudiantes:', error);
                 }
             });
-            
-            document.getElementById('addForm').addEventListener('submit', async function (event) {
-                event.preventDefault();
-    
-                const id_clase = document.getElementById('id_clase').value;
-                const fecha_asistencia = document.getElementById('fecha_asistencia').value;
-                
-                // Obtener los estudiantes de los checkboxes seleccionados
-                const allCheckboxes = document.querySelectorAll('input[name="estudiantes"]');
-                const estudiantes = Array.from(allCheckboxes).map(checkbox => ({
-                    id_usuario: checkbox.dataset.estudianteId, // Usamos el data-estudiante-id para obtener el ID
-                    presente: checkbox.checked ? 1 : 0
-                }));
-                
-                // Verificar que los campos no estén vacíos
-                if (!id_clase || !fecha_asistencia) {
-                    alert('Por favor, complete todos los campos.');
-                    return;
-                }
-    
-                const data = {
-                    id_clase,
-                    fecha_asistencia,
-                    estudiantes
-                };
-                
-                try {
-                    const response = await fetch('/crear_asistencia', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    });
-    
-                    const result = await response.json();
-                    if (!response.ok) {
-                        throw new Error(result.message || 'Error en el servidor');
-                    }
-                    
-                    alert(result.message);
-    
-                    // Limpiar el formulario y la lista de estudiantes
-                    document.getElementById('addForm').reset();
-                    document.getElementById('estudiantes_container').innerHTML = '';
-                    
-                    window.location.reload();
-                } catch (error) {
-                    console.error('Error al enviar datos:', error);
-                    alert('Error al enviar datos: ' + error.message);
-                }
-            });
         });
-    </script>    
-    
+    </script>
     
     <script>
         $(document).ready(function() {
             $('#miTabla').DataTable();
-            
+    
             // Modal para editar estudiantes por asistencia
             $('#editEstudiantesModal').on('show.bs.modal', async function(event) {
                 const button = $(event.relatedTarget); // Capturar el botón que abrió la modal
@@ -486,63 +354,63 @@
         });
     </script>
     
+    <script>
+        $(document).ready(function() {
+            // Abrir la modal para editar la fecha de la asistencia
+            $('#editModal').on('show.bs.modal', function(event) {
+                const button = $(event.relatedTarget); // Obtener el botón que abrió la modal
     
-<script>
-    $(document).ready(function() {
-        // Abrir la modal para editar la fecha de la asistencia
-        $('#editModal').on('show.bs.modal', function(event) {
-            const button = $(event.relatedTarget); // Obtener el botón que abrió la modal
-
-            // Verificar los datos que estamos obteniendo del botón
-            const id_asistencia = button.data('id');
-            const fecha_asistencia = button.data('fecha-asistencia');
-            console.log('ID Asistencia:', id_asistencia);  // Verifica el valor del ID
-            console.log('Fecha Asistencia:', fecha_asistencia);  // Verifica el valor de la fecha
-
-            // Asegurarse de que los valores existen antes de asignarlos a los campos
-            if (id_asistencia && fecha_asistencia) {
-                document.getElementById('editId').value = id_asistencia; // Establecer el id de la asistencia
-                document.getElementById('editFecha').value = fecha_asistencia.split('T')[0]; // Asignar la fecha directamente
-            } else {
-                console.error('No se obtuvieron los datos correctamente del botón');
-            }
-        });
-
-        // Manejar la acción de guardar los cambios
-        $('#editForm').on('submit', async function(event) {
-            event.preventDefault();
-
-            const id_asistencia = document.getElementById('editId').value;
-            const fecha_asistencia = document.getElementById('editFecha').value;
-
-            try {
-                // Enviar los datos actualizados a la API
-                const response = await fetch(`http://localhost:4000/api/actualizar_asistencia/${id_asistencia}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ fecha_asistencia }) // Solo la fecha
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error al actualizar la fecha de la asistencia');
+                // Verificar los datos que estamos obteniendo del botón
+                const id_asistencia = button.data('id');
+                const fecha_asistencia = button.data('fecha-asistencia');
+                console.log('ID Asistencia:', id_asistencia);  // Verifica el valor del ID
+                console.log('Fecha Asistencia:', fecha_asistencia);  // Verifica el valor de la fecha
+    
+                // Asegurarse de que los valores existen antes de asignarlos a los campos
+                if (id_asistencia && fecha_asistencia) {
+                    document.getElementById('editId').value = id_asistencia; // Establecer el id de la asistencia
+                    document.getElementById('editFecha').value = fecha_asistencia.split('T')[0]; // Asignar la fecha directamente
+                } else {
+                    console.error('No se obtuvieron los datos correctamente del botón');
                 }
-
-                const result = await response.json();
-                alert(result.message); // Mostrar mensaje de éxito
-                $('#editModal').modal('hide'); // Cerrar la modal
-
-                // Recargar la página después de guardar los cambios
-                location.reload(); // Esto recargará la página
-
-            } catch (error) {
-                console.error('Error al guardar los cambios:', error);
-                alert('Error al guardar los cambios');
-            }
+            });
+    
+            // Manejar la acción de guardar los cambios
+            $('#editForm').on('submit', async function(event) {
+                event.preventDefault();
+    
+                const id_asistencia = document.getElementById('editId').value;
+                const fecha_asistencia = document.getElementById('editFecha').value;
+    
+                try {
+                    // Enviar los datos actualizados a la API
+                    const response = await fetch(`http://localhost:4000/api/actualizar_asistencia/${id_asistencia}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ fecha_asistencia }) // Solo la fecha
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error('Error al actualizar la fecha de la asistencia');
+                    }
+    
+                    const result = await response.json();
+                    alert(result.message); // Mostrar mensaje de éxito
+                    $('#editModal').modal('hide'); // Cerrar la modal
+    
+                    // Recargar la página después de guardar los cambios
+                    location.reload(); // Esto recargará la página
+    
+                } catch (error) {
+                    console.error('Error al guardar los cambios:', error);
+                    alert('Error al guardar los cambios');
+                }
+            });
         });
-    });
-</script>
+    </script>
+    
 
     
     

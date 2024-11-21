@@ -131,7 +131,7 @@
                                                 <th>Rol</th>
                                                 <th>Gmail</th>
                                                 <th>Fecha de nacimiento</th>
-                                                <th>Fecha de pagos</th>
+                                                <!-- <th>Fecha de pagos</th> -->
                                                 <th>Estado</th>
                                                 <th>Acción</th>
                                             </tr>
@@ -179,14 +179,15 @@
                                                             <% } else { %>
                                                                 Sin fecha de nacimiento
                                                             <% } %>
-                                                        </td>                                                        
-                                                        <td>
+                                                        </td>   
+                                                        <!--- Boton de pagos-->                                                     
+                                                        <!-- <td>
                                                             <% if (usuario.pagos) { %>
                                                                 <%= `Días ${new Date(usuario.pagos).getDate()}` %>
                                                             <% } else { %>
                                                                 Sin pagos
                                                             <% } %>
-                                                        </td>
+                                                        </td> -->
                                                         <td><%= usuario.estado.charAt(0).toUpperCase() + usuario.estado.slice(1).toLowerCase() %></td>
                                                         <td>
                                                             <!-- Botón para editar -->
@@ -255,107 +256,107 @@
                     
                     
                     <!-- Modal editar -->
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Editar Usuario</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="editForm" method="post" action="/editar_usuario">
-                    <input type="hidden" name="id_usuario" id="editIdUsuario" />
-                    <div class="form-group row">
-                        <label for="editRol" class="col-sm-3 col-form-label">Rol</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" name="id_rol" id="editRol" required>
-                                <% if (roles && roles.length) { %>
-                                    <% roles.forEach(function(rol) { %>
-                                        <option value="<%= rol.id_rol %>">
-                                            <%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %>
-                                        </option>
-                                    <% }); %>
-                                <% } else { %>
-                                    <option value="">No hay roles disponibles</option>
-                                <% } %>
-                            </select>
-                        </div>
-                    </div>
+                    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel">Editar Usuario</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="editForm" method="post" action="/editar_usuario">
+                                        <input type="hidden" name="id_usuario" id="editIdUsuario" />
+                                        <div class="form-group row">
+                                            <label for="editRol" class="col-sm-3 col-form-label">Rol</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" name="id_rol" id="editRol" required>
+                                                    <% if (roles && roles.length) { %>
+                                                        <% roles.forEach(function(rol) { %>
+                                                            <option value="<%= rol.id_rol %>">
+                                                                <%= rol.nombre_rol.charAt(0).toUpperCase() + rol.nombre_rol.slice(1).toLowerCase() %>
+                                                            </option>
+                                                        <% }); %>
+                                                    <% } else { %>
+                                                        <option value="">No hay roles disponibles</option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        </div>
 
-                    <div class="form-group row">
-                        <label for="editNombre" class="col-sm-3 col-form-label">Nombre</label>
-                        <div class="col-sm-9">
-                            <input type="text" name="nombre" class="form-control" id="editNombre" placeholder="Nombre" required>
-                        </div>
-                    </div>
+                                        <div class="form-group row">
+                                            <label for="editNombre" class="col-sm-3 col-form-label">Nombre</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="nombre" class="form-control" id="editNombre" placeholder="Nombre" required>
+                                            </div>
+                                        </div>
 
-                    <div class="form-group row">
-                        <label for="editApellido" class="col-sm-3 col-form-label">Apellidos</label>
-                        <div class="col-sm-9">
-                            <input type="text" name="apellido" class="form-control" id="editApellido" placeholder="Apellidos" required>
-                        </div>
-                    </div>
+                                        <div class="form-group row">
+                                            <label for="editApellido" class="col-sm-3 col-form-label">Apellidos</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="apellido" class="form-control" id="editApellido" placeholder="Apellidos" required>
+                                            </div>
+                                        </div>
 
-                    <div class="form-group row">
-                        <label for="editFechaNacimiento" class="col-sm-3 col-form-label">Fecha de nacimiento</label>
-                        <div class="col-sm-9">
-                            <input type="date" name="fecha_nacimiento" class="form-control" id="editFechaNacimiento" required>
-                            <div id="editEdadError" class="invalid-feedback" style="display: none;">
-                                La edad debe estar entre 8 y 65 años.
+                                        <div class="form-group row">
+                                            <label for="editFechaNacimiento" class="col-sm-3 col-form-label">Fecha de nacimiento</label>
+                                            <div class="col-sm-9">
+                                                <input type="date" name="fecha_nacimiento" class="form-control" id="editFechaNacimiento" required>
+                                                <div id="editEdadError" class="invalid-feedback" style="display: none;">
+                                                    La edad debe estar entre 8 y 65 años.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="editCorreo" class="col-sm-3 col-form-label">Correo</label>
+                                            <div class="col-sm-9">
+                                                <input type="email" name="correo" class="form-control" id="editCorreo" placeholder="Correo" required>
+                                                <div id="editCorreoError" class="invalid-feedback" style="display: none;">
+                                                    El correo ya está en uso.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="editEstado" class="col-sm-3 col-form-label">Estado</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" id="editEstado" name="estado" required>
+                                                    <option value="espera">Espera</option>
+                                                    <option value="habilitado">Habilitado</option>
+                                                    <option value="deshabilitado">Deshabilitado</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Documentación y Pagos -->
+                                        <div class="form-group row" id="documentacionRow" style="display:none;">
+                                            <label for="editDocumentacion" class="col-sm-3 col-form-label">Documentación</label>
+                                            <div class="col-sm-3">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="editDocumentacion" name="documentacion" value="1">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row" id="pagosRow" style="display:none;">
+                                            <label for="editPagos" class="col-sm-3 col-form-label">Pagos</label>
+                                            <div class="col-sm-3">
+                                                <input type="date" name="pagos" class="form-control" id="editPagos">
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-dark">Guardar Cambios</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="form-group row">
-                        <label for="editCorreo" class="col-sm-3 col-form-label">Correo</label>
-                        <div class="col-sm-9">
-                            <input type="email" name="correo" class="form-control" id="editCorreo" placeholder="Correo" required>
-                            <div id="editCorreoError" class="invalid-feedback" style="display: none;">
-                                El correo ya está en uso.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="editEstado" class="col-sm-3 col-form-label">Estado</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" id="editEstado" name="estado" required>
-                                <option value="espera">Espera</option>
-                                <option value="habilitado">Habilitado</option>
-                                <option value="deshabilitado">Deshabilitado</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Documentación y Pagos -->
-                    <div class="form-group row" id="documentacionRow" style="display:none;">
-                        <label for="editDocumentacion" class="col-sm-3 col-form-label">Documentación</label>
-                        <div class="col-sm-3">
-                            <label class="switch">
-                                <input type="checkbox" id="editDocumentacion" name="documentacion" value="1">
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="pagosRow" style="display:none;">
-                        <label for="editPagos" class="col-sm-3 col-form-label">Pagos</label>
-                        <div class="col-sm-3">
-                            <input type="date" name="pagos" class="form-control" id="editPagos">
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-dark mr-2" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-dark">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 
                     
@@ -531,6 +532,9 @@
                         const fechaPagosText = document.getElementById('fechaPagosText');
                         const fechaPagosMensaje = document.getElementById('fechaPagosMensaje');
                         
+                        // Expresión regular para la contraseña
+                        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&])[A-Za-z\d!@#$%^&*]{6,}$/;
+                
                         // Validación de contraseñas
                         togglePassword.addEventListener("click", function () {
                             const type = passwordField.type === "password" ? "text" : "password";
@@ -621,6 +625,13 @@
                                 errorMessage.style.display = 'block';
                                 return;
                             }
+                
+                            // Verifica que la contraseña cumpla con la expresión regular
+                            if (!passwordRegex.test(contrasena)) {
+                                errorMessage.innerText = 'La contraseña debe contener al menos una letra, un número y un carácter especial.';
+                                errorMessage.style.display = 'block';
+                                return;
+                            }
                         
                             // Validar la edad antes de enviar el formulario
                             if (!validateAge()) {
@@ -674,7 +685,7 @@
                             });
                         });
                     });
-                </script>
+                </script>                
                           
             
 
