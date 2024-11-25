@@ -220,3 +220,19 @@ exports.actualizarEstudiantesPorClase = async (req, res) => {
         res.status(500).json({ error: 'Error al actualizar estudiantes' });
     }
 };
+exports.traerPara = async (req, res) => {
+    try {
+        const response = await fetch(`${process.env.pathApi}/traer_Para`); // Cambia la URL según la API
+        const data = await response.json();
+
+        if (response.ok) {
+            return res.status(200).json(data); // Enviar los datos obtenidos como respuesta JSON
+        } else {
+            console.error('Error al traer datos:', data);
+            return res.status(response.status).json({ message: data.message || 'Error al traer los datos' });
+        }
+    } catch (error) {
+        console.error('Error al obtener datos de la API:', error);
+        return res.status(500).json({ message: 'Error interno al obtener los datos' });
+    }
+};

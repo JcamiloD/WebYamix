@@ -1,172 +1,428 @@
-<!DOCTYPE HTML>
-<!--
-	Solid State by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-	<title>YAMIX</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<link rel="stylesheet" href="css/main.css" />
-	<noscript>
-		<link rel="stylesheet" href="css/noscript.css" />
-	</noscript>
-	
+    <meta charset="utf-8">
+    <title>YAMIX</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free Website Template" name="keywords">
+    <meta content="Free Website Template" name="description">
+
+    <!-- Favicon -->
+    <link href="c/img/favicon.ico" rel="icon">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Flaticon Font -->
+    <link href="lib/flaticon/font/flaticon.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="c/css/style.min.css" rel="stylesheet">
+        <!-- Calendario scripts -->
+         
 </head>
 
-<body class="is-preload">
-
-	<!-- Page Wrapper -->
-	<div id="page-wrapper">
-
-		<!-- Header -->
-		<header id="header" class="alt">
-			<h1><a href="#">YAMIX</a></h1>
-			<nav>
-				<a href="#menu">Menú</a>
-			</nav>
-		</header>
-
-		<!-- Menu -->
-		<nav id="menu">
-            <div class="inner">
-                <h2>Menu</h2>
-                <ul class="links">
-                    <% if (permisos && permisos.includes('perfil')) { %>
-                    <li><a href="/perfil">Perfil</a></li>
+<body class="bg-white">
+   <!-- Navbar Start -->
+<div class="container-fluid p-0 nav-bar">
+    <nav class="navbar navbar-expand-lg bg-none navbar-dark py-3">
+        <a href="" class="navbar-brand">
+            <h1 class="m-0 display-4 font-weight-bold text-uppercase text-white">YAMIX</h1>
+        </a>
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+            <div class="navbar-nav ml-auto p-4 bg-secondary">
+                <% if (!permisos || permisos.length === 0) { %>
+                    <!-- Enlaces para usuarios no autenticados -->
+                    <a href="/login" class="nav-item nav-link">Iniciar Sesión</a>
+                    <a href="/register" class="nav-item nav-link">Inscribirme</a>
+                    <a href="/" class="nav-item nav-link">Home</a>
+                    <a href="/about" class="nav-item nav-link">Nosotros</a>
+                    <a href="/clases" class="nav-item nav-link active">Clases</a>
+                <% } else { %>
+                    <!-- Enlaces para usuarios autenticados -->
+                    <% if (permisos.includes('perfil')) { %>
+                        <a href="/perfil" class="nav-item nav-link">Perfil</a>
                     <% } %>
-                    <% if (permisos && permisos.includes('calendario estudiante' || 'calendario profesor')) { %>
-                        <li><a href="/calendarioUser">Calendario</a></li>
+                    <% if (permisos.includes('calendario estudiante') || permisos.includes('calendario profesor')) { %>
+                        <a href="/calendarioUser" class="nav-item nav-link">Calendario</a>
                     <% } %>
-                    <% if (permisos && permisos.includes('dashboard')) { %>
-                    <li><a href="/dashboard">Dashboard</a></li>
+                    <% if (permisos.includes('dashboard')) { %>
+                        <a href="/dashboard" class="nav-item nav-link">Dashboard</a>
                     <% } %>
-                    <% if (permisos && permisos.includes('catalogo estudiante')) { %>
-                    <li><a href="/catalogouser">Catalogo</a></li>
+                    <% if (permisos.includes('catalogo estudiante')) { %>
+                        <a href="/catalogouser" class="nav-item nav-link">Catálogo</a>
                     <% } %>
-                    <% if (permisos && permisos.includes('asistencia profesor')) { %>
-                        <li><a href="/asistenciaProfe">Asistencia</a></li>
+                    <% if (permisos.includes('asistencia profesor')) { %>
+                        <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
                     <% } else if (Array.isArray(permisos) && permisos.length > 0) { %>
-                        <li><a href="/asistenciaUser">Asistencia</a></li>
+                        <a href="/asistenciaUser" class="nav-item nav-link">Asistencia</a>
                     <% } %>
-                    
-                    
-                    
-                    <% if (!permisos || permisos.length === 0) { %>
-                        <li><a href="/login">Iniciar Sesión</a></li>
-                        <li><a href="/register">Inscribirme</a></li>
-                    <% } %>
-                    <% if (!permisos || permisos.length > 0) { %>
-                    <li><a href="#" id="logout-link">Salir</a></li>
-                    <% } %>
-                </ul>
-                <a href="#" class="close">Close</a>
+                    <a href="#" id="logout-link" class="nav-item nav-link">Salir</a>
+                <% } %>
             </div>
-        </nav>
+        </div>
+    </nav>
+</div>
+<!-- Navbar End -->
 
-		<!-- Banner -->
-		<section id="banner">
-			<div class="inner">
-				<div class="logo"><img src="img/icon.jpg" class="icon"></div>
-				<h2>Esto es YAMIX</h2>
-				<p>Fortaleza en cada golpe, equilibrio en cada paso: ¡Artes Marciales, el camino hacia tu mejor versión.
-				</p>
-			</div>
-		</section>
 
-		<!-- Wrapper -->
-		<section id="wrapper">
+    <!-- Carousel Start -->
+    <div class="container-fluid p-0">
+        <div id="blog-carousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="w-100" src="c/img/carousel-1.jpg" alt="Image">
+                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <h3 class="text-primary text-capitalize m-0">Yamix - academia</h3>
+                        <h2 class="display-2 m-0 mt-2 mt-md-4 text-white font-weight-bold text-capitalize">¿Quieres Mejorarte?</h2>
+                        <a href="/register" class="btn btn-lg btn-outline-light mt-3 mt-md-5 py-md-3 px-md-5">Inscribete</a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img class="w-100" src="c/img/carousel-2.jpg" alt="Image">
+                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <h3 class="text-primary text-capitalize m-0">Yamix - academia</h3>
+                        <h2 class="display-2 m-0 mt-2 mt-md-4 text-white font-weight-bold text-capitalize"> ¿Quieres aprender?</h2>
+                        <a href="/register" class="btn btn-lg btn-outline-light mt-3 mt-md-5 py-md-3 px-md-5">Inscribete</a>
+                    </div>
+                </div>
+            </div>
+            <a class="carousel-control-prev" href="#blog-carousel" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="#blog-carousel" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </a>
+        </div>
+    </div>
+    <!-- Carousel End -->
 
-			<!-- One -->
-			<section id="one" class="wrapper spotlight style1">
-				<div class="inner">
-					<a href="#" class="image"><img src="img/boxeo.jpg" alt="" /></a>
-					<div class="content">
-						<h2 class="major">Boxeo</h2>
-						<p>El boxeo es un deporte de combate en el que dos competidores se enfrentan en un ring. Su
-							objetivo es golpearse con los puños para acumular puntos o lograr un nocaut. Los boxeadores
-							utilizan guantes protectores y siguen reglas estrictas. El boxeo es un deporte estratégico y
-							táctico que requiere habilidades físicas y mentales. Es parte de los Juegos Olímpicos y ha
-							sido popular como forma de entretenimiento y entrenamiento físico.</p>
-						<a href="#" class="special">leer más</a>
-					</div>
-				</div>
-			</section>
 
-			<!-- Two -->
-			<section id="two" class="wrapper alt spotlight style2">
-				<div class="inner">
-					<a href="#" class="image"><img src="img/MMA.jpg" alt="" /></a>
-					<div class="content">
-						<h2 class="major">Mixtas</h2>
-						<p>Las Artes Marciales Mixtas (MMA) son un deporte de combate que combina una variedad de
-							técnicas de artes marciales, como golpes, patadas y lucha en el suelo, en un único sistema
-							de competición. Los combates se llevan a cabo en un ring o jaula y los competidores buscan
-							ganar por nocaut, sumisión o decisión de los jueces. Las MMA son conocidas por su
-							versatilidad y estrategia, y han ganado popularidad en todo el mundo, además de ser
-							utilizadas como forma de entrenamiento y autodefensa.</p>
-						<a href="#" class="special">leer más</a>
-					</div>
-				</div>
-			</section>
+    <!-- Gym Class Start -->
+    <div class="container gym-class mb-5">
+        <div class="row px-3">
+            <div class="col-md-6 p-0">
+                <div class="gym-class-box d-flex flex-column align-items-end justify-content-center bg-primary text-right text-white py-5 px-5">
+                    <i class="flaticon-six-pack"></i>
+                    <h3 class="display-4 mb-3 text-white font-weight-bold">Amplia tu repertorio</h3>
+                    <p>
+                        En Yamix, ofrecemos un catálogo diverso de cursos diseñados para todos los niveles, desde principiantes hasta expertos. Nuestra programación incluye disciplinas de artes marciales mixtas (MMA), parkour y boxeo, impartidas por instructores altamente capacitados.
+                    </p>
+                    <a href="/register" class="btn btn-lg btn-outline-light mt-4 px-4">Inscribete</a>
+                </div>
+            </div>
+            <div class="col-md-6 p-0">
+                <div class="gym-class-box d-flex flex-column align-items-start justify-content-center bg-secondary text-left text-white py-5 px-5">
+                    <i class="flaticon-bodybuilding"></i>
+                    <h3 class="display-4 mb-3 text-white font-weight-bold">Crea tu Potencial</h3>
+                    <p>
+                        Cada clase está pensada para fortalecer tu cuerpo, mente y habilidades, garantizando una formación completa en un ambiente dinámico y seguro. Únete a nosotros y mejora tu técnica, resistencia y confianza mientras aprendes de manera efectiva y divertida.
+                    </p>
+                    <a href="/register" class="btn btn-lg btn-outline-light mt-4 px-4">Inscribete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Gym Class End -->
 
-			<!-- Three -->
-			<section id="three" class="wrapper spotlight style3">
-				<div class="inner">
-					<a href="#" class="image"><img src="img/pakour.jpeg" alt="" /></a>
-					<div class="content">
-						<h2 class="major">Parkour</h2>
-						<p>El parkour es una disciplina física que se basa en el movimiento eficiente a través de
-							obstáculos urbanos y naturales usando habilidades corporales como saltos y escaladas. No es
-							una competición, sino una forma de entrenamiento que fomenta la agilidad y la creatividad.
-							Los practicantes buscan superar obstáculos de manera fluida y segura.</p>
-						<a href="#" class="special">leer más</a>
-					</div>
-				</div>
-			</section>
 
-	</div>
-	<!-- Scripts -->
-	<script src="js/jquery.min.js"></script>
-	<script src="js/jquery.scrollex.min.js"></script>
-	<script src="js/browser.min.js"></script>
-	<script src="js/breakpoints.min.js"></script>
-	<script src="js/util.js"></script>
-	<script src="js/main.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- About Start -->
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <img class="img-fluid mb-4 mb-lg-0" src="c/img/about.jpg" alt="Image">
+            </div>
+            <div class="col-lg-6">
+                <h2 class="display-4 font-weight-bold mb-4">10 Años De Experiencia</h2>
+                <p>Nuestros instructores están altamente capacitados para guiarte a través de un entrenamiento completo.</p>
+                <div class="row py-2">
+                    <div class="col-sm-6">
+                        <i class="flaticon-barbell display-2 text-primary"></i>
+                        <h4 class="font-weight-bold">Gimnasio</h4>
+                        <p>Cuenta gimnasio completamente equipado</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <i class="flaticon-medal display-2 text-primary"></i>
+                        <h4 class="font-weight-bold">Unidad Deportiva</h4>
+                        <p>Un lugar amplio para practicar todas las disciplinas.</p>
+                    </div>
+                </div>
+                <a href="" class="btn btn-lg px-4 btn-outline-primary">Ver mas</a>
+            </div>
+        </div>
+    </div>
+    <!-- About End -->
 
-	
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			var logoutLink = document.getElementById('logout-link');
+    <!-- Features Start -->
+    <div class="container-fluid my-5">
+        <div class="row">
+            <div class="col-lg-4 p-0">
+                <div class="d-flex align-items-center bg-secondary text-white px-5" style="min-height: 300px;">
+                    <i class="flaticon-training display-3 text-primary mr-3"></i>
+                    <div class="">
+                        <h2 class="text-white mb-3">Progresión</h2>
+                        <p>Un enfoque constante en tu evolución, mejorando tus habilidades en cada entrenamiento y alcanzando nuevas metas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 p-0">
+                <div class="d-flex align-items-center bg-primary text-white px-5" style="min-height: 300px;">
+                    <i class="flaticon-weightlifting display-3 text-secondary mr-3"></i>
+                    <div class="">
+                        <h2 class="text-white mb-3">Entrenamiento</h2>
+                        <p>Entrena con propósito y dedicación. Diseñamos rutinas que te desafían a superar tus límites y mejorar tu rendimiento en cada sesión.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 p-0">
+                <div class="d-flex align-items-center bg-secondary text-white px-5" style="min-height: 300px;">
+                    <i class="flaticon-treadmill display-3 text-primary mr-3"></i>
+                    <div class="">
+                        <h2 class="text-white mb-3">Crecimiento</h2>
+                        <p>Impulsa tu desarrollo personal y físico con cada entrenamiento. Enfócate en avanzar constantemente y alcanzar tu máximo potencial.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Features End -->
 
-			if (logoutLink) {
-				logoutLink.addEventListener('click', function (event) {
-					event.preventDefault();
+<!-- Class Timetable Start -->
+<div class="container gym-feature py-5">
+    <div class="d-flex flex-column text-center mb-5">
+        <h4 class="text-primary font-weight-bold">Horario de clases</h4>
+        <h4 class="display-4 font-weight-bold">Cursos y instructores</h4>
+    </div>
+    <div class="tab-class">
+        <ul class="nav nav-pills justify-content-center mb-4" id="courseNav">
+            <!-- Los botones de filtro por curso se generarán aquí dinámicamente -->
+        </ul>
+        <div class="tab-content">
+            <!-- Filtro por curso -->
+            <div class="text-center mb-4">
+                <button class="btn btn-primary" id="clearFilter">Mostrar todas las clases</button>
+            </div>
+            <!-- All Classes Tab -->
+            <div id="class-all" class="container tab-pane p-0 active">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-lg m-0">
+                        <thead class="bg-secondary text-white text-center">
+                            <tr>
+                                <th>Horarios</th>
+                                <th>Lunes</th>
+                                <th>Martes</th>
+                                <th>Miercoles</th>
+                                <th>Jueves</th>
+                                <th>Viernes</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            <!-- Placeholder for dynamically added content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Class Timetable End -->
 
-					Swal.fire({
-						title: '¿Estás seguro?',
-						text: "Estás a punto de cerrar sesión.",
-						icon: 'warning',
-						showCancelButton: true,
-						confirmButtonColor: '#3085d6',
-						cancelButtonColor: '#d33',
-						confirmButtonText: 'Sí, cerrar sesión',
-						cancelButtonText: 'Cancelar'
-					}).then((result) => {
-						if (result.isConfirmed) {
-							window.location.href = "/logout";
-						}
-					});
-				});
-			}
-		});
-	</script>
+<script>
+let clasesGlobal = [];  
 
+
+async function fetchClases() {
+    try {
+        const response = await fetch('http://localhost:4000/api/traerPara');
+        const clases = await response.json();
+        clasesGlobal = clases;  
+
+    
+        const tableBody = document.querySelector('#class-all tbody');
+        tableBody.innerHTML = ''; 
+
+      
+        const diasSemana = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+     
+        displayClasses(clases);
+
+      
+        createFilterButtons(clases);
+
+    } catch (error) {
+        console.error('Error al cargar las clases:', error);
+    }
+}
+
+
+function createFilterButtons(clases) {
+    const filterButtonsDiv = document.getElementById('courseNav');
+    filterButtonsDiv.innerHTML = '';  
+
+    const uniqueCursos = [...new Set(clases.map(clase => clase.nombre_curso))]; 
+
+    uniqueCursos.forEach(curso => {
+        const button = document.createElement('button');  
+        button.classList.add('btn', 'btn-primary', 'm-1');  
+        button.textContent = curso;
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            filterByCourse(curso);
+        });
+        filterButtonsDiv.appendChild(button);
+    });
+}
+
+function filterByCourse(cursoName) {
+    const filteredClasses = clasesGlobal.filter(clase => clase.nombre_curso === cursoName);
+    displayClasses(filteredClasses);
+}
+
+
+document.getElementById('clearFilter').addEventListener('click', () => {
+    displayClasses(clasesGlobal); 
+});
+
+
+function displayClasses(clases) {
+    const tableBody = document.querySelector('#class-all tbody');
+    tableBody.innerHTML = '';  
+
+
+    const diasSemana = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+    clases.forEach(clase => {
+        const row = document.createElement('tr');
+
+        const timeCell = document.createElement('td');
+        timeCell.textContent = clase.time;
+
+        timeCell.style.backgroundColor = 'black';
+        timeCell.style.color = 'white';
+        timeCell.style.fontWeight = 'bold';
+        timeCell.style.textAlign = 'center';
+        row.appendChild(timeCell);
+
+        diasSemana.forEach(dia => {
+            const diaCell = document.createElement('td');
+            const cursoInstructorDiv = document.createElement('div');
+            const curso = document.createElement('div');
+            curso.textContent = clase.nombre_curso;
+            cursoInstructorDiv.appendChild(curso);
+
+            const instructor = document.createElement('div');
+            instructor.textContent = clase.nombre_usuario;
+            cursoInstructorDiv.appendChild(instructor);
+
+            diaCell.appendChild(cursoInstructorDiv);
+            row.appendChild(diaCell);
+        });
+
+        tableBody.appendChild(row);
+    });
+}
+
+
+fetchClases();
+</script>
+
+
+
+    <div class="container-fluid position-relative bmi my-5">
+        <div class="container">
+            <div class="row px-3 align-items-center">
+                <div class="col-md-6">
+                    <div class="pr-md-3 d-none d-md-block">
+                        <h4 class="text-primary">Encuentra Nuestra Ubicación</h4>
+                        <h4 class="display-4 text-white font-weight-bold mb-4">¿Dónde estamos ubicados?</h4>
+                        <p class="m-0 text-white">Nos encontramos en el corazón de Copacabana, Antioquia. Usa el mapa de abajo para encontrar nuestra ubicación exacta y navega fácilmente.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 bg-secondary py-5">
+                    <div class="py-5 px-3">
+                        <h1 class="mb-4 text-white">Encuentranos</h1>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1982.690276998877!2d-75.51662944954418!3d6.344738771988914!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2sco!4v1732388776022!5m2!1ses-419!2sco"width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe> </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer Start -->
+    <div class="footer container-fluid mt-5 py-5 px-sm-3 px-md-5 text-white">
+        <div class="row pt-5">
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-primary mb-4">Contacto</h4>
+                <p><i class="fa fa-map-marker-alt mr-2"></i>Unidad Deportiva Principal De Copacabana</p>
+                <p><i class="fa fa-phone-alt mr-2"></i>4016923</p>
+                <p><i class="fa fa-envelope mr-2"></i>Yamix60@gmail.com</p>
+                <div class="d-flex justify-content-start mt-4">
+                    <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-primary mb-4"> Links</h4>
+                <div class="d-flex flex-column justify-content-start">
+                    <a class="text-white mb-2" href="/calen"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                    <a class="text-white mb-2" href="/about"><i class="fa fa-angle-right mr-2"></i>Sobre nosotros</a>
+                    <a class="text-white mb-2" href="/clases"><i class="fa fa-angle-right mr-2"></i>Clases</a>
+                    <a class="text-white" href="/contac"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-primary mb-4">Popular Links</h4>
+                <div class="d-flex flex-column justify-content-start">
+                    <a class="text-white mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                    <a class="text-white mb-2" href="/about"><i class="fa fa-angle-right mr-2"></i>Sobre nosotros</a>
+                    <a class="text-white mb-2" href="/clases"><i class="fa fa-angle-right mr-2"></i>Clases</a>
+                    <a class="text-white" href="/contac"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-primary mb-4">Horarios</h4>
+                <h5 class="text-white">Lunes - Viernes</h5>
+                <p>8.00 AM - 10.00 PM</p>
+            </div>
+        </div>
+        <div class="container border-top border-dark pt-5">
+            <p class="m-0 text-center text-white">
+                &copy; <a class="text-white font-weight-bold" href="/">Yamix</a>. Derechos reservados. Diseñado por
+                <a class="text-white font-weight-bold" href="/">Yamix</a>
+            </p>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-outline-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="c/lib/easing/easing.min.js"></script>
+    <script src="c/lib/waypoints/waypoints.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="c/mail/jqBootstrapValidation.min.js"></script>
+    <script src="c/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="c/js/main.js"></script>
 </body>
 
 </html>
