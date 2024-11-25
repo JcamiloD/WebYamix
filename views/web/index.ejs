@@ -335,6 +335,191 @@ function displayClasses(clases) {
 fetchClases();
 </script>
 
+<!-- Features Start -->  
+<div id="customCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
+    <!-- Indicadores -->
+    <ol class="carousel-indicators" id="carouselIndicators">
+        <!-- Los indicadores se llenarán dinámicamente -->
+    </ol>
+
+    <!-- Slides -->
+    <div class="carousel-inner" id="carouselInner">
+        <!-- Los slides se llenarán dinámicamente -->
+    </div>
+</div>
+<!-- Features End -->
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const response = await fetch("http://localhost:4000/api/traerPara");
+        const clases = await response.json();
+
+        if (!clases || clases.length === 0) {
+            console.warn("No se encontraron clases activas.");
+            return;
+        }
+
+        // Agrupar clases en lotes de 3 para cada slide
+        const groupedClasses = [];
+        for (let i = 0; i < clases.length; i += 3) {
+            groupedClasses.push(clases.slice(i, i + 3));
+        }
+
+        const indicators = document.querySelector("#carouselIndicators");
+        const carouselInner = document.querySelector("#carouselInner");
+
+        // Limpiar contenido previo del carrusel
+        indicators.innerHTML = "";
+        carouselInner.innerHTML = "";
+
+        // Generar contenido dinámico del carrusel
+        groupedClasses.forEach((group, groupIndex) => {
+            // Crear indicador
+            const indicator = document.createElement("li");
+            indicator.setAttribute("data-target", "#customCarousel");
+            indicator.setAttribute("data-slide-to", groupIndex);
+            if (groupIndex === 0) indicator.classList.add("active");
+            indicators.appendChild(indicator);
+
+            // Crear slide
+            const slide = document.createElement("div");
+            slide.classList.add("carousel-item");
+            if (groupIndex === 0) slide.classList.add("active");
+
+            const row = document.createElement("div");
+            row.classList.add("row");
+
+            // Crear columnas dinámicamente
+            group.forEach((clase, index) => {
+                const col = document.createElement("div");
+                col.classList.add("col-lg-4", "p-0");
+
+                // Alternar entre los estilos de las tarjetas
+                const isFirstStyle = index % 2 === 0;
+                const bgClass = isFirstStyle ? "bg-secondary" : "bg-primary";
+                const textClass = isFirstStyle ? "text-white" : "text-secondary";
+                const iconClass = isFirstStyle ? "flaticon-training" : "flaticon-weightlifting";
+                const iconColor = isFirstStyle ? "text-primary" : "text-secondary";
+                const buttonText = isFirstStyle ? "Unete" : "Unete ahora";
+
+                const content = `
+                    <div class="d-flex align-items-center ${bgClass} ${textClass} px-5" style="min-height: 300px;">
+                        <i class="${iconClass} display-3 ${iconColor} mr-3"></i>
+                        <div>
+                            <h2 class="${textClass} mb-3">${clase.nombre_curso}</h2>
+                            <p>${clase.descripcion}</p>
+                            <a href="#" class="btn btn-lg btn-outline-light mt-4 px-4">${buttonText}</a>
+                        </div>
+                    </div>
+                `;
+                col.innerHTML = content;
+                row.appendChild(col);
+            });
+
+            slide.appendChild(row);
+            carouselInner.appendChild(slide);
+        });
+    } catch (error) {
+        console.error("Error al cargar las clases:", error);
+    }
+});
+</script>
+
+
+<!-- Team Start -->
+<div class="container pt-5 team">
+    <div class="d-flex flex-column text-center mb-5">
+        <h4 class="text-primary font-weight-bold">Catalogo</h4>
+        <h4 class="display-4 font-weight-bold">Productos recomendados</h4>
+    </div>
+    <div id="productosCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
+        <div class="carousel-inner">
+            <!-- Aquí se cargarán los productos dinámicamente -->
+        </div>
+        <a class="carousel-control-prev" href="#productosCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#productosCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+<!-- Team End -->
+
+<script>
+    async function obtenerCatalogo() {
+        try {
+          
+            const response = await fetch("http://localhost:4000/api/get-all");
+            const productos = await response.json();
+    
+    
+            if (!productos || productos.length === 0) {
+                console.warn("No se encontraron productos.");
+                return;
+            }
+    
+        
+            cargarProductosEnCarrusel(productos);
+        } catch (error) {
+            console.error("Error al cargar los productos:", error);
+        }
+    }
+    
+    function cargarProductosEnCarrusel(productos) {
+        const carouselInner = document.querySelector('#productosCarousel .carousel-inner');
+        carouselInner.innerHTML = ''; 
+    
+        let slide = '';
+        let itemCount = 0;
+
+    
+        productos.forEach((producto, index) => {
+            if (itemCount % 4 === 0) {
+                if (itemCount > 0) {
+                    slide += '</div>'; 
+                }
+                slide += '<div class="carousel-item' + (itemCount === 0 ? ' active' : '') + '"><div class="row">';
+            }
+            
+            slide += `
+                <div class="col-md-3">
+                    <div class="card border-0 bg-secondary text-center text-white">
+                        <img class="card-img-top" src="${producto.imagen_producto}" alt="${producto.nombre_producto}">
+                        <div class="card-social d-flex align-items-center justify-content-center">
+                            <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                        <div class="card-body bg-secondary">
+                            <h4 class="card-title text-primary">${producto.nombre_producto}</h4>
+                            <p class="card-text">${producto.descripcion}</p>
+                            <!-- Aquí se utiliza el link dinámico -->
+                            <a href="${producto.link}" class="btn btn-lg px-4 btn-outline-primary" target="_blank">Ver producto</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+    
+            itemCount++;
+
+            if (itemCount % 4 === 0 || index === productos.length - 1) {
+                slide += '</div></div>'; 
+            }
+        });
+
+        carouselInner.innerHTML = slide; 
+    }
+    
+
+    document.addEventListener('DOMContentLoaded', obtenerCatalogo);
+</script>
+
+
 
 
     <div class="container-fluid position-relative bmi my-5">
