@@ -35,4 +35,7 @@ router.get('/estudiantes_clases/:claseId',  clases.traerEstudiantesPorClase, (re
 
 router.post('/actualizar_estudiantes', clases.actualizarEstudiantesPorClase);
 
+router.get('traerPara', clases.traerPara);
+
+
 module.exports = router;
