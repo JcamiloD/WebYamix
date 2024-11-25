@@ -6,6 +6,7 @@ const FormData = require('form-data');
 const axios = require('axios');
 
 exports.addDocument = async (req, res) => {
+    console.log("hola")
     const { id_usuario } = req.body;
     const documentos = req.files; // Los archivos subidos estarán en un array llamado req.files
 

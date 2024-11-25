@@ -4,6 +4,7 @@
 <head>
     <%- include('partials/head') %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
         <style>
             .icon-btn {
                 background-color: transparent;
@@ -183,12 +184,10 @@
                                                         </td>
                                                         <td>
                                                             <!-- Botón que abre el modal -->
-<button class="button-iconn btn btn-primary" data-bs-toggle="modal" data-bs-target="#documentacion-<%= usuario.id_usuario %>" 
-    data-url1="/uploads/<%= usuario.ruta_archivo %>" 
-    data-url2="https://www.adobe.com/support/products/enterprise/knowledgecenter/media/c4611_sample_explain.pdf">
-<i class="fas fa-plus"></i>
-</button>
-
+                                                            <button class="button-iconn" data-bs-toggle="modal" data-bs-target="#documentacion-<%= usuario.id_usuario %>" 
+                                                            >
+                                                            <i class="fas fa-plus"></i>
+                                                            </button>
                                                         </td>
                                                         <!--- Boton de pagos-->                                                     
                                                         <!-- <td>
@@ -275,6 +274,20 @@
                                                                                         onclick="eliminarDocumento(<%= doc.id_documento %>, <%= usuario.id_usuario %>)">
                                                                                         Eliminar
                                                                                     </button>
+                                                                                <button 
+                                                                                    type="button" 
+                                                                                    class="btn btn-primary mt-2 btn-sm" 
+                                                                                    onclick="editarDocumento('<%= doc.id_documento %>')">
+                                                                                    Editar
+                                                                                </button>
+                                                                                
+                                                                                <!-- Input de archivo -->
+                                                                                <input 
+                                                                                    type="file" 
+                                                                                    id="editarDocumentoInput-<%= doc.id_documento %>" 
+                                                                                    style="display: none;" 
+                                                                                    onchange="enviarDocumento('<%= doc.id_documento %>', '<%= usuario.id_usuario %>')">
+                                                                                
                                                                                 </div>
                                                                             <% }); %>
                                                                         <% } else { %>
@@ -287,12 +300,12 @@
                                                                     <div class="row">
                                                                         <div class="col-12">
                                                                             <h6>Agregar nuevos documentos</h6>
-                                                                            <form action="/add_documento" method="POST" enctype="multipart/form-data">
+                                                                            <form id="uploadForm-<%= usuario.id_usuario %>">
                                                                                 <% if (usuario && usuario.id_usuario) { %>
                                                                                     <input type="hidden" name="id_usuario" value="<%= usuario.id_usuario %>">
                                                                                 <% } else { %>
                                                                                     <p style="color: red;">Error: No se encontró el ID de usuario.</p>
-                                                                                <% } %>                                                                                
+                                                                                <% } %>
                                                                                 <div class="mb-3">
                                                                                     <label for="nuevoDocumento-<%= usuario.id_usuario %>" class="form-label">Seleccionar archivos:</label>
                                                                                     <input 
@@ -300,12 +313,11 @@
                                                                                         class="form-control" 
                                                                                         id="nuevoDocumento-<%= usuario.id_usuario %>" 
                                                                                         name="nuevoDocumento[]" 
-                                                                                        multiple 
-                                                                                        required>
+                                                                                        multiple>
                                                                                 </div>
                                                                                 <button type="submit" class="btn btn-dark">Subir</button>
                                                                             </form>
-                                                                            
+                                                                            <ul id="fileList-<%= usuario.id_usuario %>" class="list-unstyled mt-3"></ul>
                                                                         </div>
                                                                     </div>                                                                  
                                                                 </div>
@@ -314,7 +326,128 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>                                              
+                                                    </div>
+                                                    <script>
+                                                        // Selecciona el campo de entrada
+                                                        const miau = document.getElementById('nuevoDocumento-<%= usuario.id_usuario %>');
+                                                    
+                                                        // Escucha el evento 'change' cuando se seleccionan archivos
+                                                        miau.addEventListener('change', function () {
+                                                            const validFiles = []; // Archivos válidos
+                                                            const invalidFiles = []; // Archivos no válidos
+                                                    
+                                                            // Recorre los archivos seleccionados
+                                                            Array.from(this.files).forEach(file => {
+                                                                if (file.type !== 'application/pdf') {
+                                                                    invalidFiles.push(file.name); // Agrega a la lista de no válidos
+                                                                } else {
+                                                                    validFiles.push(file); // Mantén los archivos válidos
+                                                                }
+                                                            });
+                                                    
+                                                            // Si hay archivos no válidos
+                                                            if (invalidFiles.length > 0) {
+                                                                // Usa SweetAlert para mostrar una alerta
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: 'Archivos inválidos',
+                                                                    text: `Los siguientes archivos no son PDF y fueron eliminados: ${invalidFiles.join(', ')}`,
+                                                                    confirmButtonText: 'Aceptar',
+                                                                    timer: 5000
+                                                                });
+                                                    
+                                                                // Reemplaza el campo con solo los archivos válidos
+                                                                const dataTransfer = new DataTransfer();
+                                                                validFiles.forEach(file => dataTransfer.items.add(file));
+                                                                this.files = dataTransfer.files; // Actualiza los archivos seleccionados
+                                                            }
+                                                        });
+                                                    </script>
+                                                    <script>
+                                                        
+                                                        document.getElementById('uploadForm-<%= usuario.id_usuario %>').addEventListener('submit', function (event) {
+                                                            event.preventDefault(); // Esto detiene el envío del formulario
+                                                        
+                                                            const formData = new FormData(this);
+                                                        
+                                                            fetch('/add_documento', {
+                                                                method: 'POST',
+                                                                body: formData
+                                                            })
+                                                                .then(response => {
+                                                                    if (response.ok) {
+                                                                        Swal.fire({
+                                                                            icon: 'success',
+                                                                            title: 'Éxito',
+                                                                            text: 'Archivos subidos exitosamente.',
+                                                                            confirmButtonText: 'Aceptar'
+                                                                        }).then(() => {
+                                                                            window.location.reload(); // Recargar la página tras cerrar SweetAlert
+                                                                        });
+                                                                    } else {
+                                                                        Swal.fire({
+                                                                            icon: 'error',
+                                                                            title: 'Error',
+                                                                            text: 'Hubo un problema al subir los archivos. Por favor, inténtalo de nuevo.',
+                                                                            confirmButtonText: 'Cerrar'
+                                                                        });
+                                                                    }
+                                                                })
+                                                                .catch(error => {
+                                                                    console.error('Error:', error);
+                                                                    Swal.fire({
+                                                                        icon: 'error',
+                                                                        title: 'Error crítico',
+                                                                        text: 'Ocurrió un error inesperado. Por favor, verifica tu conexión o contacta al soporte.',
+                                                                        confirmButtonText: 'Cerrar'
+                                                                    });
+                                                                });
+                                                        });                                                        
+                                                    </script>   
+                                                    <script>
+                                                        const fileInput = document.getElementById('nuevoDocumento-<%= usuario.id_usuario %>');
+                                                        const fileList = document.getElementById('fileList-<%= usuario.id_usuario %>');
+                                                        const dt = new DataTransfer(); // Usado para almacenar los archivos seleccionados acumulados
+                                                    
+                                                        fileInput.addEventListener('change', () => {
+                                                            Array.from(fileInput.files).forEach(file => {
+                                                                // Agregar cada archivo al DataTransfer
+                                                                dt.items.add(file);
+                                                    
+                                                                // Crear un elemento en la lista
+                                                                const listItem = document.createElement('li');
+                                                                listItem.className = 'd-flex align-items-center mb-2';
+                                                                listItem.innerHTML = `
+                                                                    <span class="me-2">${file.name} (${(file.size / 1024).toFixed(2)} KB)</span>
+                                                                    <button class="btn btn-sm btn-danger ms-auto" type="button">X</button>
+                                                                `;
+                                                    
+                                                                // Eliminar archivo de la lista
+                                                                listItem.querySelector('button').addEventListener('click', () => {
+                                                                    removeFile(file.name);
+                                                                    listItem.remove();
+                                                                });
+                                                    
+                                                                fileList.appendChild(listItem);
+                                                            });
+                                                    
+                                                            // Actualizar el input de archivos con el acumulado
+                                                            fileInput.files = dt.files;
+                                                        });
+                                                    
+                                                        function removeFile(fileName) {
+                                                            const newDt = new DataTransfer();
+                                                            Array.from(dt.files).forEach(file => {
+                                                                if (file.name !== fileName) {
+                                                                    newDt.items.add(file); // Conservar los archivos que no se eliminaron
+                                                                }
+                                                            });
+                                                            dt.items.clear(); // Limpiar DataTransfer original
+                                                            Array.from(newDt.files).forEach(file => dt.items.add(file)); // Agregar los restantes
+                                                            fileInput.files = dt.files; // Actualizar el input
+                                                        }
+                                                    </script> 
+                                                                                              
                                                 <% }) %>
                                             <% } else { %>
                                                 <tr>
@@ -593,7 +726,91 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>1
         
         
+        <script>
+            // Mostrar el input de archivo al presionar el botón Editar
+            function editarDocumento(id_documento) {
+                const fileInput = document.getElementById(`editarDocumentoInput-${id_documento}`);
+                if (fileInput) {
+                    fileInput.click(); // Simula un clic en el input para abrir el selector de archivos
+                }
+            }
         
+            // Enviar el archivo seleccionado al controlador
+            function enviarDocumento(id_documento, id_usuario) {
+                const fileInput = document.getElementById(`editarDocumentoInput-${id_documento}`);
+                const file = fileInput.files[0]; // Obtiene el archivo seleccionado
+        
+                if (!file) {
+                    Swal.fire('Error', 'Por favor selecciona un archivo antes de enviar.', 'error');
+                    return;
+                }
+        
+                // Validar que sea un archivo PDF
+                if (file.type !== 'application/pdf') {
+                    Swal.fire('Error', 'Solo se permiten archivos PDF.', 'error');
+                    fileInput.value = ''; // Limpia el archivo no válido
+                    return;
+                }
+        
+                // Confirmación por parte del usuario antes de enviar
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "Se actualizará el documento seleccionado.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, actualizar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Crear un FormData para enviar el archivo
+                        const formData = new FormData();
+                        formData.append('documento', file); // Archivo
+                        formData.append('id_usuario', id_usuario); // ID del usuario
+        
+                        // Bloquear la interfaz mientras se realiza la operación
+                        Swal.fire({
+                            title: 'Subiendo archivo...',
+                            text: 'Por favor espera.',
+                            icon: 'info',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+        
+                        fetch(`http://localhost:4000/api/update-doc/${id_documento}`, {
+                            method: 'PUT',
+                            body: formData,
+                        })
+                            .then(response => {
+                                // Verificar si la respuesta es JSON válida
+                                const contentType = response.headers.get('content-type');
+                                if (contentType && contentType.includes('application/json')) {
+                                    return response.json();
+                                } else {
+                                    throw new Error('La respuesta no es JSON válida.');
+                                }
+                            })
+                            .then(data => {
+                                if (data.error) {
+                                    Swal.fire('Error', data.error, 'error');
+                                } else {
+                                    Swal.fire('Éxito', 'Documento actualizado correctamente.', 'success').then(() => {
+                                        location.reload(); // Recarga la página tras éxito
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire('Error', 'Hubo un problema al actualizar el documento.', 'error');
+                            });
+                    }
+                });
+            }
+        </script>
+        
+              
                
         <script>
             function eliminarDocumento(id_documento) {
