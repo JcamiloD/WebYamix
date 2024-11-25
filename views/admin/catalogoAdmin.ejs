@@ -301,6 +301,48 @@
     </div>
     <%- include('partials/scripts') %>
         <!-- Custom JS -->
+
+        <script>
+            document.getElementById('imagenProducto').addEventListener('change', function () {
+                const fileInput = this;
+                const file = fileInput.files[0];
+                const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        
+                if (!file) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Archivo no seleccionado',
+                        text: 'Por favor selecciona un archivo de imagen.',
+                    });
+                    fileInput.value = ''; // Limpia el input
+                    return;
+                }
+        
+                if (!validImageTypes.includes(file.type)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Formato no válido',
+                        text: 'Por favor selecciona un archivo de imagen válido (JPEG, PNG, GIF, WEBP).',
+                    });
+                    fileInput.value = ''; // Limpia el input
+                }
+            });
+        
+            document.getElementById('addProductForm').addEventListener('submit', function (event) {
+                const fileInput = document.getElementById('imagenProducto');
+                const file = fileInput.files[0];
+                const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        
+                if (!file || !validImageTypes.includes(file.type)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Formulario incompleto',
+                        text: 'Selecciona un archivo de imagen válido antes de enviar el formulario.',
+                    });
+                    event.preventDefault(); // Evita que el formulario se envíe
+                }
+            });
+        </script>
         <script>
             $(document).ready(function () {
                 $('#editModal').on('show.bs.modal', function (event) {

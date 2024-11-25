@@ -1,5 +1,60 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const path = require('path');
+const fs = require('fs');
+const FormData = require('form-data');
+const axios = require('axios');
+
+exports.addDocument = async (req, res) => {
+    const { id_usuario } = req.body;
+    const documentos = req.files; // Los archivos subidos estarán en un array llamado req.files
+
+    // Verificar si se han cargado documentos
+    if (!documentos || documentos.length === 0) {
+        return res.status(400).json({ success: false, message: 'No se ha subido ningún documento' });
+    }
+
+    try {
+        // Imprimir los archivos recibidos para verlos en consola
+        console.log('Archivos recibidos:', documentos);
+
+        // Procesar cada documento subido
+        for (let documento of documentos) {
+            console.log(`Procesando archivo: ${documento.originalname}`); // Nombre del archivo
+
+            const form = new FormData();
+
+            // Cambiar el nombre del campo a 'file' si es lo que el servidor espera
+            form.append('documento', documento.buffer, documento.originalname); // Asegúrate de que el nombre del campo sea correcto
+            form.append('id_usuario', id_usuario);
+
+            const headers = form.getHeaders();
+            
+            console.log('Encabezados del FormData:', headers); // Mostrar los encabezados para verificar que se estén generando correctamente
+
+            // Enviar los datos al servidor externo
+            const response = await axios.post(`${process.env.pathApi}/add-documento`, form, {
+                headers: {
+                    ...headers,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            // Mostrar la respuesta de la API externa
+            console.log('Respuesta del servidor externo:', response.data);
+        }
+
+        // Redirigir al catálogo después de agregar los documentos
+        console.log('Documentos enviados correctamente, redirigiendo...');
+        res.redirect('/usuariosAdmin');
+    } catch (error) {
+        // Manejo de errores con más detalle
+        console.error('Error al enviar los documentos al servidor externo:', error.response ? error.response.data : error.message);
+        res.status(500).json({ success: false, message: 'Error al agregar los documentos' });
+    }
+};
+
+
 
 // Traer usuarios desde la API
 exports.traer = async (req, res, next) => {

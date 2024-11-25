@@ -1,8 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 
 const { verifyToken } = require('../controller/middleware/verificarToken');
 const usuarios = require('../controller/usuarios_controller');
+
+const storage = multer.memoryStorage(); // Usar memoria en lugar de almacenamiento en disco
+const upload = multer({ storage: storage });
+
+// Enrutador para manejar el formulario de carga
+router.post('/add_documento', upload.array('nuevoDocumento[]'), usuarios.addDocument);
 
 // Controlador traer estudiantes
 router.get('/estudiantes', verifyToken, usuarios.traer, (req, res) => {
