@@ -154,8 +154,6 @@
             </div>
             <!-- page-body-wrapper ends -->
             <script>
-// Expresión regular para validar el nombre del curso (solo letras y espacios)
-const nombreCursoValido = /^[a-zA-Z\s]+$/;
 
 // Abrir el modal cuando se hace clic en el botón de editar
 $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function () {
@@ -174,24 +172,26 @@ $('#miTabla').on('click', '.button-iconn[data-toggle="modal"]', function () {
     $('#editModal').modal('show');
 });
 
-// Manejo del formulario de edición
+
+const nombreCursoValido = /^[a-zA-Z]+( [a-zA-Z]+)*$/;
+
+
 $('#editForm').on('submit', function (event) {
-    event.preventDefault(); // Evitar el envío por defecto
+    event.preventDefault(); 
 
     const nombreCurso = $('#editNombreCurso').val();
 
-    // Validación para el nombre del curso
+
     if (!nombreCursoValido.test(nombreCurso)) {
         Swal.fire({
             icon: 'error',
             title: 'Nombre del curso inválido',
-            text: 'El nombre del curso solo puede contener letras y espacios.',
+            text: 'El nombre del curso solo puede contener letras y un único espacio entre palabras.',
             confirmButtonText: 'Aceptar'
         });
-        return; // Detener la ejecución si no es válido
+        return; 
     }
 
-    // Preparar datos para la actualización
     const idCurso = $('#editIdCurso').val();
     const formData = {
         nombre_curso: nombreCurso,
@@ -199,10 +199,10 @@ $('#editForm').on('submit', function (event) {
         estado: $('#editEstadoCurso').val()
     };
 
-    // Mostrar spinner mientras se procesa
+
     $('#spinner').show();
 
-    // Realizar la solicitud de actualización
+   
     fetch(`/actualizar_curso/${idCurso}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -210,27 +210,30 @@ $('#editForm').on('submit', function (event) {
     })
         .then(response => response.json())
         .then(data => {
-            $('#spinner').hide(); // Ocultar spinner
-            if (data.success) {
+            $('#spinner').hide();
+
+     
+            if (data.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al actualizar',
+                    text: data.error || 'Error desconocido al actualizar',
+                    confirmButtonText: 'Aceptar'
+                });
+            } else if (data.success) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Curso actualizado',
                     text: 'El curso se ha actualizado correctamente.',
                     confirmButtonText: 'Aceptar'
                 }).then(() => {
-                    window.location.reload(); // Recargar página
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al actualizar',
-                    text: data.message || 'Error desconocido al actualizar',
-                    confirmButtonText: 'Aceptar'
+                    window.location.reload(); 
                 });
             }
         })
         .catch(error => {
             console.error('Error al actualizar el curso:', error);
+            $('#spinner').hide(); 
             Swal.fire({
                 icon: 'error',
                 title: 'Error interno',
@@ -240,34 +243,36 @@ $('#editForm').on('submit', function (event) {
         });
 });
 
-// Manejo del formulario de creación
+
 $('#addForm').on('submit', function (event) {
     event.preventDefault(); // Evitar envío por defecto
 
-    const nombreCurso = $('#addNombreCurso').val();
+    let nombreCurso = $('#addNombreCurso').val().trim(); // Eliminar espacios al principio y al final
+    // Reemplazar múltiples espacios internos por uno solo
+    nombreCurso = nombreCurso.replace(/\s+/g, ' '); 
 
     // Validación para el nombre del curso
     if (!nombreCursoValido.test(nombreCurso)) {
         Swal.fire({
             icon: 'error',
             title: 'Nombre del curso inválido',
-            text: 'El nombre del curso solo puede contener letras y espacios.',
+            text: 'El nombre del curso solo puede contener letras y un único espacio entre las palabras, sin espacios al principio ni al final.',
             confirmButtonText: 'Aceptar'
         });
-        return; 
+        return;
     }
 
-
+    // Preparar datos para el envío
     const formData = {
         nombre_curso: nombreCurso,
         descripcion: $('#addDescripcionCurso').val(),
         estado: $('#addEstadoCurso').val()
     };
 
-    
+    // Mostrar spinner mientras se procesa
     $('#spinner').show();
 
-  
+    // Enviar solicitud al servidor
     fetch('/agregar_curso', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -275,35 +280,41 @@ $('#addForm').on('submit', function (event) {
     })
         .then(response => response.json())
         .then(data => {
-            $('#spinner').hide(); 
-            if (data.success) {
+            $('#spinner').hide(); // Ocultar spinner
+
+            if (data.error) {
+                // Mostrar alerta si el curso ya existe
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Curso duplicado',
+                    text: data.error, // Mostrar el mensaje del backend
+                    confirmButtonText: 'Aceptar'
+                });
+            } else {
+                // Mostrar alerta de éxito si el curso se agregó correctamente
                 Swal.fire({
                     icon: 'success',
                     title: 'Curso agregado',
                     text: 'El curso se ha agregado correctamente.',
                     confirmButtonText: 'Aceptar'
                 }).then(() => {
-                    window.location.reload(); 
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al agregar',
-                    text: data.message || 'Error desconocido al agregar',
-                    confirmButtonText: 'Aceptar'
+                    window.location.reload(); // Recargar la página
                 });
             }
         })
         .catch(error => {
             console.error('Error al agregar el curso:', error);
+            $('#spinner').hide(); // Ocultar spinner en caso de error
             Swal.fire({
                 icon: 'error',
                 title: 'Error interno',
-                text: 'Ocurrió un error al agregar el curso.',
+                text: 'Ocurrió un error al agregar el curso. Por favor, inténtalo más tarde.',
                 confirmButtonText: 'Aceptar'
             });
         });
 });
+
+
 
 
 $('#editModal').on('hidden.bs.modal', function () {
