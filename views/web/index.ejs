@@ -65,7 +65,7 @@
                     <% if (permisos.includes('asistencia profesor')) { %>
                         <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
                     <% } else if (Array.isArray(permisos) && permisos.length > 0) { %>
-                        <a href="/asistenciaUser" class="nav-item nav-link">Asistencia</a>
+                        <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
                     <% } %>
                     <a href="/logout" id="logout-link" class="nav-item nav-link">Salir</a>
                 <% } %>
@@ -171,7 +171,7 @@
                 <div class="d-flex align-items-center bg-secondary text-white px-5" style="min-height: 300px;">
                     <i class="flaticon-training display-3 text-primary mr-3"></i>
                     <div>
-                        <h2 class="text-white mb-3">Progression</h2>
+                        <h2 class="text-white mb-3">Progresion</h2>
                         <p>Un enfoque constante en tu evolución, mejorando tus habilidades en cada entrenamiento y alcanzando nuevas metas.</p>
                         <a href="" class="btn btn-lg btn-outline-light mt-4 px-4">Unete</a>
                     </div>
@@ -202,6 +202,7 @@
         </div>
     </div>
     <!-- Features End -->
+
  <!-- Servicios que Ofrecemos Start -->
  <div id="servicesCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
   <!-- Indicadores -->

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Calendario</title>
+
+ <!-- Favicon -->
+ <link href="c/img/favicon.ico" rel="icon">
+
+ <!-- Font Awesome -->
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+ <!-- Flaticon Font -->
+ <link rel="stylesheet" href="c/lib/flaticon/font/flaticon.css">
+
+
+ <!-- Customized Bootstrap Stylesheet -->
+ <link href="c/css/style.min.css" rel="stylesheet">
+     <!-- Calendario scripts -->
+
+
+</head>
+
+</div>
+<body class="bg-white">
+    <!-- Navbar Start -->
+<div class="container-fluid p-0 nav-bar">
+  <nav class="navbar navbar-expand-lg bg-none navbar-dark py-3">
+      <a href="" class="navbar-brand">
+          <h1 class="m-0 display-4 font-weight-bold text-uppercase text-white">YAMIX</h1>
+      </a>
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+          <div class="navbar-nav ml-auto p-4 bg-secondary">
+              <% if (!permisos || permisos.length === 0) { %>
+                  <!-- Enlaces para usuarios no autenticados -->
+                  <a href="/login" class="nav-item nav-link">Iniciar Sesión</a>
+                  <a href="/register" class="nav-item nav-link">Inscribirme</a>
+                  <a href="/" class="nav-item nav-link">Home</a>
+                  <a href="/about" class="nav-item nav-link">Nosotros</a>
+                  <a href="/clases" class="nav-item nav-link active">Clases</a>
+              <% } else { %>
+                  <!-- Enlaces para usuarios autenticados -->
+                  <% if (permisos.includes('perfil')) { %>
+                      <a href="/perfil" class="nav-item nav-link">Perfil</a>
+                  <% } %>
+                  <% if (permisos.includes('calendario estudiante') || permisos.includes('calendario profesor')) { %>
+                      <a href="/calendarioUser" class="nav-item nav-link">Calendario</a>
+                  <% } %>
+                  <% if (permisos.includes('dashboard')) { %>
+                      <a href="/dashboard" class="nav-item nav-link">Dashboard</a>
+                  <% } %>
+                  <% if (permisos.includes('catalogo estudiante')) { %>
+                      <a href="/catalogouser" class="nav-item nav-link">Catálogo</a>
+                  <% } %>
+                  <% if (permisos.includes('asistencia profesor')) { %>
+                      <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
+                  <% } else if (Array.isArray(permisos) && permisos.length > 0) { %>
+                      <a href="/asistenciaUser" class="nav-item nav-link">Asistencia</a>
+                  <% } %>
+                  <a href="#" id="logout-link" class="nav-item nav-link">Salir</a>
+              <% } %>
+          </div>
+      </div>
+  </nav>
+</div>
+<!-- Navbar End -->
+
+ 
+  <!-- Page Header Start -->
+  <div class="container-fluid page-header mb-5">
+      <div class="d-flex flex-column align-items-center justify-content-center pt-0 pt-lg-5" style="min-height: 400px">
+          <h4 class="display-4 mb-3 mt-0 mt-lg-5 text-white text-uppercase font-weight-bold">Asistencia</h4>
+          <div class="d-inline-flex">
+              <p class="m-0 text-white"><a class="text-white" href="">Home</a></p>
+              <p class="m-0 text-white px-2">/</p>
+              <p class="m-0 text-white">YAMIX</p>
+          </div>
+      </div>
+  </div>
+  <!-- Page Header End -->
+
+<!-- Servicios que Ofrecemos Start -->
+<div id="servicesCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
+  <!-- Indicadores -->
+  <ol class="carousel-indicators">
+    <li data-target="#servicesCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#servicesCarousel" data-slide-to="1"></li>
+    <li data-target="#servicesCarousel" data-slide-to="2"></li>
+  </ol>
+
+  <!-- Contenido del carrusel -->
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <div class="container-card">
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2015/06/24/16/36/office-820390_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Diseño Gràfico</h3>
+            <p>
+              Podemos crear la identidad corporativa de tu empresa. Diseño ,
+              Maquetación de folletos, Catálogos, Papelería y mucho más.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2015/11/05/09/52/touch-screen-1023966_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Gestión de Redes</h3>
+            <p>
+              Nosotros creamos y optimizamos tus perfiles en las Redes Sociales.
+              Importantes para que tu presencia online sea completa.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2021/08/05/12/36/software-development-6523979_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Desarrollo Web</h3>
+            <p>
+              Creamos tu página web utilizando las últimas tecnologías
+              disponibles. Una Web adaptativa a tu móvil o Tablet y con un gestor
+              de contenido fácil.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 2 - Puedes duplicar este bloque para agregar más tarjetas -->
+    <div class="carousel-item">
+      <div class="container-card">
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2015/06/24/16/36/office-820390_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Diseño Gràfico</h3>
+            <p>
+              Podemos crear la identidad corporativa de tu empresa. Diseño ,
+              Maquetación de folletos, Catálogos, Papelería y mucho más.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2015/11/05/09/52/touch-screen-1023966_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Gestión de Redes</h3>
+            <p>
+              Nosotros creamos y optimizamos tus perfiles en las Redes Sociales.
+              Importantes para que tu presencia online sea completa.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2021/08/05/12/36/software-development-6523979_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Desarrollo Web</h3>
+            <p>
+              Creamos tu página web utilizando las últimas tecnologías
+              disponibles. Una Web adaptativa a tu móvil o Tablet y con un gestor
+              de contenido fácil.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles (flechas) -->
+  <a class="carousel-control-prev" href="#servicesCarousel" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#servicesCarousel" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+<!-- Servicios que Ofrecemos End -->
+
+  <style>
+    @import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: "Montserrat", sans-serif;
+        }
+        /*Cards*/
+        .container-card {
+          width: 100%;
+          display: flex;
+          max-width: 1100px;
+          margin: auto;
+        }
+        .title-cards {
+          width: 100%;
+          max-width: 1080px;
+          margin: auto;
+          padding: 20px;
+          margin-top: 20px;
+          text-align: center;
+          color: #7a7a7a;
+        }
+        .card {
+          width: 100%;
+          margin: 20px;
+          border-radius: 6px;
+          overflow: hidden;
+          background: #fff;
+          box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);
+          transition: all 400ms ease-out;
+          cursor: default;
+        }
+        .card:hover {
+          box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.4);
+          transform: translateY(-3%);
+        }
+        .card img {
+          width: 100%;
+          height: 210px;
+        }
+        .card .contenido-card {
+          padding: 15px;
+          text-align: center;
+        }
+        .card .contenido-card h3 {
+          margin-bottom: 15px;
+          color: #7a7a7a;
+        }
+        .card .contenido-card p {
+          line-height: 1.8;
+          color: #6a6a6a;
+          font-size: 14px;
+          margin-bottom: 5px;
+        }
+        .card .contenido-card a {
+          display: inline-block;
+          padding: 10px;
+          margin-top: 10px;
+          text-decoration: none;
+          color: #2fb4cc;
+          border: 1px solid #2fb4cc;
+          border-radius: 4px;
+          transition: all 400ms ease;
+          margin-bottom: 5px;
+        }
+        .card .contenido-card a:hover {
+          background: #2fb4cc;
+          color: #fff;
+        }
+        @media only screen and (min-width: 320px) and (max-width: 768px) {
+          .container-card {
+            flex-wrap: wrap;
+          }
+          .card {
+            margin: 15px;
+          }
+        }
+        </style>
+  
+
+<!-- Class Timetable Start -->
+<div class="container gym-feature py-5">
+  <div class="d-flex flex-column text-center mb-5">
+      <h4 class="text-primary font-weight-bold">Horario de clases</h4>
+      <h4 class="display-4 font-weight-bold">Cursos y instructores</h4>
+  </div>
+  <div class="tab-class">
+      <ul class="nav nav-pills justify-content-center mb-4" id="courseNav">
+          <!-- Los botones de filtro por curso se generarán aquí dinámicamente -->
+      </ul>
+      <div class="tab-content">
+          <!-- Filtro por curso -->
+          <div class="text-center mb-4">
+              <button class="btn btn-primary" id="clearFilter">Mostrar todas las clases</button>
+          </div>
+          <!-- All Classes Tab -->
+          <div id="class-all" class="container tab-pane p-0 active">
+              <div class="table-responsive">
+                  <table class="table table-bordered table-lg m-0">
+                      <thead class="bg-secondary text-white text-center">
+                          <tr>
+                              <th>Horarios</th>
+                              <th>Lunes</th>
+                              <th>Martes</th>
+                              <th>Miercoles</th>
+                              <th>Jueves</th>
+                              <th>Viernes</th>
+                          </tr>
+                      </thead>
+                      <tbody class="text-center">
+                          <!-- Placeholder for dynamically added content -->
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- Class Timetable End -->
+
+<script>
+let clasesGlobal = [];  // Variable para almacenar las clases
+
+// Función para obtener los datos y llenar la tabla
+async function fetchClases() {
+  try {
+      const response = await fetch('http://localhost:4000/api/traerPara');
+      const clases = await response.json();
+      clasesGlobal = clases;  // Guardar las clases para usarlas en el filtro
+
+      // Llenar la tabla de todas las clases
+      const tableBody = document.querySelector('#class-all tbody');
+      tableBody.innerHTML = ''; // Limpiar la tabla antes de llenarla
+
+      // Días de la semana en orden (solo hasta el viernes)
+      const diasSemana = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+      // Mostrar todas las clases por defecto
+      displayClasses(clases);
+
+      // Crear botones de filtro para cada curso
+      createFilterButtons(clases);
+
+  } catch (error) {
+      console.error('Error al cargar las clases:', error);
+  }
+}
+
+// Crear botones de filtro por nombre de curso
+function createFilterButtons(clases) {
+  const filterButtonsDiv = document.getElementById('courseNav');
+  filterButtonsDiv.innerHTML = '';  // Limpiar los botones anteriores
+
+  const uniqueCursos = [...new Set(clases.map(clase => clase.nombre_curso))]; // Obtener nombres únicos de cursos
+
+  uniqueCursos.forEach(curso => {
+      const button = document.createElement('button');  // Cambiar de 'a' a 'button'
+      button.classList.add('btn', 'btn-primary', 'm-1');  // Agregar el estilo btn btn-primary
+      button.textContent = curso;
+      button.addEventListener('click', (event) => {
+          event.preventDefault();
+          filterByCourse(curso);
+      });
+      filterButtonsDiv.appendChild(button);
+  });
+}
+
+// Filtrar las clases por nombre de curso
+function filterByCourse(cursoName) {
+  const filteredClasses = clasesGlobal.filter(clase => clase.nombre_curso === cursoName);
+  displayClasses(filteredClasses);
+}
+
+// Mostrar todas las clases
+document.getElementById('clearFilter').addEventListener('click', () => {
+  displayClasses(clasesGlobal); // Mostrar todas las clases
+});
+
+// Función para mostrar las clases en la tabla
+function displayClasses(clases) {
+  const tableBody = document.querySelector('#class-all tbody');
+  tableBody.innerHTML = '';  // Limpiar la tabla antes de llenarla
+
+  // Días de la semana en orden (solo hasta el viernes)
+  const diasSemana = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+  clases.forEach(clase => {
+      const row = document.createElement('tr');
+
+      const timeCell = document.createElement('td');
+      timeCell.textContent = clase.time;
+
+      timeCell.style.backgroundColor = 'black';
+      timeCell.style.color = 'white';
+      timeCell.style.fontWeight = 'bold';
+      timeCell.style.textAlign = 'center';
+      row.appendChild(timeCell);
+
+      diasSemana.forEach(dia => {
+          const diaCell = document.createElement('td');
+          const cursoInstructorDiv = document.createElement('div');
+          const curso = document.createElement('div');
+          curso.textContent = clase.nombre_curso;
+          cursoInstructorDiv.appendChild(curso);
+
+          const instructor = document.createElement('div');
+          instructor.textContent = clase.nombre_usuario;
+          cursoInstructorDiv.appendChild(instructor);
+
+          diaCell.appendChild(cursoInstructorDiv);
+          row.appendChild(diaCell);
+      });
+
+      tableBody.appendChild(row);
+  });
+}
+
+// Llamar la función para cargar las clases cuando se cargue la página
+fetchClases();
+</script>
+
+
+
+<div class="container pt-5 team">
+  <div class="d-flex flex-column text-center mb-5">
+    <h4 class="text-primary font-weight-bold">Catalogo</h4>
+    <h4 class="display-4 font-weight-bold">Productos recomendados</h4>
+  </div>
+  
+  <!-- Carrusel de productos -->
+  <div id="productosCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
+    <div class="carousel-inner">
+      <!-- Aquí se cargarán los productos dinámicamente -->
+    </div>
+    <a class="carousel-control-prev" href="#productosCarousel" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#productosCarousel" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+</div>
+
+<script>
+async function obtenerCatalogo() {
+  try {
+    const response = await fetch("http://localhost:4000/api/get-all");
+    const productos = await response.json();
+
+    if (!productos || productos.length === 0) {
+      console.warn("No se encontraron productos.");
+      return;
+    }
+
+    cargarProductosEnCatalogo(productos);
+  } catch (error) {
+    console.error("Error al cargar los productos:", error);
+  }
+}
+
+function cargarProductosEnCatalogo(productos) {
+  const carouselInner = document.querySelector("#productosCarousel .carousel-inner");
+  carouselInner.innerHTML = ""; // Limpiar contenido previo
+
+  // Dividir los productos en grupos de 4 para las diapositivas del carrusel
+  let productosPorCarrusel = [];
+  for (let i = 0; i < productos.length; i += 4) {
+    productosPorCarrusel.push(productos.slice(i, i + 4));
+  }
+
+  productosPorCarrusel.forEach((grupo, index) => {
+    const slide = document.createElement("div");
+    slide.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+
+    const carouselItems = document.createElement("div");
+    carouselItems.className = "profile-container";
+
+    grupo.forEach((producto) => {
+      const tarjeta = document.createElement("div");
+      tarjeta.className = "profile-card";
+
+      // Aplicar la imagen de fondo con formato estándar
+      tarjeta.style.background = `url(${producto.imagen_producto}) no-repeat 50% / cover`;
+
+      // Contenido de la tarjeta
+      const contenido = `
+        <div class="profile-content">
+          <h2>${producto.nombre_producto}</h2>
+          <span>${producto.descripcion.slice(0, 22)}${producto.descripcion.length > 22 ? "..." : ""}</span>
+        </div>
+      `;
+
+      tarjeta.innerHTML = contenido;
+      carouselItems.appendChild(tarjeta);
+    });
+
+    slide.appendChild(carouselItems);
+    carouselInner.appendChild(slide);
+  });
+}
+
+// Esperar a que el DOM esté cargado para ejecutar la función
+document.addEventListener("DOMContentLoaded", obtenerCatalogo);
+</script>
+
+
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap");
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Contenedor del carrusel */
+  .carousel-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden; /* Para ocultar el contenido que sale fuera */
+    width: 100%;
+    padding: 20px 0;
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 10;
+    padding: 10px;
+  }
+
+  .prev-btn {
+    left: 10px;
+  }
+
+  .next-btn {
+    right: 10px;
+  }
+
+  .profile-container {
+    display: flex;
+    gap: 10px;
+    transition: scroll 0.3s ease;
+  }
+
+  .profile-card {
+    flex: 0 0 250px;
+    border-radius: 0.5rem;
+    transition: 0.5s ease-in-out;
+    cursor: pointer;
+    box-shadow: 1px 5px 15px #1e0e3e;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1 / 1.5; /* Mantener proporción estándar */
+    background-size: cover; /* Asegura que la imagen cubra todo el área */
+    background-position: center; /* Centra la imagen */
+    height: 500px;
+  }
+
+  .profile-content {
+    font-size: 1.5rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    opacity: 0;
+    flex-direction: column;
+    height: 100%;
+    justify-content: flex-end;
+    background: linear-gradient(
+      0deg,
+      rgba(2, 2, 46, 0.6755077030812324) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: translateY(100%);
+    transition: opacity 0.5s ease-in-out, transform 0.5s 0.2s;
+    visibility: hidden;
+  }
+
+  .profile-content span {
+    display: block;
+    margin-top: 5px;
+    font-size: 1.2rem;
+  }
+
+  .profile-card:hover {
+    flex: 0 0 700px;
+    box-shadow: 1px 3px 15px #7645d8;
+    transform: translateY(-30px);
+  }
+
+  .profile-card:hover .profile-content {
+    opacity: 1;
+    transform: translateY(0%);
+    visibility: visible;
+  }
+</style>
+
+
+<!-- Footer Start -->
+<div class="footer container-fluid mt-5 py-5 px-sm-3 px-md-5 text-white">
+    <div class="row pt-5">
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-primary mb-4">Contacto</h4>
+            <p><i class="fa fa-map-marker-alt mr-2"></i>Unidad Deportiva Principal De Copacabana</p>
+            <p><i class="fa fa-phone-alt mr-2"></i>4016923</p>
+            <p><i class="fa fa-envelope mr-2"></i>Yamix60@gmail.com</p>
+            <div class="d-flex justify-content-start mt-4">
+                <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-primary mb-4"> Links</h4>
+            <div class="d-flex flex-column justify-content-start">
+                <a class="text-white mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                <a class="text-white mb-2" href="/about"><i class="fa fa-angle-right mr-2"></i>Sobre nosotros</a>
+                <a class="text-white mb-2" href="/clases"><i class="fa fa-angle-right mr-2"></i>Clases</a>
+                <a class="text-white" href="/contac"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-primary mb-4">Popular Links</h4>
+            <div class="d-flex flex-column justify-content-start">
+                <a class="text-white mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                <a class="text-white mb-2" href="/about"><i class="fa fa-angle-right mr-2"></i>Sobre nosotros</a>
+                <a class="text-white mb-2" href="/clases"><i class="fa fa-angle-right mr-2"></i>Clases</a>
+                <a class="text-white" href="/contac"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-primary mb-4">Horarios</h4>
+            <h5 class="text-white">Lunes - Viernes</h5>
+            <p>8.00 AM - 10.00 PM</p>
+        </div>
+    </div>
+    <div class="container border-top border-dark pt-5">
+        <p class="m-0 text-center text-white">
+            &copy; <a class="text-white font-weight-bold" href="/">Yamix</a>. Derechos reservados. Diseñado por
+            <a class="text-white font-weight-bold" href="/">Yamix</a>
+        </p>
+    </div>
+  </div>
+  <!-- Footer End -->
+       <!-- JavaScript Libraries -->
+       <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+       <script src="c/lib/easing/easing.min.js"></script>
+       <script src="c/lib/waypoints/waypoints.min.js"></script>
+   
+       <!-- Contact Javascript File -->
+       <script src="c/mail/jqBootstrapValidation.min.js"></script>
+       <script src="c/mail/contact.js"></script>
+   
+       <!-- Template Javascript -->
+       <script src="c/js/main.js"></script>

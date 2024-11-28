@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Calendario</title>
+    <link rel="stylesheet" type="text/css" href="css/fullcalendar.min.css">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="c/css/style.min.css" rel="stylesheet">
+   
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
+  
+</head>
+
+</div>
+<body class="bg-white">
+    <!-- Navbar Start -->
+<div class="container-fluid p-0 nav-bar">
+  <nav class="navbar navbar-expand-lg bg-none navbar-dark py-3">
+      <a href="" class="navbar-brand">
+          <h1 class="m-0 display-4 font-weight-bold text-uppercase text-white">YAMIX</h1>
+      </a>
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+          <div class="navbar-nav ml-auto p-4 bg-secondary">
+              <% if (!permisos || permisos.length === 0) { %>
+                  <!-- Enlaces para usuarios no autenticados -->
+                  <a href="/login" class="nav-item nav-link">Iniciar Sesión</a>
+                  <a href="/register" class="nav-item nav-link">Inscribirme</a>
+                  <a href="/" class="nav-item nav-link">Home</a>
+                  <a href="/about" class="nav-item nav-link">Nosotros</a>
+                  <a href="/clases" class="nav-item nav-link active">Clases</a>
+              <% } else { %>
+                  <!-- Enlaces para usuarios autenticados -->
+                  <% if (permisos.includes('perfil')) { %>
+                      <a href="/perfil" class="nav-item nav-link">Perfil</a>
+                  <% } %>
+                  <% if (permisos.includes('calendario estudiante') || permisos.includes('calendario profesor')) { %>
+                      <a href="/calendarioUser" class="nav-item nav-link">Calendario</a>
+                  <% } %>
+                  <% if (permisos.includes('dashboard')) { %>
+                      <a href="/dashboard" class="nav-item nav-link">Dashboard</a>
+                  <% } %>
+                  <% if (permisos.includes('catalogo estudiante')) { %>
+                      <a href="/catalogouser" class="nav-item nav-link">Catálogo</a>
+                  <% } %>
+                  <% if (permisos.includes('asistencia profesor')) { %>
+                      <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
+                  <% } else if (Array.isArray(permisos) && permisos.length > 0) { %>
+                      <a href="/asistenciaUser" class="nav-item nav-link">Asistencia</a>
+                  <% } %>
+                  <a href="#" id="logout-link" class="nav-item nav-link">Salir</a>
+              <% } %>
+          </div>
+      </div>
+  </nav>
+</div>
+<!-- Navbar End -->
+
+
+
+  <!-- Page Header Start -->
+  <div class="container-fluid page-header mb-5">
+      <div class="d-flex flex-column align-items-center justify-content-center pt-0 pt-lg-5" style="min-height: 400px">
+          <h4 class="display-4 mb-3 mt-0 mt-lg-5 text-white text-uppercase font-weight-bold">Perfil</h4>
+          <div class="d-inline-flex">
+              <p class="m-0 text-white"><a class="text-white" href="">Home</a></p>
+              <p class="m-0 text-white px-2">/</p>
+              <p class="m-0 text-white">YAMIX</p>
+          </div>
+      </div>
+  </div>
+  <!-- Page Header End -->
+
+  <div class="content-container">
+    <!-- Profile Card -->
+    <div class="user-card">
+      <div class="image-container">
+        <img src="./img/boxeo.jpg" alt="Profile">
+      </div>
+  
+      <div class="card-content">
+        <div class="user-details">
+         
+          <h2 id="userName">
+            Henry Francis
+            <br>
+            <span>henry@example.com</span>
+          </h2>
+  
+       
+          <h3 id="userDOB">Date of Birth: 1990-01-01</h3>
+  
+          <div class="button-group">
+            <button id="editBtn">Editar</button>
+   
+          </div>
+        </div>
+  
+      
+        <div class="edit-form" id="editForm" style="display: none;">
+          <input type="text" id="editName" placeholder="First Name" value="Henry">
+          <input type="text" id="editLastName" placeholder="Last Name" value="Francis">
+          <input type="email" id="editEmail" placeholder="Email" value="henry@example.com">
+          <input type="date" id="editDOB" placeholder="Date of Birth" value="1990-01-01">
+          <button id="saveBtn">Guardar</button>
+        </div>
+      </div>
+    </div>
+    <!-- End Profile Card -->
+  </div>
+  
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      box-sizing: border-box;
+    }
+  
+    /* Main container to center content */
+    .content-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+  
+    /* Profile Card Styles */
+    .user-card {
+      position: relative;
+      width: 550px;
+      height: 190px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+      transition: 0.5s ease-in-out;
+    }
+  
+    .user-card:hover {
+      height: 450px;
+    }
+  
+    .user-card .image-container {
+      position: absolute;
+      left: 50%;
+      top: -50px;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 150px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      transition: 0.55s;
+    }
+  
+    .user-card:hover .image-container {
+      width: 250px;
+      height: 250px;
+    }
+  
+    .user-card .image-container img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  
+    .user-card .card-content {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+  
+    .user-card .user-details {
+      text-align: center;
+      padding: 40px;
+      width: 100%;
+      transition: 0.55s;
+      transform: translateY(125px);
+    }
+  
+    .user-card:hover .user-details {
+      transform: translateY(0px);
+    }
+  
+    .user-card .user-details h2 {
+      font-size: 1.25em;
+      font-weight: 600;
+      color: #555;
+      margin-top: 20px;
+      line-height: 1.4;
+    }
+  
+    .user-card .user-details h2 span {
+      font-size: 0.85em;
+      font-weight: 400;
+      color: #777;
+      display: block;
+      margin-top: 5px;
+    }
+  
+    .user-card .user-details h3 {
+      font-size: 1em;
+      font-weight: 500;
+      color: #555;
+      margin-top: 10px;
+    }
+  
+    .user-card .stats {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+  
+    .user-card .stats h3 {
+      font-size: 1em;
+      color: #555;
+      line-height: 1.2em;
+      font-weight: 600;
+      text-align: center;
+    }
+  
+    .user-card .stats h3 span {
+      font-size: 0.85em;
+      font-weight: 400;
+      opacity: 0.5;
+    }
+  
+    .user-card .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+  
+    .user-card .button-group button {
+      padding: 10px 30px;
+      border: none;
+      outline: none;
+      border-radius: 5px;
+      font-size: 1em;
+      font-weight: 500;
+      background: rgb(246, 3, 3);
+      color: #fff;
+      cursor: pointer;
+    }
+  
+    .user-card .button-group button:nth-child(2) {
+      border: 1px solid #999;
+      color: #999;
+      background: #fff;
+    }
+  
+    /* Edit Form Styles */
+    .edit-form {
+      text-align: center;
+      padding: 20px;
+      width: 100%;
+    }
+  
+    .edit-form input {
+      margin-bottom: 10px;
+      padding: 10px;
+      width: 80%;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+  
+    .edit-form button {
+      padding: 10px 30px;
+      border: none;
+      outline: none;
+      border-radius: 5px;
+      font-size: 1em;
+      font-weight: 500;
+      background: rgb(246, 3, 3);
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+  
+  <script>
+    document.getElementById("editBtn").addEventListener("click", function () {
+      document.getElementById("editForm").style.display = "block"; // Mostrar el formulario
+      document.querySelector(".user-details").style.display = "none"; // Ocultar detalles
+    });
+  
+    document.getElementById("saveBtn").addEventListener("click", function () {
+      // Guardar los cambios (aquí puedes agregar tu lógica de guardar en backend)
+      const name = document.getElementById("editName").value;
+      const lastName = document.getElementById("editLastName").value;
+      const dob = document.getElementById("editDOB").value;
+  
+      // Actualizar la tarjeta con la nueva información
+      document.getElementById("userName").innerHTML = name + " " + lastName + "<br><span>" + document.getElementById("editEmail").value + "</span>"; // Nombre y correo
+      document.getElementById("userDOB").innerHTML = "Date of Birth: " + dob; // Mostrar la fecha de nacimiento actualizada
+  
+      // Ocultar el formulario y mostrar los detalles
+      document.getElementById("editForm").style.display = "none";
+      document.querySelector(".user-details").style.display = "block";
+    });
+  </script>
+  
+  
+
+<!-- Class Timetable Start -->
+<div class="container gym-feature py-5">
+  <div class="d-flex flex-column text-center mb-5">
+      <h4 class="text-primary font-weight-bold">Horario de clases</h4>
+      <h4 class="display-4 font-weight-bold">Cursos y instructores</h4>
+  </div>
+  <div class="tab-class">
+      <ul class="nav nav-pills justify-content-center mb-4" id="courseNav">
+          <!-- Los botones de filtro por curso se generarán aquí dinámicamente -->
+      </ul>
+      <div class="tab-content">
+          <!-- Filtro por curso -->
+          <div class="text-center mb-4">
+              <button class="btn btn-primary" id="clearFilter">Mostrar todas las clases</button>
+          </div>
+          <!-- All Classes Tab -->
+          <div id="class-all" class="container tab-pane p-0 active">
+              <div class="table-responsive">
+                  <table class="table table-bordered table-lg m-0">
+                      <thead class="bg-secondary text-white text-center">
+                          <tr>
+                              <th>Horarios</th>
+                              <th>Lunes</th>
+                              <th>Martes</th>
+                              <th>Miercoles</th>
+                              <th>Jueves</th>
+                              <th>Viernes</th>
+                          </tr>
+                      </thead>
+                      <tbody class="text-center">
+                          <!-- Placeholder for dynamically added content -->
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- Class Timetable End -->
+
+<script>
+let clasesGlobal = [];  // Variable para almacenar las clases
+
+// Función para obtener los datos y llenar la tabla
+async function fetchClases() {
+  try {
+      const response = await fetch('http://localhost:4000/api/traerPara');
+      const clases = await response.json();
+      clasesGlobal = clases;  // Guardar las clases para usarlas en el filtro
+
+      // Llenar la tabla de todas las clases
+      const tableBody = document.querySelector('#class-all tbody');
+      tableBody.innerHTML = ''; // Limpiar la tabla antes de llenarla
+
+      // Días de la semana en orden (solo hasta el viernes)
+      const diasSemana = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+      // Mostrar todas las clases por defecto
+      displayClasses(clases);
+
+      // Crear botones de filtro para cada curso
+      createFilterButtons(clases);
+
+  } catch (error) {
+      console.error('Error al cargar las clases:', error);
+  }
+}
+
+// Crear botones de filtro por nombre de curso
+function createFilterButtons(clases) {
+  const filterButtonsDiv = document.getElementById('courseNav');
+  filterButtonsDiv.innerHTML = '';  // Limpiar los botones anteriores
+
+  const uniqueCursos = [...new Set(clases.map(clase => clase.nombre_curso))]; // Obtener nombres únicos de cursos
+
+  uniqueCursos.forEach(curso => {
+      const button = document.createElement('button');  // Cambiar de 'a' a 'button'
+      button.classList.add('btn', 'btn-primary', 'm-1');  // Agregar el estilo btn btn-primary
+      button.textContent = curso;
+      button.addEventListener('click', (event) => {
+          event.preventDefault();
+          filterByCourse(curso);
+      });
+      filterButtonsDiv.appendChild(button);
+  });
+}
+
+// Filtrar las clases por nombre de curso
+function filterByCourse(cursoName) {
+  const filteredClasses = clasesGlobal.filter(clase => clase.nombre_curso === cursoName);
+  displayClasses(filteredClasses);
+}
+
+// Mostrar todas las clases
+document.getElementById('clearFilter').addEventListener('click', () => {
+  displayClasses(clasesGlobal); // Mostrar todas las clases
+});
+
+// Función para mostrar las clases en la tabla
+function displayClasses(clases) {
+  const tableBody = document.querySelector('#class-all tbody');
+  tableBody.innerHTML = '';  // Limpiar la tabla antes de llenarla
+
+  // Días de la semana en orden (solo hasta el viernes)
+  const diasSemana = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+  clases.forEach(clase => {
+      const row = document.createElement('tr');
+
+      const timeCell = document.createElement('td');
+      timeCell.textContent = clase.time;
+
+      timeCell.style.backgroundColor = 'black';
+      timeCell.style.color = 'white';
+      timeCell.style.fontWeight = 'bold';
+      timeCell.style.textAlign = 'center';
+      row.appendChild(timeCell);
+
+      diasSemana.forEach(dia => {
+          const diaCell = document.createElement('td');
+          const cursoInstructorDiv = document.createElement('div');
+          const curso = document.createElement('div');
+          curso.textContent = clase.nombre_curso;
+          cursoInstructorDiv.appendChild(curso);
+
+          const instructor = document.createElement('div');
+          instructor.textContent = clase.nombre_usuario;
+          cursoInstructorDiv.appendChild(instructor);
+
+          diaCell.appendChild(cursoInstructorDiv);
+          row.appendChild(diaCell);
+      });
+
+      tableBody.appendChild(row);
+  });
+}
+
+// Llamar la función para cargar las clases cuando se cargue la página
+fetchClases();
+</script>
+
+
+
+
+
+<!-- Footer Start -->
+<div class="footer container-fluid mt-5 py-5 px-sm-3 px-md-5 text-white">
+    <div class="row pt-5">
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-primary mb-4">Contacto</h4>
+            <p><i class="fa fa-map-marker-alt mr-2"></i>Unidad Deportiva Principal De Copacabana</p>
+            <p><i class="fa fa-phone-alt mr-2"></i>4016923</p>
+            <p><i class="fa fa-envelope mr-2"></i>Yamix60@gmail.com</p>
+            <div class="d-flex justify-content-start mt-4">
+                <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-primary mb-4"> Links</h4>
+            <div class="d-flex flex-column justify-content-start">
+                <a class="text-white mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                <a class="text-white mb-2" href="/about"><i class="fa fa-angle-right mr-2"></i>Sobre nosotros</a>
+                <a class="text-white mb-2" href="/clases"><i class="fa fa-angle-right mr-2"></i>Clases</a>
+                <a class="text-white" href="/contac"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-primary mb-4">Popular Links</h4>
+            <div class="d-flex flex-column justify-content-start">
+                <a class="text-white mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                <a class="text-white mb-2" href="/about"><i class="fa fa-angle-right mr-2"></i>Sobre nosotros</a>
+                <a class="text-white mb-2" href="/clases"><i class="fa fa-angle-right mr-2"></i>Clases</a>
+                <a class="text-white" href="/contac"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-primary mb-4">Horarios</h4>
+            <h5 class="text-white">Lunes - Viernes</h5>
+            <p>8.00 AM - 10.00 PM</p>
+        </div>
+    </div>
+    <div class="container border-top border-dark pt-5">
+        <p class="m-0 text-center text-white">
+            &copy; <a class="text-white font-weight-bold" href="/">Yamix</a>. Derechos reservados. Diseñado por
+            <a class="text-white font-weight-bold" href="/">Yamix</a>
+        </p>
+    </div>
+  </div>
+  <!-- Footer End -->   
