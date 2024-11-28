@@ -1,7 +1,9 @@
 const { promisify } = require('util');
+const fs = require('fs');
+const path = require('path');
 
-
-
+const FormData = require('form-data');
+const axios = require('axios');
 // Controlador para actualizar un curso
 exports.actualizarCurso = async (req, res) => {
     const { id } = req.params;
@@ -45,39 +47,41 @@ exports.traerCursos = async (req, res, next) => {
         res.status(500).send('Error al obtener los cursos');
     }
 };
-
-// Controlador para agregar un nuevo curso
 exports.agregarCurso = async (req, res) => {
     try {
+        // Acceder a los datos del curso y al archivo subido
         const { nombre_curso, descripcion, estado } = req.body;
+        const file = req.file; // El archivo subido se encuentra aquí
 
-        const response = await fetch(`${process.env.pathApi}/agregar_curso`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                nombre_curso,
-                descripcion,
-                estado
-            })
+        // Si no se subió archivo
+        if (!file) {
+            return res.status(400).json({ success: false, message: 'No se seleccionó una imagen' });
+        }
+
+        // Crear una instancia de FormData
+        const formData = new FormData();
+        formData.append('nombre_curso', nombre_curso);
+        formData.append('descripcion', descripcion);
+        formData.append('estado', estado);
+        formData.append('file', file.buffer, { filename: file.originalname });
+
+        // Realizar la solicitud POST con axios
+        const response = await axios.post(`${process.env.pathApi}/agregar_curso`, formData, {
+            headers: formData.getHeaders() // Establece los encabezados necesarios para el FormData
         });
 
-        if (response.ok) {
-            res.json({ success: true, message: 'Curso agregado exitosamente' });
+        // Verificar la respuesta
+        if (response.status === 200) {
+            res.status(200).json({ success: true, message: 'Curso agregado exitosamente' });
         } else {
-            const result = await response.json();
-            console.error('Error al agregar curso:', result);
-            res.status(response.status).json({ success: false, error: result.error || 'Error desconocido' });
+            console.error('Error al agregar curso:', response.data);
+            res.status(response.status).json({ success: false, error: response.data.error || 'Error desconocido' });
         }
     } catch (error) {
         console.error('Error al agregar curso:', error);
         res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
 };
-
-
-
 // Controlador para eliminar un curso
 exports.eliminarCurso = async (req, res) => {
     const { id } = req.params;
