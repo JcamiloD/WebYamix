@@ -59,7 +59,7 @@
                     <% if (permisos.includes('asistencia profesor')) { %>
                         <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
                     <% } else if (Array.isArray(permisos) && permisos.length > 0) { %>
-                        <a href="/asistenciaUser" class="nav-item nav-link">Asistencia</a>
+                        <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
                     <% } %>
                     <a href="/logout" id="logout-link" class="nav-item nav-link">Salir</a>
                 <% } %>
@@ -194,6 +194,140 @@
         </div>
     </div>
     <!-- Features End -->
+
+
+ <!-- Servicios que Ofrecemos Start -->
+ <div id="servicesCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
+  <!-- Indicadores -->
+  <ol class="carousel-indicators">
+    <li data-target="#servicesCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#servicesCarousel" data-slide-to="1"></li>
+    <li data-target="#servicesCarousel" data-slide-to="2"></li>
+  </ol>
+
+  <!-- Contenido del carrusel -->
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <div class="container-card">
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2015/06/24/16/36/office-820390_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Diseño Gràfico</h3>
+            <p>
+              Podemos crear la identidad corporativa de tu empresa. Diseño ,
+              Maquetación de folletos, Catálogos, Papelería y mucho más.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2015/11/05/09/52/touch-screen-1023966_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Gestión de Redes</h3>
+            <p>
+              Nosotros creamos y optimizamos tus perfiles en las Redes Sociales.
+              Importantes para que tu presencia online sea completa.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2021/08/05/12/36/software-development-6523979_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Desarrollo Web</h3>
+            <p>
+              Creamos tu página web utilizando las últimas tecnologías
+              disponibles. Una Web adaptativa a tu móvil o Tablet y con un gestor
+              de contenido fácil.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 2 - Puedes duplicar este bloque para agregar más tarjetas -->
+    <div class="carousel-item">
+      <div class="container-card">
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2015/06/24/16/36/office-820390_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Diseño Gràfico</h3>
+            <p>
+              Podemos crear la identidad corporativa de tu empresa. Diseño ,
+              Maquetación de folletos, Catálogos, Papelería y mucho más.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2015/11/05/09/52/touch-screen-1023966_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Gestión de Redes</h3>
+            <p>
+              Nosotros creamos y optimizamos tus perfiles en las Redes Sociales.
+              Importantes para que tu presencia online sea completa.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+        <div class="card">
+          <figure>
+            <img
+              src="https://cdn.pixabay.com/photo/2021/08/05/12/36/software-development-6523979_1280.jpg"
+              class="d-block w-100"
+            />
+          </figure>
+          <div class="contenido-card">
+            <h3>Desarrollo Web</h3>
+            <p>
+              Creamos tu página web utilizando las últimas tecnologías
+              disponibles. Una Web adaptativa a tu móvil o Tablet y con un gestor
+              de contenido fácil.
+            </p>
+            <a href="#">Leer Màs</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles (flechas) -->
+  <a class="carousel-control-prev" href="#servicesCarousel" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#servicesCarousel" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+<!-- Servicios que Ofrecemos End -->
+
 
 <!-- Class Timetable Start -->
 <div class="container gym-feature py-5">
