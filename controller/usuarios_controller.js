@@ -129,7 +129,6 @@ exports.agregarUsuario = async (req, res, next) => {
             contraseña: req.body.contrasena, // Asegúrate de que sea 'contrasena'
             id_rol: req.body.id_rol,
             estado: req.body.estado,
-            documentacion: req.body.documentacion === 'true', // Convertir a booleano si es cadena
             pagos: req.body.fecha_pagado || null // Enviar la fecha si existe, si no, null
         };
 
