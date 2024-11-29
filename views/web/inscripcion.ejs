@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>YAMIX</title>
     <link rel="stylesheet" href="css/login.css">
-
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
-
 <body>
     <section id="sec">
         <div class="form-box">
             <div class="form-value">
                 <form id="restablecerForm" action="/registro" method="post" onsubmit="validarFormulario(event)">
-                    <h2>Inscribete</h2>
+                    <h2>Inscríbete</h2>
                     <div class="inputbox">
                         <ion-icon name="person"></ion-icon>
                         <input name="nombre" type="text" id="nombre">
@@ -26,7 +24,7 @@
                     </div>
                     <div class="inputbox">
                         <ion-icon name="mail-outline"></ion-icon>
-                        <input name="correo" id="correo">
+                        <input name="gmail" id="correo">
                         <label for="">Correo</label>
                     </div>
                     <div class="inputbox">
@@ -34,18 +32,20 @@
                         <input name="fecha_nacimiento" type="date" id="nacimiento">
                     </div>
                     <div class="inputbox" id="confirmarContraseñaBox">
-                        <ion-icon name="eye-off-outline" class="show-password"
-                            onclick="togglePassword('contraseña', this)"></ion-icon>
+                        <ion-icon name="eye-off-outline" class="show-password" onclick="togglePassword('contraseña', this)"></ion-icon>
                         <input name="contraseña" type="password" id="contraseña">
                         <label for="confirmarContraseña">Contraseña</label>
                     </div>
                     <div class="inputbox" id="confirmarContraseñaBox">
                         <input type="password" name="confirmarContraseña" id="confirmarContraseña">
                         <label for="confirmarContraseña">Confirmar Contraseña</label>
-                        <ion-icon name="eye-off-outline" class="show-password"
-                            onclick="togglePassword('confirmarContraseña', this)"></ion-icon>
+                        <ion-icon name="eye-off-outline" class="show-password" onclick="togglePassword('confirmarContraseña', this)"></ion-icon>
                     </div>
-                    <button>Registrar</button>
+
+                    <!-- Google reCAPTCHA -->
+                    <div class="g-recaptcha" data-sitekey="6Le2640qAAAAAOck_dTlrMgxvOAmMhFve0-OksUT"></div>
+
+                    <button type="submit">Registrar</button>
                     <div class="register">
                         <p>¿Ya tienes cuenta? <a href="/login">Iniciar Sesión</a></p>
                     </div>
@@ -58,156 +58,173 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'></script>
+
     <script>
-
-
-
+        // Validar formulario antes de enviarlo
         async function validarFormulario(event) {
             event.preventDefault();
-            const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
-            const nombre = document.getElementById('nombre').value.trim();
-            const apellido = document.getElementById('apellido').value;
-            const contraseña = document.getElementById('contraseña').value;
-            const nacimiento = document.getElementById('nacimiento').value;
-            const correo = document.getElementById('correo').value.trim();
-            const confirmarContraseña = document.getElementById('confirmarContraseña').value;
-
-
-            if (!correo) {
+            console.log("Procesando formulario...");
+    
+            // Obtener la respuesta de reCAPTCHA
+            const captchaResponse = grecaptcha.getResponse();
+            console.log("Token de reCAPTCHA obtenido:", captchaResponse);
+    
+            if (!captchaResponse) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'El campo correo es obligatorio.'
+                    icon: "error",
+                    title: "Error",
+                    text: "Por favor, verifica que no eres un robot."
                 });
                 return;
             }
-
+    
+            // Verificar el captcha en el servidor
             try {
-
-                const response = await fetch('http://localhost:4000/api/verificar-correo', {
+                const captchaResponseData = await fetch('http://localhost:4000/api/verify-captcha', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ correo })
+                    body: JSON.stringify({ captchaResponse })
                 });
-
-                const result = await response.json();
-
-                if (response.ok) {
+    
+                const verificationResult = await captchaResponseData.json();
+                console.log("Resultado de verificación de reCAPTCHA:", verificationResult);
+    
+                if (!verificationResult.success) {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Correo en uso.'
+                        icon: "error",
+                        title: "Error",
+                        text: "Verificación de reCAPTCHA fallida."
                     });
                     return;
-                } else {
-                    next()
                 }
             } catch (error) {
-                console.error('El correo no existe');
-            }
-
-         
-            // Calcular la edad
-            const fechaNacimiento = new Date(nacimiento);
-            const hoy = new Date();
-            const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
-            const mes = hoy.getMonth() - fechaNacimiento.getMonth();
-
-            if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
-                edad--; // Ajustar la edad si el cumpleaños no ha ocurrido este año
-            }
-
-            // Validar el rango de edad
-            if (edad < 8 || edad > 65) {
+                console.error("Error al verificar reCAPTCHA:", error);
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'La edad debe estar entre 8 y 65 años.'
+                    icon: "error",
+                    title: "Error",
+                    text: "Hubo un error al verificar reCAPTCHA."
                 });
                 return;
             }
-            // Validación del código
-            if (!nombre || !apellido || !contraseña || !correo) {
+    
+            // Validaciones de campos
+            const form = document.getElementById('restablecerForm'); // Cambiar el ID aquí
+            const nombre = form.nombre.value.trim();
+            const apellido = form.apellido.value.trim();
+            const correo = form.correo.value.trim();
+            const contraseña = form.contraseña.value;
+            const confirmarContraseña = form.confirmarContraseña.value;
+            const fechaNacimiento = form.nacimiento.value;
+    
+            if (!nombre || !apellido || !correo || !contraseña || !confirmarContraseña || !fechaNacimiento) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Todos los campos obligatorio.'
+                    icon: "error",
+                    title: "Error",
+                    text: "Todos los campos son obligatorios."
                 });
                 return;
             }
-
-            if (contraseña != confirmarContraseña) {
+    
+            if (contraseña !== confirmarContraseña) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Las contraseñas no coinciden.'
+                    icon: "error",
+                    title: "Error",
+                    text: "Las contraseñas no coinciden."
                 });
                 return;
             }
-
-            // Validación de contraseñas
-            if (!correo.includes('@')) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Correo inválido.'
-                });
-                return;
-            }
-
+    
+            const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
             if (!passwordRegex.test(contraseña)) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'La contraseña debe tener al menos 6 caracteres, incluyendo letras min o mayus , números y caracteres especiales.'
+                    icon: "error",
+                    title: "Error",
+                    text: "La contraseña debe tener al menos 6 caracteres, incluyendo letras, números y caracteres especiales."
                 });
                 return;
             }
-            // Envía el formulario después de que se cierre la alerta
-            document.getElementById('restablecerForm').submit();
-        }
-
-        function togglePassword(inputId, icon) {
-            const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-                icon.name = "eye-outline";
-            } else {
-                input.type = "password";
-                icon.name = "eye-off-outline";
+    
+            const edad = calcularEdad(fechaNacimiento);
+            if (edad < 8 || edad > 65) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "La edad debe estar entre 8 y 65 años."
+                });
+                return;
             }
-        }
-    </script>
-
-    <script>
-    <% if (typeof alert !== 'undefined') { %>
-            Swal.fire({
-                icon: '<%= alertType %>',
-                title: '<%= alertType === "success" ? "¡Éxito!" : "¡Error!" %>',
-                text: '<%= alert %>',
-                confirmButtonText: 'Aceptar'
-            }).then(() => {
-                window.location = '/<%= ruta %>';  // Redirige después de cerrar la alerta
-            });
-    <% } %>
-    </script>
-
-
-
-    <script>
-            function togglePassword(inputId, icon) {
-                const input = document.getElementById(inputId);
-                if (input.type === "password") {
-                    input.type = "text";
-                    icon.name = "eye-outline";
+    
+            // Enviar datos al backend para registro
+            try {
+                const formData = {
+                    nombre,
+                    apellido,
+                    correo,
+                    contraseña,
+                    fecha_nacimiento: fechaNacimiento,
+                    captchaResponse
+                };
+    
+                const registroResponse = await fetch('http://localhost:4000/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+    
+                const registroResult = await registroResponse.json();
+                console.log("Resultado de registro:", registroResult);
+    
+                if (registroResponse.ok) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Registro exitoso",
+                        text: "Tu cuenta ha sido creada. Serás redirigido al login."
+                    }).then(() => {
+                        window.location.href = '/login';
+                    });
                 } else {
-                    input.type = "password";
-                    icon.name = "eye-off-outline";
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: registroResult.message || "Hubo un error al registrar."
+                    });
                 }
+            } catch (error) {
+                console.error("Error al registrar usuario:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Hubo un error al procesar tu solicitud."
+                });
             }
+        }
+    
+        // Calcular edad en base a la fecha de nacimiento
+        function calcularEdad(fechaNacimiento) {
+            const fecha = new Date(fechaNacimiento);
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - fecha.getFullYear();
+            const mes = hoy.getMonth() - fecha.getMonth();
+            if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) {
+                edad--;
+            }
+            return edad;
+        }
+         // Función para mostrar/ocultar contraseñas
+    function togglePassword(inputId, icon) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.name = "eye-outline";
+        } else {
+            input.type = "password";
+            icon.name = "eye-off-outline";
+        }
+    }
     </script>
 </body>
-
 </html>
