@@ -1,33 +1,44 @@
 const { promisify } = require('util');
-const fs = require('fs');
-const path = require('path');
+
 
 const FormData = require('form-data');
 const axios = require('axios');
-// Controlador para actualizar un curso
+
+
+
 exports.actualizarCurso = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const response = await fetch(`http://localhost:4000/api/actualizar_curso/${id}`, {
-            method: 'POST', // Cambiar a 'PUT' si la API lo requiere
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(req.body)
-        });
+        const formData = new FormData();
+        
+        // Agregar los campos recibidos
+        formData.append('nombre_curso', req.body.nombre_curso || '');
+        formData.append('descripcion', req.body.descripcion || '');
+        formData.append('estado', req.body.estado || '');
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Error al actualizar el curso:', errorData);
-            return res.status(response.status).json({ error: errorData.error || 'Error al actualizar el curso' });
+        // Verificar y agregar el archivo
+        if (req.file) {
+            formData.append('file', req.file.buffer, req.file.originalname); // Asegúrate de manejar correctamente el archivo
         }
 
-        const result = await response.json();
-        res.json({ success: true, data: result });        
+        // Enviar la solicitud al servidor principal
+        const response = await axios.post(`http://localhost:4000/api/actualizar_curso/${id}`, formData, {
+            headers: {
+                ...formData.getHeaders(),
+            },
+        });
+
+        // Responder con éxito
+        res.json({ success: true, data: response.data });
     } catch (error) {
-        console.error('Error al actualizar el curso:', error);
-        res.status(500).send('Error interno del servidor');
+        console.error('Error al actualizar el curso:', error.response?.data || error.message);
+        res.status(error.response?.status || 500).json({
+            error: error.response?.data?.error || 'Error interno del servidor',
+        });
     }
 };
+
 
 // Controlador para traer todos los cursos y renderizar en la vista
 exports.traerCursos = async (req, res, next) => {
@@ -47,6 +58,7 @@ exports.traerCursos = async (req, res, next) => {
         res.status(500).send('Error al obtener los cursos');
     }
 };
+
 exports.agregarCurso = async (req, res) => {
     try {
         // Acceder a los datos del curso y al archivo subido
