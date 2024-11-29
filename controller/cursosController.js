@@ -82,6 +82,9 @@ exports.agregarCurso = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
 };
+
+
+
 // Controlador para eliminar un curso
 exports.eliminarCurso = async (req, res) => {
     const { id } = req.params;
@@ -103,6 +106,7 @@ exports.eliminarCurso = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
 };
+
 
 // Controlador para obtener un curso específico por su ID
 exports.obtenerCurso = async (req, res) => {
