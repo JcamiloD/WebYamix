@@ -17,7 +17,10 @@ const upload = multer({ storage: storage });
 
 router.post('/agregar_curso',upload.single('file'), cursos.agregarCurso);
 
-router.put('/actualizar_curso/:id', cursos.actualizarCurso);
+router.post('/actualizar_curso/:id', upload.single('file'), cursos.actualizarCurso);
+
+
+
 router.delete('/eliminar_curso/:id', cursos.eliminarCurso);
 router.get('/obtener_curso/:id_curso', cursos.obtenerCurso);
 router.get('/traer_cursos', cursos.traerCursos);

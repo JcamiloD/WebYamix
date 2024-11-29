@@ -307,3 +307,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Esperar a que el DOM esté cargado para ejecutar la función
     document.addEventListener('DOMContentLoaded', obtenerCatalogo);
+
+
+    

@@ -166,6 +166,10 @@
                         <textarea name="descripcion" class="form-control" id="editDescripcionCurso" required></textarea>
                     </div>
                     <div class="form-group">
+                        <label for="editfile">Imagen</label>
+                        <input type="file" class="form-control" id="editfile" name="file">
+                    </div>
+                    <div class="form-group">
                         <label for="editEstadoCurso">Estado</label>
                         <select name="estado" class="form-control" id="editEstadoCurso" required>
                             <option value="activo">Activo</option>
@@ -218,12 +222,10 @@ $('#miTabla').on('click', '.button-iconn[data-target^="#imageModal-"]', function
 
 const nombreCursoValido = /^[a-zA-Z]+( [a-zA-Z]+)*$/;
 
-
 $('#editForm').on('submit', function (event) {
-    event.preventDefault(); 
+    event.preventDefault();
 
     const nombreCurso = $('#editNombreCurso').val();
-
 
     if (!nombreCursoValido.test(nombreCurso)) {
         Swal.fire({
@@ -232,30 +234,47 @@ $('#editForm').on('submit', function (event) {
             text: 'El nombre del curso solo puede contener letras y un único espacio entre palabras.',
             confirmButtonText: 'Aceptar'
         });
-        return; 
+        return;
+    }
+
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+    const fileInput = document.getElementById('editfile');
+    if (fileInput.files.length > 0) {
+        const fileType = fileInput.files[0].type;
+
+        // Validar tipo de archivo
+        if (!validImageTypes.includes(fileType)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Formato de archivo no permitido',
+                text: 'Solo se aceptan archivos de tipo: JPEG, PNG, GIF o WEBP.',
+                confirmButtonText: 'Aceptar'
+            });
+            return;
+        }
     }
 
     const idCurso = $('#editIdCurso').val();
-    const formData = {
-        nombre_curso: nombreCurso,
-        descripcion: $('#editDescripcionCurso').val(),
-        estado: $('#editEstadoCurso').val()
-    };
+    const formData = new FormData();
+    formData.append('nombre_curso', $('#editNombreCurso').val());
+    formData.append('descripcion', $('#editDescripcionCurso').val());
+    formData.append('estado', $('#editEstadoCurso').val());
 
+    if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]); // Agregar el archivo seleccionado
+    }
 
     $('#spinner').show();
 
-   
     fetch(`/actualizar_curso/${idCurso}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        method: 'POST',
+        body: formData // Enviar el FormData directamente
     })
         .then(response => response.json())
         .then(data => {
             $('#spinner').hide();
 
-     
             if (data.error) {
                 Swal.fire({
                     icon: 'error',
@@ -270,13 +289,13 @@ $('#editForm').on('submit', function (event) {
                     text: 'El curso se ha actualizado correctamente.',
                     confirmButtonText: 'Aceptar'
                 }).then(() => {
-                    window.location.reload(); 
+                    window.location.reload();
                 });
             }
         })
         .catch(error => {
             console.error('Error al actualizar el curso:', error);
-            $('#spinner').hide(); 
+            $('#spinner').hide();
             Swal.fire({
                 icon: 'error',
                 title: 'Error interno',
@@ -285,7 +304,6 @@ $('#editForm').on('submit', function (event) {
             });
         });
 });
-
 $('#addForm').on('submit', function (event) {
     event.preventDefault(); // Evitar envío por defecto
 
@@ -303,16 +321,11 @@ $('#addForm').on('submit', function (event) {
         return;
     }
 
-    // Crear FormData para enviar el archivo y los datos
-    const formData = new FormData();
-    formData.append('nombre_curso', nombreCurso);
-    formData.append('descripcion', $('#addDescripcionCurso').val());
-    formData.append('estado', $('#addEstadoCurso').val());
-
+    // Validación del archivo (solo imágenes permitidas)
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     const fileInput = $('input[name="file"]')[0].files[0];
-    if (fileInput) {
-        formData.append('file', fileInput);
-    } else {
+    
+    if (!fileInput) {
         Swal.fire({
             icon: 'error',
             title: 'Archivo requerido',
@@ -321,6 +334,23 @@ $('#addForm').on('submit', function (event) {
         });
         return;
     }
+
+    if (!validImageTypes.includes(fileInput.type)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Formato de archivo no permitido',
+            text: 'Solo se aceptan archivos de tipo: JPEG, PNG, GIF o WEBP.',
+            confirmButtonText: 'Aceptar'
+        });
+        return;
+    }
+
+    // Crear FormData para enviar el archivo y los datos
+    const formData = new FormData();
+    formData.append('nombre_curso', nombreCurso);
+    formData.append('descripcion', $('#addDescripcionCurso').val());
+    formData.append('estado', $('#addEstadoCurso').val());
+    formData.append('file', fileInput);
 
     // Mostrar spinner mientras se procesa
     $('#spinner').show();
@@ -365,6 +395,7 @@ $('#addForm').on('submit', function (event) {
         });
     });
 });
+
 
 $('#editModal').on('hidden.bs.modal', function () {
     $('#editForm')[0].reset();
