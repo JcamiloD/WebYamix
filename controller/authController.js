@@ -1,12 +1,102 @@
 const jwt = require('jsonwebtoken');
 
-
 exports.register = async (req, res) => {
-    const { nombre, apellido, correo, contraseña, fecha_nacimiento } = req.body;
-    console.log(req.body);
+    const { nombre, apellido, gmail, contraseña, fecha_nacimiento, id_clase, captchaResponse } = req.body;
+    
     try {
+        // Validar el token de reCAPTCHA
+        const secretKey = "6Le2640qAAAAAKpKZX4LKCIHM_fQiaLAwjmlRXWr"; // Tu clave secreta reCAPTCHA
+        const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaResponse}`;
+
+        // Verificar reCAPTCHA
+        const recaptchaResponse = await fetch(recaptchaUrl, {
+            method: 'POST'
+        });
+        
+        if (!recaptchaResponse.ok) {
+            console.error('Error al verificar el reCAPTCHA:', recaptchaResponse.statusText);
+            return res.render('web/inscripcion', {
+                alert: true,
+                alertTitle: "Error",
+                alertMessage: "Verificación reCAPTCHA fallida. Intenta nuevamente.",
+                alertIcon: 'error',
+                showConfirmButton: true,
+                timer: 2500,
+                ruta: 'inscripcion',
+                showGuideButton: false
+            });
+        }
+
+        const recaptchaResult = await recaptchaResponse.json();
+        console.log('reCAPTCHA Response:', recaptchaResult); // Agrega esta línea para depurar
+
+        if (!recaptchaResult.success) {
+            console.log('Error en la verificación de reCAPTCHA:', recaptchaResult['error-codes']);
+            return res.render('web/inscripcion', {
+                alert: true,
+                alertTitle: "Error",
+                alertMessage: "Verificación reCAPTCHA fallida. Intenta nuevamente.",
+                alertIcon: 'error',
+                showConfirmButton: true,
+                timer: 2500,
+                ruta: 'inscripcion',
+                showGuideButton: false
+            });
+        }
+
+        // Validaciones de los campos
+        if (!nombre || !apellido || !contraseña || !fecha_nacimiento || !id_clase) {
+            return res.render('web/inscripcion', {
+                alert: true,
+                alertTitle: "Advertencia",
+                alertMessage: "Ingrese todos los campos",
+                alertIcon: 'info',
+                showConfirmButton: true,
+                timer: false,
+                ruta: 'inscripcion',
+                showGuideButton: false
+            });
+        }
+
+        // Verificar el formato del correo
+        if (!gmail.includes('@')) {
+            return res.render('web/inscripcion', {
+                alert: true,
+                alertTitle: "Advertencia",
+                alertMessage: "El correo es inválido",
+                alertIcon: 'info',
+                showConfirmButton: true,
+                timer: false,
+                ruta: 'inscripcion',
+                showGuideButton: false
+            });
+        }
+
+        // Validar la contraseña
+        if (!/^\d{6,}$/.test(contraseña)) {
+            return res.render('web/inscripcion', {
+                alert: true,
+                alertTitle: "Advertencia",
+                alertMessage: "La contraseña debe tener al menos 6 dígitos",
+                alertIcon: 'info',
+                showConfirmButton: true,
+                timer: false,
+                ruta: 'inscripcion',
+                showGuideButton: false
+            });
+        }
+
+        // Calcular la edad y registrar el usuario
+        const today = new Date();
+        const birthDate = new Date(fecha_nacimiento);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
         // Registro del usuario a través de la API
-        const userData = { nombre, apellido, correo, contraseña, fecha_nacimiento };
+        const userData = { nombre, apellido, gmail, contraseña, fecha_nacimiento, id_clase };
         const apiResponse = await fetch(`${process.env.pathApi}/register`, {
             method: 'POST',
             headers: {
@@ -15,28 +105,47 @@ exports.register = async (req, res) => {
             body: JSON.stringify(userData)
         });
 
-        const apiData = await apiResponse.json();
-
         if (apiResponse.ok) {
-            // Si el registro es exitoso, redirige al login con alerta de éxito
             return res.render('web/inscripcion', {
-                alert: 'Registro exitoso, ahora puedes iniciar sesión',
+                alert: true,
+                alertTitle: age < 18 ? "Advertencia" : "Éxito",
+                alertMessage: age < 18 
+                    ? "Eres menor de edad. Tu cuenta estará en espera hasta que un administrador apruebe tu solicitud."
+                    : "Registro exitoso",
+                alertIcon: age < 18 ? 'info' : 'success',
+                showConfirmButton: age < 18,
+                timer: age < 18 ? false : 2500,
                 ruta: 'login',
-                alertType: 'success'
+                showGuideButton: age < 18
             });
         } else {
-            // Si la API devuelve un error (correo ya en uso u otro error), muestra la alerta de error
+            const errorData = await apiResponse.json();
             return res.render('web/inscripcion', {
-                alert: apiData.message || 'Error al registrar el usuario',
-                alertType: 'error',
-                ruta: 'register'
+                alert: true,
+                alertTitle: "Error",
+                alertMessage: errorData.message || "Error en el registro del usuario",
+                alertIcon: 'error',
+                showConfirmButton: true,
+                timer: 2500,
+                ruta: 'inscripcion',
+                showGuideButton: false
             });
         }
     } catch (error) {
-        // Si hay un error en el servidor, redirige a la página de registro con alerta
-        return;
+        console.error('Error en el proceso de registro:', error);
+        return res.render('web/inscripcion', {
+            alert: true,
+            alertTitle: "Error",
+            alertMessage: "Error del servidor",
+            alertIcon: 'error',
+            showConfirmButton: true,
+            timer: 2500,
+            ruta: 'inscripcion',
+            showGuideButton: false
+        });
     }
 };
+
 
 
 exports.login = async (req, res) => {
