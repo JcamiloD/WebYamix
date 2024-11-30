@@ -56,5 +56,16 @@ router.get('/login', (req, res) => {
 });
 
 
-
+router.get('/eventos', (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('web/eventos',{
+        permisos: userPermissions
+    });
+});
+router.get('/catalogo', (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('web/catalogo',{
+        permisos: userPermissions
+    });
+});
 module.exports = router;

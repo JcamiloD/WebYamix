@@ -210,6 +210,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 //catalogo
 
+<<<<<<< HEAD
+=======
     async function obtenerCatalogo() {
         try {
             const response = await fetch("http://localhost:4000/api/get-all");
@@ -309,4 +311,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.addEventListener('DOMContentLoaded', obtenerCatalogo);
 
 
+>>>>>>> bb90b3390a8a4fa158ac53c2ff679c37c65e82f5
     
