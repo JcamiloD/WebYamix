@@ -86,36 +86,37 @@
   
       <div class="card-content">
         <div class="user-details">
-         
           <h2 id="userName">
             Henry Francis
             <br>
             <span>henry@example.com</span>
           </h2>
   
-       
           <h3 id="userDOB">Date of Birth: 1990-01-01</h3>
   
           <div class="button-group">
             <button id="editBtn">Editar</button>
-   
           </div>
         </div>
   
-      
         <div class="edit-form" id="editForm" style="display: none;">
-          <input type="text" id="editName" placeholder="First Name" value="Henry">
-          <input type="text" id="editLastName" placeholder="Last Name" value="Francis">
-          <input type="email" id="editEmail" placeholder="Email" value="henry@example.com">
-          <input type="date" id="editDOB" placeholder="Date of Birth" value="1990-01-01">
-          <button id="saveBtn">Guardar</button>
+          <!-- Campo de Contraseña -->
+          <input type="password" id="editPassword" placeholder="Ingrese su contraseña">
+          <div id="error-message" style="color: red; display: none;">Contraseña incorrecta.</div>
+  
+          <input type="text" id="editName" placeholder="First Name" value="Henry" disabled>
+          <input type="text" id="editLastName" placeholder="Last Name" value="Francis" disabled>
+          <input type="email" id="editEmail" placeholder="Email" value="henry@example.com" disabled>
+          <input type="date" id="editDOB" placeholder="Date of Birth" value="1990-01-01" disabled>
+          
+          <button id="saveBtn" style="display: none;">Guardar</button>
         </div>
       </div>
     </div>
     <!-- End Profile Card -->
   </div>
-  
   <style>
+    
     /* Global Styles */
     * {
       margin: 0;
@@ -144,7 +145,8 @@
     }
   
     .user-card:hover {
-      height: 450px;
+      height: 520px;
+      word-wrap: none;
     }
   
     .user-card .image-container {
@@ -294,27 +296,48 @@
     }
   </style>
   
-  <script>
-    document.getElementById("editBtn").addEventListener("click", function () {
-      document.getElementById("editForm").style.display = "block"; // Mostrar el formulario
-      document.querySelector(".user-details").style.display = "none"; // Ocultar detalles
-    });
+<script>
+  const correctPassword = "123"; // Contraseña
   
-    document.getElementById("saveBtn").addEventListener("click", function () {
-      // Guardar los cambios (aquí puedes agregar tu lógica de guardar en backend)
-      const name = document.getElementById("editName").value;
-      const lastName = document.getElementById("editLastName").value;
-      const dob = document.getElementById("editDOB").value;
-  
-      // Actualizar la tarjeta con la nueva información
-      document.getElementById("userName").innerHTML = name + " " + lastName + "<br><span>" + document.getElementById("editEmail").value + "</span>"; // Nombre y correo
-      document.getElementById("userDOB").innerHTML = "Date of Birth: " + dob; // Mostrar la fecha de nacimiento actualizada
-  
-      // Ocultar el formulario y mostrar los detalles
-      document.getElementById("editForm").style.display = "none";
-      document.querySelector(".user-details").style.display = "block";
-    });
-  </script>
+  document.getElementById("editBtn").addEventListener("click", function () {
+    // Mostrar el formulario de edición y pedir contraseña
+    document.getElementById("editForm").style.display = "block"; // Mostrar el formulario
+    document.querySelector(".user-details").style.display = "none"; // Ocultar detalles
+  });
+
+  document.getElementById("editPassword").addEventListener("input", function () {
+    const enteredPassword = document.getElementById("editPassword").value;
+
+    if (enteredPassword === correctPassword) {
+      // Habilitar los campos de edición
+      document.getElementById("editName").disabled = false;
+      document.getElementById("editLastName").disabled = false;
+      document.getElementById("editEmail").disabled = false;
+      document.getElementById("editDOB").disabled = false;
+      document.getElementById("saveBtn").style.display = "block"; // Mostrar el botón de guardar
+      document.getElementById("error-message").style.display = "none"; // Ocultar el mensaje de error
+    } else {
+      // Mostrar mensaje de error si la contraseña es incorrecta
+      document.getElementById("error-message").style.display = "block";
+      document.getElementById("saveBtn").style.display = "none"; // Ocultar el botón de guardar
+    }
+  });
+
+  document.getElementById("saveBtn").addEventListener("click", function () {
+    // Guardar los cambios (aquí puedes agregar tu lógica de guardar en backend)
+    const name = document.getElementById("editName").value;
+    const lastName = document.getElementById("editLastName").value;
+    const dob = document.getElementById("editDOB").value;
+
+    // Actualizar la tarjeta con la nueva información
+    document.getElementById("userName").innerHTML = name + " " + lastName + "<br><span>" + document.getElementById("editEmail").value + "</span>";
+    document.getElementById("userDOB").innerHTML = "Date of Birth: " + dob;
+
+    // Ocultar el formulario y mostrar los detalles
+    document.getElementById("editForm").style.display = "none";
+    document.querySelector(".user-details").style.display = "block";
+  });
+</script>
   
   
 

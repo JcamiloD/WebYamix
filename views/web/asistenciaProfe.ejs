@@ -15,7 +15,9 @@
  <!-- Flaticon Font -->
  <link rel="stylesheet" href="c/lib/flaticon/font/flaticon.css">
 
-
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+ <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
  <!-- Customized Bootstrap Stylesheet -->
  <link href="c/css/style.min.css" rel="stylesheet">
      <!-- Calendario scripts -->
@@ -26,48 +28,49 @@
 </div>
 <body class="bg-white">
     <!-- Navbar Start -->
-<div class="container-fluid p-0 nav-bar">
-  <nav class="navbar navbar-expand-lg bg-none navbar-dark py-3">
-      <a href="" class="navbar-brand">
-          <h1 class="m-0 display-4 font-weight-bold text-uppercase text-white">YAMIX</h1>
-      </a>
-      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-          <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-          <div class="navbar-nav ml-auto p-4 bg-secondary">
-              <% if (!permisos || permisos.length === 0) { %>
-                  <!-- Enlaces para usuarios no autenticados -->
-                  <a href="/login" class="nav-item nav-link">Iniciar Sesión</a>
-                  <a href="/register" class="nav-item nav-link">Inscribirme</a>
-                  <a href="/" class="nav-item nav-link">Home</a>
-                  <a href="/about" class="nav-item nav-link">Nosotros</a>
-                  <a href="/clases" class="nav-item nav-link active">Clases</a>
-              <% } else { %>
-                  <!-- Enlaces para usuarios autenticados -->
-                  <% if (permisos.includes('perfil')) { %>
-                      <a href="/perfil" class="nav-item nav-link">Perfil</a>
+    <div class="container-fluid p-0 nav-bar">
+      <nav class="navbar navbar-expand-lg bg-none navbar-dark py-3">
+          <a href="" class="navbar-brand">
+              <h1 class="m-0 display-4 font-weight-bold text-uppercase text-white">YAMIX</h1>
+          </a>
+          <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+              <div class="navbar-nav ml-auto p-4 bg-secondary">
+                  <% if (!permisos || permisos.length === 0) { %>
+                      <!-- Enlaces para usuarios no autenticados -->
+                      <a href="/login" class="nav-item nav-link">Iniciar Sesión</a>
+                      <a href="/register" class="nav-item nav-link">Inscribirme</a>
+                      <a href="/" class="nav-item nav-link">Home</a>
+                      <a href="/about" class="nav-item nav-link">Nosotros</a>
+                      <a href="/clases" class="nav-item nav-link ">Clases</a>
+                      <a href="/catalogo" class="nav-item nav-link">Catalogo</a>
+                  <% } else { %>
+                      <!-- Enlaces para usuarios autenticados -->
+                      <% if (permisos.includes('perfil')) { %>
+                          <a href="/perfil" class="nav-item nav-link">Perfil</a>
+                      <% } %>
+                      <% if (permisos.includes('calendario estudiante') || permisos.includes('calendario profesor')) { %>
+                          <a href="/calendarioUser" class="nav-item nav-link">Calendario</a>
+                      <% } %>
+                      <% if (permisos.includes('dashboard')) { %>
+                          <a href="/dashboard" class="nav-item nav-link">Dashboard</a>
+                      <% } %>
+                      <% if (permisos.includes('catalogo estudiante')) { %>
+                          <a href="/catalogo" class="nav-item nav-link">Catálogo</a>
+                      <% } %>
+                      <% if (permisos.includes('asistencia profesor')) { %>
+                          <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
+                      <% } else if (Array.isArray(permisos) && permisos.length > 0) { %>
+                          <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
+                      <% } %>
+                      <a href="/logout" id="logout-link" class="nav-item nav-link">Salir</a>
                   <% } %>
-                  <% if (permisos.includes('calendario estudiante') || permisos.includes('calendario profesor')) { %>
-                      <a href="/calendarioUser" class="nav-item nav-link">Calendario</a>
-                  <% } %>
-                  <% if (permisos.includes('dashboard')) { %>
-                      <a href="/dashboard" class="nav-item nav-link">Dashboard</a>
-                  <% } %>
-                  <% if (permisos.includes('catalogo estudiante')) { %>
-                      <a href="/catalogouser" class="nav-item nav-link">Catálogo</a>
-                  <% } %>
-                  <% if (permisos.includes('asistencia profesor')) { %>
-                      <a href="/asistenciaProfe" class="nav-item nav-link">Asistencia</a>
-                  <% } else if (Array.isArray(permisos) && permisos.length > 0) { %>
-                      <a href="/asistenciaUser" class="nav-item nav-link">Asistencia</a>
-                  <% } %>
-                  <a href="#" id="logout-link" class="nav-item nav-link">Salir</a>
-              <% } %>
+              </div>
           </div>
-      </div>
-  </nav>
-</div>
+      </nav>
+  </div>
 <!-- Navbar End -->
 
  
@@ -84,550 +87,787 @@
   </div>
   <!-- Page Header End -->
 
-<!-- Servicios que Ofrecemos Start -->
-<div id="servicesCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
-  <!-- Indicadores -->
-  <ol class="carousel-indicators">
-    <li data-target="#servicesCarousel" data-slide-to="0" class="active"></li>
-    <li data-target="#servicesCarousel" data-slide-to="1"></li>
-    <li data-target="#servicesCarousel" data-slide-to="2"></li>
-  </ol>
+  <div class="d-flex flex-column text-center mb-5">
+    <h4 class="text-primary font-weight-bold">Asistencia</h4>
+    <h4 class="display-4 font-weight-bold">Control de asistencia</h4>
+</div>
 
-  <!-- Contenido del carrusel -->
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <div class="container-card">
-        <div class="card">
-          <figure>
-            <img
-              src="https://cdn.pixabay.com/photo/2015/06/24/16/36/office-820390_1280.jpg"
-              class="d-block w-100"
-            />
-          </figure>
-          <div class="contenido-card">
-            <h3>Diseño Gràfico</h3>
-            <p>
-              Podemos crear la identidad corporativa de tu empresa. Diseño ,
-              Maquetación de folletos, Catálogos, Papelería y mucho más.
-            </p>
-            <a href="#">Leer Màs</a>
-          </div>
-        </div>
-        <div class="card">
-          <figure>
-            <img
-              src="https://cdn.pixabay.com/photo/2015/11/05/09/52/touch-screen-1023966_1280.jpg"
-              class="d-block w-100"
-            />
-          </figure>
-          <div class="contenido-card">
-            <h3>Gestión de Redes</h3>
-            <p>
-              Nosotros creamos y optimizamos tus perfiles en las Redes Sociales.
-              Importantes para que tu presencia online sea completa.
-            </p>
-            <a href="#">Leer Màs</a>
-          </div>
-        </div>
-        <div class="card">
-          <figure>
-            <img
-              src="https://cdn.pixabay.com/photo/2021/08/05/12/36/software-development-6523979_1280.jpg"
-              class="d-block w-100"
-            />
-          </figure>
-          <div class="contenido-card">
-            <h3>Desarrollo Web</h3>
-            <p>
-              Creamos tu página web utilizando las últimas tecnologías
-              disponibles. Una Web adaptativa a tu móvil o Tablet y con un gestor
-              de contenido fácil.
-            </p>
-            <a href="#">Leer Màs</a>
-          </div>
-        </div>
+
+<div class="mb-4 text-center">
+    <select id="filtroAsistencia" class="form-control" style="max-width: 400px; margin: auto;">
+        <option value="">Filtro asistencia</option>
+        <!-- Opciones dinámicas se agregarán aquí -->
+    </select>
+</div>
+
+<!-- Agregar asistencia -->
+<div class="mb-4 text-center">
+  <button class="btn btn-primary" id="agregarAsistenciaBtn" data-bs-toggle="modal" data-bs-target="#modalAsistencia">Agregar Asistencia</button>
+</div>
+
+  <div class="grid">
+    <div class="card">
+      <span class="icon">
+        <!-- Icono de la tarjeta -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.5 9.5V5.5C4.5 4.94772 4.94772 4.5 5.5 4.5H9.5C10.0523 4.5 10.5 4.94772 10.5 5.5V9.5C10.5 10.0523 10.0523 10.5 9.5 10.5H5.5C4.94772 10.5 4.5 10.0523 4.5 9.5Z"></path>
+          <path d="M13.5 18.5V14.5C13.5 13.9477 13.9477 13.5 14.5 13.5H18.5C19.0523 13.5 19.5 13.9477 19.5 14.5V18.5C19.5 19.0523 19.0523 19.5 18.5 19.5H14.5C13.9477 19.5 13.5 19.0523 13.5 18.5Z"></path>
+          <path d="M4.5 19.5L7.5 13.5L10.5 19.5H4.5Z"></path>
+          <path d="M16.5 4.5C18.1569 4.5 19.5 5.84315 19.5 7.5C19.5 9.15685 18.1569 10.5 16.5 10.5C14.8431 10.5 13.5 9.15685 13.5 7.5C13.5 5.84315 14.8431 4.5 16.5 4.5Z"></path>
+        </svg>
+      </span>
+      <h4>Boxeo</h4>
+      <p>
+        <strong>fecha asistencia: </strong>20 de Noviembre del 2024<br />
+        <strong>Hora de inicio:</strong> 14:10:00<br />
+        <strong>Hora final:</strong> 16:10:00<br />
+        <strong>Instructor:</strong> Juan Pérez
+      </p>
+      <div class="shine"></div>
+      <div class="background">
+        <!-- Elementos de fondo -->
+      </div>
+      <div class="card-buttons">
+        <button class="btn btn-add" id="addButton" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal">+</button> <!-- Aquí abrimos la modal de asistencia de estudiantes -->
+        <button class="btn btn-view" data-bs-toggle="modal" data-bs-target="#viewModal">Ver</button>
+        <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editModal">Editar</button>
       </div>
     </div>
-    <!-- Slide 2 - Puedes duplicar este bloque para agregar más tarjetas -->
-    <div class="carousel-item">
-      <div class="container-card">
-        <div class="card">
-          <figure>
-            <img
-              src="https://cdn.pixabay.com/photo/2015/06/24/16/36/office-820390_1280.jpg"
-              class="d-block w-100"
-            />
-          </figure>
-          <div class="contenido-card">
-            <h3>Diseño Gràfico</h3>
-            <p>
-              Podemos crear la identidad corporativa de tu empresa. Diseño ,
-              Maquetación de folletos, Catálogos, Papelería y mucho más.
-            </p>
-            <a href="#">Leer Màs</a>
-          </div>
-        </div>
-        <div class="card">
-          <figure>
-            <img
-              src="https://cdn.pixabay.com/photo/2015/11/05/09/52/touch-screen-1023966_1280.jpg"
-              class="d-block w-100"
-            />
-          </figure>
-          <div class="contenido-card">
-            <h3>Gestión de Redes</h3>
-            <p>
-              Nosotros creamos y optimizamos tus perfiles en las Redes Sociales.
-              Importantes para que tu presencia online sea completa.
-            </p>
-            <a href="#">Leer Màs</a>
-          </div>
-        </div>
-        <div class="card">
-          <figure>
-            <img
-              src="https://cdn.pixabay.com/photo/2021/08/05/12/36/software-development-6523979_1280.jpg"
-              class="d-block w-100"
-            />
-          </figure>
-          <div class="contenido-card">
-            <h3>Desarrollo Web</h3>
-            <p>
-              Creamos tu página web utilizando las últimas tecnologías
-              disponibles. Una Web adaptativa a tu móvil o Tablet y con un gestor
-              de contenido fácil.
-            </p>
-            <a href="#">Leer Màs</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Controles (flechas) -->
-  <a class="carousel-control-prev" href="#servicesCarousel" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#servicesCarousel" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
-</div>
-<!-- Servicios que Ofrecemos End -->
-
-  <style>
-    @import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          font-family: "Montserrat", sans-serif;
-        }
-        /*Cards*/
-        .container-card {
-          width: 100%;
-          display: flex;
-          max-width: 1100px;
-          margin: auto;
-        }
-        .title-cards {
-          width: 100%;
-          max-width: 1080px;
-          margin: auto;
-          padding: 20px;
-          margin-top: 20px;
-          text-align: center;
-          color: #7a7a7a;
-        }
-        .card {
-          width: 100%;
-          margin: 20px;
-          border-radius: 6px;
-          overflow: hidden;
-          background: #fff;
-          box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);
-          transition: all 400ms ease-out;
-          cursor: default;
-        }
-        .card:hover {
-          box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.4);
-          transform: translateY(-3%);
-        }
-        .card img {
-          width: 100%;
-          height: 210px;
-        }
-        .card .contenido-card {
-          padding: 15px;
-          text-align: center;
-        }
-        .card .contenido-card h3 {
-          margin-bottom: 15px;
-          color: #7a7a7a;
-        }
-        .card .contenido-card p {
-          line-height: 1.8;
-          color: #6a6a6a;
-          font-size: 14px;
-          margin-bottom: 5px;
-        }
-        .card .contenido-card a {
-          display: inline-block;
-          padding: 10px;
-          margin-top: 10px;
-          text-decoration: none;
-          color: #2fb4cc;
-          border: 1px solid #2fb4cc;
-          border-radius: 4px;
-          transition: all 400ms ease;
-          margin-bottom: 5px;
-        }
-        .card .contenido-card a:hover {
-          background: #2fb4cc;
-          color: #fff;
-        }
-        @media only screen and (min-width: 320px) and (max-width: 768px) {
-          .container-card {
-            flex-wrap: wrap;
-          }
-          .card {
-            margin: 15px;
-          }
-        }
-        </style>
-  
-
-<!-- Class Timetable Start -->
-<div class="container gym-feature py-5">
-  <div class="d-flex flex-column text-center mb-5">
-      <h4 class="text-primary font-weight-bold">Horario de clases</h4>
-      <h4 class="display-4 font-weight-bold">Cursos y instructores</h4>
-  </div>
-  <div class="tab-class">
-      <ul class="nav nav-pills justify-content-center mb-4" id="courseNav">
-          <!-- Los botones de filtro por curso se generarán aquí dinámicamente -->
-      </ul>
-      <div class="tab-content">
-          <!-- Filtro por curso -->
-          <div class="text-center mb-4">
-              <button class="btn btn-primary" id="clearFilter">Mostrar todas las clases</button>
-          </div>
-          <!-- All Classes Tab -->
-          <div id="class-all" class="container tab-pane p-0 active">
-              <div class="table-responsive">
-                  <table class="table table-bordered table-lg m-0">
-                      <thead class="bg-secondary text-white text-center">
-                          <tr>
-                              <th>Horarios</th>
-                              <th>Lunes</th>
-                              <th>Martes</th>
-                              <th>Miercoles</th>
-                              <th>Jueves</th>
-                              <th>Viernes</th>
-                          </tr>
-                      </thead>
-                      <tbody class="text-center">
-                          <!-- Placeholder for dynamically added content -->
-                      </tbody>
-                  </table>
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
-<!-- Class Timetable End -->
-
-<script>
-let clasesGlobal = [];  // Variable para almacenar las clases
-
-// Función para obtener los datos y llenar la tabla
-async function fetchClases() {
-  try {
-      const response = await fetch('http://localhost:4000/api/traerPara');
-      const clases = await response.json();
-      clasesGlobal = clases;  // Guardar las clases para usarlas en el filtro
-
-      // Llenar la tabla de todas las clases
-      const tableBody = document.querySelector('#class-all tbody');
-      tableBody.innerHTML = ''; // Limpiar la tabla antes de llenarla
-
-      // Días de la semana en orden (solo hasta el viernes)
-      const diasSemana = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-
-      // Mostrar todas las clases por defecto
-      displayClasses(clases);
-
-      // Crear botones de filtro para cada curso
-      createFilterButtons(clases);
-
-  } catch (error) {
-      console.error('Error al cargar las clases:', error);
-  }
-}
-
-// Crear botones de filtro por nombre de curso
-function createFilterButtons(clases) {
-  const filterButtonsDiv = document.getElementById('courseNav');
-  filterButtonsDiv.innerHTML = '';  // Limpiar los botones anteriores
-
-  const uniqueCursos = [...new Set(clases.map(clase => clase.nombre_curso))]; // Obtener nombres únicos de cursos
-
-  uniqueCursos.forEach(curso => {
-      const button = document.createElement('button');  // Cambiar de 'a' a 'button'
-      button.classList.add('btn', 'btn-primary', 'm-1');  // Agregar el estilo btn btn-primary
-      button.textContent = curso;
-      button.addEventListener('click', (event) => {
-          event.preventDefault();
-          filterByCourse(curso);
-      });
-      filterButtonsDiv.appendChild(button);
-  });
-}
-
-// Filtrar las clases por nombre de curso
-function filterByCourse(cursoName) {
-  const filteredClasses = clasesGlobal.filter(clase => clase.nombre_curso === cursoName);
-  displayClasses(filteredClasses);
-}
-
-// Mostrar todas las clases
-document.getElementById('clearFilter').addEventListener('click', () => {
-  displayClasses(clasesGlobal); // Mostrar todas las clases
-});
-
-// Función para mostrar las clases en la tabla
-function displayClasses(clases) {
-  const tableBody = document.querySelector('#class-all tbody');
-  tableBody.innerHTML = '';  // Limpiar la tabla antes de llenarla
-
-  // Días de la semana en orden (solo hasta el viernes)
-  const diasSemana = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-
-  clases.forEach(clase => {
-      const row = document.createElement('tr');
-
-      const timeCell = document.createElement('td');
-      timeCell.textContent = clase.time;
-
-      timeCell.style.backgroundColor = 'black';
-      timeCell.style.color = 'white';
-      timeCell.style.fontWeight = 'bold';
-      timeCell.style.textAlign = 'center';
-      row.appendChild(timeCell);
-
-      diasSemana.forEach(dia => {
-          const diaCell = document.createElement('td');
-          const cursoInstructorDiv = document.createElement('div');
-          const curso = document.createElement('div');
-          curso.textContent = clase.nombre_curso;
-          cursoInstructorDiv.appendChild(curso);
-
-          const instructor = document.createElement('div');
-          instructor.textContent = clase.nombre_usuario;
-          cursoInstructorDiv.appendChild(instructor);
-
-          diaCell.appendChild(cursoInstructorDiv);
-          row.appendChild(diaCell);
-      });
-
-      tableBody.appendChild(row);
-  });
-}
-
-// Llamar la función para cargar las clases cuando se cargue la página
-fetchClases();
-</script>
-
-
-
-<div class="container pt-5 team">
-  <div class="d-flex flex-column text-center mb-5">
-    <h4 class="text-primary font-weight-bold">Catalogo</h4>
-    <h4 class="display-4 font-weight-bold">Productos recomendados</h4>
+    
   </div>
   
-  <!-- Carrusel de productos -->
-  <div id="productosCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
-    <div class="carousel-inner">
-      <!-- Aquí se cargarán los productos dinámicamente -->
+  <!-- Modal Ver Detalle -->
+  <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewModalLabel">Ver Detalle</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Clase:</strong> Boxeo</p>
+          <p><strong>Fecha de Asistencia:</strong> 20 de Noviembre del 2024</p>
+          <p><strong>Hora de Inicio:</strong> 14:10:00</p>
+          <p><strong>Hora de Finalización:</strong> 16:10:00</p>
+          <p><strong>Instructor:</strong> Juan Pérez</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
     </div>
-    <a class="carousel-control-prev" href="#productosCarousel" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#productosCarousel" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
+  </div>
+  
+  <!-- Modal Editar Fecha de Asistencia -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Editar Fecha de Asistencia</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm">
+            <input type="hidden" name="id" id="editId">
+            <div class="form-group">
+              <label for="editFecha">Fecha de Asistencia</label>
+              <input type="date" name="fecha_asistencia" class="form-control" id="editFecha" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark mr-2" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-dark" form="editForm">Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Asistencia de Estudiantes -->
+<div class="modal fade" id="editEstudiantesModal" tabindex="-1" aria-labelledby="editEstudiantesModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editEstudiantesModalLabel">Asistencia de Estudiantes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="card-description">Estudiantes presentes y ausentes en la clase</p>
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Estudiantes Presentes</h6>
+            <div id="presentStudentsContainer"></div>
+          </div>
+          <div class="col-md-6">
+            <h6>Estudiantes Ausentes</h6>
+            <div id="absentStudentsContainer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="saveChangesButton">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+ <!-- Modal para agregar asistencia -->
+<div class="modal fade" id="modalAsistencia" tabindex="-1" role="dialog" aria-labelledby="modalAsistenciaLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAsistenciaLabel">Registrar Asistencia</h5>
+        <!-- Cambiar a "btn-close" y "data-bs-dismiss" -->
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formAsistencia">
+   
+          <!-- Campo de fecha -->
+          <div class="form-group">
+            <label for="fechaAsistencia">Fecha</label>
+            <input type="date" class="form-control" id="fechaAsistencia" required>
+          </div>
+
+          <!-- Campo de clase como un select -->
+          <div class="form-group">
+            <label for="nombreEstudiante">Clase</label>
+            <select class="form-control" id="nombreEstudiante" required>
+              <option value="">Selecciona una clase</option>
+              <option value="Artes Marciales">Artes Marciales</option>
+              <option value="Defensa Personal">Defensa Personal</option>
+              <option value="Boxeo">Boxeo</option>
+              <option value="Parkour">Parkour</option>
+            </select>
+          </div>
+
+          <!-- Botón de envío -->
+          <button type="submit" class="btn btn-outline-primary">Registrar Asistencia</button>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-async function obtenerCatalogo() {
-  try {
-    const response = await fetch("http://localhost:4000/api/get-all");
-    const productos = await response.json();
+document.addEventListener('DOMContentLoaded', function() {
+  // Ejemplo de productos (en la práctica, estos vendrían de una base de datos o una API)
+  const productos = [
+    {nombre: 'Boxeo', fecha: '20 de Noviembre del 2024', horaInicio: '14:10:00', horaFinal: '16:10:00', instructor: 'Juan Pérez'},
+    {nombre: 'Artes Marciales', fecha: '22 de Noviembre del 2024', horaInicio: '10:00:00', horaFinal: '12:00:00', instructor: 'Ana Gómez'},
+    {nombre: 'Parkour', fecha: '23 de Noviembre del 2024', horaInicio: '15:00:00', horaFinal: '17:00:00', instructor: 'Carlos Martínez'},
+    // Agregar más productos aquí para que haya más de 15
+  ];
 
-    if (!productos || productos.length === 0) {
-      console.warn("No se encontraron productos.");
-      return;
-    }
+  const itemsPerPage = 15;
+  let currentPage = 1;
+  
+  // Función para mostrar los productos en la página actual
+  function showProducts() {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const productosPagina = productos.slice(start, end);
 
-    cargarProductosEnCatalogo(productos);
-  } catch (error) {
-    console.error("Error al cargar los productos:", error);
-  }
-}
+    // Limpiar el contenedor de productos
+    const productosContainer = document.getElementById('productos-container');
+    productosContainer.innerHTML = '';
 
-function cargarProductosEnCatalogo(productos) {
-  const carouselInner = document.querySelector("#productosCarousel .carousel-inner");
-  carouselInner.innerHTML = ""; // Limpiar contenido previo
-
-  // Dividir los productos en grupos de 4 para las diapositivas del carrusel
-  let productosPorCarrusel = [];
-  for (let i = 0; i < productos.length; i += 4) {
-    productosPorCarrusel.push(productos.slice(i, i + 4));
-  }
-
-  productosPorCarrusel.forEach((grupo, index) => {
-    const slide = document.createElement("div");
-    slide.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-
-    const carouselItems = document.createElement("div");
-    carouselItems.className = "profile-container";
-
-    grupo.forEach((producto) => {
-      const tarjeta = document.createElement("div");
-      tarjeta.className = "profile-card";
-
-      // Aplicar la imagen de fondo con formato estándar
-      tarjeta.style.background = `url(${producto.imagen_producto}) no-repeat 50% / cover`;
-
-      // Contenido de la tarjeta
-      const contenido = `
-        <div class="profile-content">
-          <h2>${producto.nombre_producto}</h2>
-          <span>${producto.descripcion.slice(0, 22)}${producto.descripcion.length > 22 ? "..." : ""}</span>
+    // Agregar los productos de la página actual
+    productosPagina.forEach(producto => {
+      const productCard = document.createElement('div');
+      productCard.classList.add('card');
+      productCard.innerHTML = `
+        <span class="icon">
+          <!-- Icono aquí -->
+        </span>
+        <h4>${producto.nombre}</h4>
+        <p>
+          <strong>Fecha asistencia: </strong>${producto.fecha}<br />
+          <strong>Hora de inicio:</strong> ${producto.horaInicio}<br />
+          <strong>Hora final:</strong> ${producto.horaFinal}<br />
+          <strong>Instructor:</strong> ${producto.instructor}
+        </p>
+        <div class="shine"></div>
+        <div class="background"></div>
+        <div class="card-buttons">
+          <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal">+</button>
+          <button class="btn btn-view" data-bs-toggle="modal" data-bs-target="#viewModal">Ver</button>
+          <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editModal">Editar</button>
         </div>
       `;
-
-      tarjeta.innerHTML = contenido;
-      carouselItems.appendChild(tarjeta);
+      productosContainer.appendChild(productCard);
     });
 
-    slide.appendChild(carouselItems);
-    carouselInner.appendChild(slide);
-  });
+    // Actualizar el número de página
+    document.getElementById('pageNumber').textContent = currentPage;
+  }
+
+  // Función para manejar la paginación
+  function handlePagination() {
+    const prevButton = document.getElementById('prevPage');
+    const nextButton = document.getElementById('nextPage');
+
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage * itemsPerPage >= productos.length;
+
+    prevButton.addEventListener('click', function() {
+      if (currentPage > 1) {
+        currentPage--;
+        showProducts();
+      }
+    });
+
+    nextButton.addEventListener('click', function() {
+      if (currentPage * itemsPerPage < productos.length) {
+        currentPage++;
+        showProducts();
+      }
+    });
+  }
+
+  // Inicializar paginación y mostrar los productos
+  showProducts();
+  handlePagination();
+});
+
+
+  </script>
+  
+ 
+<style>
+ .card:active {
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.6);  
+  transform: scale(0.98);  
+  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;  
 }
 
-// Esperar a que el DOM esté cargado para ejecutar la función
-document.addEventListener("DOMContentLoaded", obtenerCatalogo);
-</script>
 
+  #pagination button {
+  margin: 0 10px;
+}
+#pagination span {
+  font-size: 18px;
+  font-weight: bold;
+}
 
+  .card .card-buttons {
+  position: relative;
+  z-index: 2; /* Asegura que los botones estén sobre la tarjeta */
+}
 
-<style>
-  @import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap");
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  body {
+      --background-color: #18181B;
+      --text-color: #ffffff;
+      --card-background-color: rgba(255, 255, 255, .015);
+      --card-border-color: rgba(255, 255, 255, 0.1);
+      --card-box-shadow-1: rgba(0, 0, 0, 0.05);
+      --card-box-shadow-1-y: 3px;
+      --card-box-shadow-1-blur: 6px;
+      --card-box-shadow-2: rgba(0, 0, 0, 0.1);
+      --card-box-shadow-2-y: 8px;
+      --card-box-shadow-2-blur: 15px;
+      --card-label-color: #FFFFFF;
+      --card-icon-color: #D4D4D8;
+      --card-icon-background-color: rgba(255, 255, 255, 0.08);
+      --card-icon-border-color: rgba(255, 255, 255, 0.12);
+      --card-shine-opacity: .1;
+      --card-shine-gradient: conic-gradient(from 205deg at 50% 50%, rgba(16, 185, 129, 0) 0deg, #ff0000 25deg, rgba(52, 211, 153, 0.18) 295deg, rgba(16, 185, 129, 0) 360deg);
+      --card-line-color: #2A2B2C;
+      --card-tile-color: rgba(16, 185, 129, 0.05);
+      --card-hover-border-color: rgba(255, 255, 255, 0.2);
+      --card-hover-box-shadow-1: rgba(0, 0, 0, 0.04);
+      --card-hover-box-shadow-1-y: 5px;
+      --card-hover-box-shadow-1-blur: 10px;
+      --card-hover-box-shadow-2: rgba(0, 0, 0, 0.3);
+      --card-hover-box-shadow-2-y: 15px;
+      --card-hover-box-shadow-2-blur: 25px;
+      --card-hover-icon-color: #ff0000;
+      --card-hover-icon-background-color: rgb(255 0 0 / 10%);
+      --card-hover-icon-border-color: rgba(52, 211, 153, 0.2);
+      --blur-opacity: .01;
   }
-
-  /* Contenedor del carrusel */
-  .carousel-container {
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 tarjetas por fila */
+    grid-gap: 32px; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 20px; 
+  }
+  
+  
+  .card {
+    background-color: var(--background-color);
+    box-shadow: 0px var(--card-box-shadow-1-y) var(--card-box-shadow-1-blur) var(--card-box-shadow-1), 0px var(--card-box-shadow-2-y) var(--card-box-shadow-2-blur) var(--card-box-shadow-2), 0 0 0 1px var(--card-border-color);
+    padding: 56px 16px 16px 16px;
+    border-radius: 15px;
+    cursor: pointer;
+    position: relative;
+    transition: box-shadow .25s;
+  
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 15px;
+      background-color: var(--card-background-color);
+    }
+  
+    .icon {
+      z-index: 2;
+      position: relative;
+      display: table;
+      padding: 8px;
+  
+              &::after {
+              content: '';
+              position: absolute;
+              inset: 4.5px;
+              border-radius: 50%;
+              background-color: rgb(255 0 0 / 8%);
+              border: 1px solid rgb(255 0 0 / 12%);
+              backdrop-filter: blur(2px);
+              transition: background-color .25s, border-color .25s;
+          }
+  
+      svg {
+        position: relative;
+        z-index: 1;
+        display: block;
+        width: 24px;
+        height: 24px;
+        transform: translateZ(0);
+        color: var(--card-icon-color);
+        transition: color .25s;
+      }
+    }
+  
+    h4 {
+      z-index: 2;
+      position: relative;
+      margin: 12px 0 4px 0;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 2;
+      color: var(--card-label-color);
+    }
+  
+    p {
+      z-index: 2;
+      position: relative;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-color);
+    }
+  
+    .shine {
+      border-radius: inherit;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity .5s;
+  
+      &:before {
+        content: '';
+        width: 150%;
+        padding-bottom: 150%;
+        border-radius: 50%;
+        position: absolute;
+        left: 50%;
+        bottom: 55%;
+        filter: blur(35px);
+        opacity: var(--card-shine-opacity);
+        transform: translateX(-50%);
+        background-image: var(--card-shine-gradient);
+      }
+    }
+  
+    .background {
+      border-radius: inherit;
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      -webkit-mask-image: radial-gradient(circle at 60% 5%, black 0%, black 15%, transparent 60%);
+      mask-image: radial-gradient(circle at 60% 5%, black 0%, black 15%, transparent 60%);
+  
+      .tiles {
+        opacity: 0;
+        transition: opacity .25s;
+  
+        .tile {
+          position: absolute;
+          background-color: var(--card-tile-color);
+          animation-duration: 8s;
+          animation-iteration-count: infinite;
+          opacity: 0;
+  
+          &.tile-4,
+          &.tile-6,
+          &.tile-10 {
+            animation-delay: -2s;
+          }
+  
+          &.tile-3,
+          &.tile-5,
+          &.tile-8 {
+            animation-delay: -4s;
+          }
+  
+          &.tile-2,
+          &.tile-9 {
+            animation-delay: -6s;
+          }
+  
+          &.tile-1 {
+            top: 0;
+            left: 0;
+            height: 10%;
+            width: 22.5%;
+          }
+  
+          &.tile-2 {
+            top: 0;
+            left: 22.5%;
+            height: 10%;
+            width: 27.5%;
+          }
+  
+          &.tile-3 {
+            top: 0;
+            left: 50%;
+            height: 10%;
+            width: 27.5%;
+          }
+  
+          &.tile-4 {
+            top: 0;
+            left: 77.5%;
+            height: 10%;
+            width: 22.5%;
+          }
+  
+          &.tile-5 {
+            top: 10%;
+            left: 0;
+            height: 22.5%;
+            width: 22.5%;
+          }
+  
+          &.tile-6 {
+            top: 10%;
+            left: 22.5%;
+            height: 22.5%;
+            width: 27.5%;
+          }
+  
+          &.tile-7 {
+            top: 10%;
+            left: 50%;
+            height: 22.5%;
+            width: 27.5%;
+          }
+  
+          &.tile-8 {
+            top: 10%;
+            left: 77.5%;
+            height: 22.5%;
+            width: 22.5%;
+          }
+  
+          &.tile-9 {
+            top: 32.5%;
+            left: 50%;
+            height: 22.5%;
+            width: 27.5%;
+          }
+  
+          &.tile-10 {
+            top: 32.5%;
+            left: 77.5%;
+            height: 22.5%;
+            width: 22.5%;
+          }
+        }
+      }
+  
+      @keyframes tile {
+  
+        0%,
+        12.5%,
+        100% {
+          opacity: 1;
+        }
+  
+        25%,
+        82.5% {
+          opacity: 0;
+        }
+      }
+  
+      .line {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity .35s;
+  
+        &:before,
+        &:after {
+          content: '';
+          position: absolute;
+          background-color: var(--card-line-color);
+          transition: transform .35s;
+        }
+  
+        &:before {
+          left: 0;
+          right: 0;
+          height: 1px;
+          transform-origin: 0 50%;
+          transform: scaleX(0);
+        }
+  
+        &:after {
+          top: 0;
+          bottom: 0;
+          width: 1px;
+          transform-origin: 50% 0;
+          transform: scaleY(0);
+        }
+  
+        &.line-1 {
+          &:before {
+            top: 10%;
+          }
+  
+          &:after {
+            left: 22.5%;
+          }
+  
+          &:before,
+          &:after {
+            transition-delay: .3s;
+          }
+        }
+  
+        &.line-2 {
+          &:before {
+            top: 32.5%;
+          }
+  
+          &:after {
+            left: 50%;
+          }
+  
+          &:before,
+          &:after {
+            transition-delay: .15s;
+          }
+        }
+  
+        &.line-3 {
+          &:before {
+            top: 55%;
+          }
+  
+          &:after {
+            right: 22.5%;
+          }
+        }
+      }
+    }
+  
+    &:hover {
+      box-shadow: 0px 3px 6px var(--card-hover-box-shadow-1), 0px var(--card-hover-box-shadow-2-y) var(--card-hover-box-shadow-2-blur) var(--card-hover-box-shadow-2), 0 0 0 1px var(--card-hover-border-color);
+  
+      .icon {
+        &::after {
+          background-color: var(--card-hover-icon-background-color);
+          border-color: var(--card-hover-icon-border-color);
+        }
+  
+        svg {
+          color: var(--card-hover-icon-color);
+        }
+      }
+  
+      .shine {
+        opacity: 1;
+        transition-duration: .5s;
+        transition-delay: 0s;
+      }
+  
+      .background {
+  
+        .tiles {
+          opacity: 1;
+          transition-delay: .25s;
+  
+          .tile {
+            animation-name: tile;
+          }
+        }
+  
+        .line {
+          opacity: 1;
+          transition-duration: .15s;
+  
+          &:before {
+            transform: scaleX(1);
+          }
+  
+          &:after {
+            transform: scaleY(1);
+          }
+  
+          &.line-1 {
+  
+            &:before,
+            &:after {
+              transition-delay: .0s;
+            }
+          }
+  
+          &.line-2 {
+  
+            &:before,
+            &:after {
+              transition-delay: .15s;
+            }
+          }
+  
+          &.line-3 {
+  
+            &:before,
+            &:after {
+              transition-delay: .3s;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .day-night {
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    opacity: .3;
+  
+    input {
+      display: none;
+  
+      &+div {
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        position: relative;
+        box-shadow: inset 8px -8px 0 0 var(--text-color);
+        transform: scale(1) rotate(-2deg);
+        transition: box-shadow .5s ease 0s, transform .4s ease .1s;
+  
+        &:before {
+          content: '';
+          width: inherit;
+          height: inherit;
+          border-radius: inherit;
+          position: absolute;
+          left: 0;
+          top: 0;
+          transition: background-color .3s ease;
+        }
+  
+        &:after {
+          content: '';
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          margin: -3px 0 0 -3px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          box-shadow: 0 -23px 0 var(--text-color), 0 23px 0 var(--text-color), 23px 0 0 var(--text-color), -23px 0 0 var(--text-color), 15px 15px 0 var(--text-color), -15px 15px 0 var(--text-color), 15px -15px 0 var(--text-color), -15px -15px 0 var(--text-color);
+          transform: scale(0);
+          transition: all .3s ease;
+        }
+      }
+  
+      &:checked+div {
+        box-shadow: inset 20px -20px 0 0 var(--text-color);
+        transform: scale(.5) rotate(0deg);
+        transition: transform .3s ease .1s, box-shadow .2s ease 0s;
+  
+        &:before {
+          background: var(--text-color);
+          transition: background-color .3s ease .1s;
+        }
+  
+        &:after {
+          transform: scale(1);
+          transition: transform .5s ease .15s;
+        }
+      }
+    }
+  }
+  
+  html {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  * {
+    box-sizing: inherit;
+    &:before,
+    &:after {
+      box-sizing: inherit;
+    }
+  }
+  
+   Center
+  body {
+    min-height: 100vh;
     display: flex;
+    font-family: 'Inter', Arial;
     justify-content: center;
     align-items: center;
-    position: relative;
-    overflow: hidden; /* Para ocultar el contenido que sale fuera */
-    width: 100%;
-    padding: 20px 0;
-  }
-
-  .carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    font-size: 30px;
-    cursor: pointer;
-    z-index: 10;
-    padding: 10px;
-  }
-
-  .prev-btn {
-    left: 10px;
-  }
-
-  .next-btn {
-    right: 10px;
-  }
-
-  .profile-container {
-    display: flex;
-    gap: 10px;
-    transition: scroll 0.3s ease;
-  }
-
-  .profile-card {
-    flex: 0 0 250px;
-    border-radius: 0.5rem;
-    transition: 0.5s ease-in-out;
-    cursor: pointer;
-    box-shadow: 1px 5px 15px #1e0e3e;
-    position: relative;
+    background-color: var(--background-color);
     overflow: hidden;
-    aspect-ratio: 1 / 1.5; /* Mantener proporción estándar */
-    background-size: cover; /* Asegura que la imagen cubra todo el área */
-    background-position: center; /* Centra la imagen */
-    height: 500px;
-  }
-
-  .profile-content {
-    font-size: 1.5rem;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    opacity: 0;
-    flex-direction: column;
-    height: 100%;
-    justify-content: flex-end;
-    background: linear-gradient(
-      0deg,
-      rgba(2, 2, 46, 0.6755077030812324) 0%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    transform: translateY(100%);
-    transition: opacity 0.5s ease-in-out, transform 0.5s 0.2s;
-    visibility: hidden;
-  }
-
-  .profile-content span {
-    display: block;
-    margin-top: 5px;
-    font-size: 1.2rem;
-  }
-
-  .profile-card:hover {
-    flex: 0 0 700px;
-    box-shadow: 1px 3px 15px #7645d8;
-    transform: translateY(-30px);
-  }
-
-  .profile-card:hover .profile-content {
-    opacity: 1;
-    transform: translateY(0%);
-    visibility: visible;
+  
+    &:before {
+      content: '';
+      position: absolute;
+      inset: 0 -60% 65% -60%;
+      background-image: radial-gradient(ellipse at top, #ff0000 0%, var(--background-color) 50%);
+      opacity: var(--blur-opacity);
+    }
+  
+    .twitter {
+      position: fixed;
+      display: block;
+      right: 12px;
+      bottom: 12px;
+      svg {
+        width: 32px;
+        height: 32px;
+        fill: #fff;
+      }
+    }
   }
 </style>
 
-
+  <div id="pagination" class="text-center mt-4">
+    <button id="prevPage" class="btn btn-outline-primary">Anterior</button>
+    <span id="pageNumber" class="mx-3"></span>
+    <button id="nextPage" class="btn btn-outline-primary">Siguiente</button>
+  </div>
+  
 <!-- Footer Start -->
 <div class="footer container-fluid mt-5 py-5 px-sm-3 px-md-5 text-white">
     <div class="row pt-5">
@@ -686,4 +926,4 @@ document.addEventListener("DOMContentLoaded", obtenerCatalogo);
        <script src="c/mail/contact.js"></script>
    
        <!-- Template Javascript -->
-       <script src="c/js/main.js"></script>
+  
