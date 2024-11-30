@@ -210,4 +210,106 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 //catalogo
 
+<<<<<<< HEAD
+=======
+    async function obtenerCatalogo() {
+        try {
+            const response = await fetch("http://localhost:4000/api/get-all");
+            const productos = await response.json();
+
+            if (!productos || productos.length === 0) {
+                console.warn("No se encontraron productos.");
+                return;
+            }
+
+            cargarProductosEnCarrusel(productos);
+        } catch (error) {
+            console.error("Error al cargar los productos:", error);
+        }
+    }
+
+    function cargarProductosEnCarrusel(productos) {
+        const carouselInner = document.querySelector('#productosCarousel .carousel-inner');
+        carouselInner.innerHTML = ''; // Limpiar contenido previo
+
+        let slide = '';
+        let itemCount = 0;
+
+        productos.forEach((producto, index) => {
+            // Cada 4 productos creamos un nuevo slide
+            if (itemCount % 4 === 0) {
+                if (itemCount > 0) {
+                    slide += '</div>'; // Cerrar la fila anterior
+                }
+                slide += `<div class="carousel-item${itemCount === 0 ? ' active' : ''}"><div class="row">`;
+            }
+
+            const maxLength = 22; 
+            const descripcionCorta = producto.descripcion.slice(0, maxLength);
+            const tieneVerMas = producto.descripcion.length > maxLength;
+
+            slide += `
+                <div class="col-md-3">
+                    <div class="card border-0 bg-secondary text-center text-white">
+                        <img class="card-img-top" src="${producto.imagen_producto}" alt="${producto.nombre_producto}">
+                        <div class="card-social d-flex align-items-center justify-content-center">
+                            <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-outline-light rounded-circle text-center mr-2 px-0" style="width: 40px; height: 40px;" href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                        <div class="card-body bg-secondary">
+                            <h4 class="card-title text-primary">${producto.nombre_producto}</h4>
+                            <p class="card-text" id="desc-${producto.id_catalogo}">
+                                ${descripcionCorta} <!-- No se muestran los puntos suspensivos -->
+                            </p>
+                            <p class="card-text ${tieneVerMas ? 'ver-mas' : ''}" id="full-desc-${producto.id_catalogo}" style="display: none;">${producto.descripcion}</p>
+
+                            <!-- Botón "Ver más" o "Ver menos" pegado al texto -->
+                            ${tieneVerMas ? `<span class="ver-mas-btn" onclick="mostrarMasMenos(${producto.id_catalogo})">Ver más</span>` : ''}
+
+                            <a href="${producto.link}" class="btn btn-lg px-4 btn-outline-primary" target="_blank">Ver producto</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            itemCount++;
+
+            // Si ya hemos añadido 4 productos o es el último, cerramos el slide
+            if (itemCount % 4 === 0 || index === productos.length - 1) {
+                slide += '</div></div>';
+            }
+        });
+
+        carouselInner.innerHTML = slide; // Inyectar el contenido del carrusel
+    }
+
+   function mostrarMasMenos(id) {
+    const shortDesc = document.getElementById(`desc-${id}`);
+    const fullDesc = document.getElementById(`full-desc-${id}`);
+    const verMasBtn = document.querySelector(`#desc-${id} + .ver-mas-btn`);
+    const cardBody = document.querySelector(`#desc-${id}`).closest('.card-body'); // Acceder al body de la tarjeta
+
+    // Si la descripción está truncada (mostrar más), la ampliamos
+    if (shortDesc.style.display !== 'none') {
+        shortDesc.style.display = 'none';
+        fullDesc.style.display = 'block';
+        verMasBtn.textContent = 'Ver menos'; // Cambiar el texto a "Ver menos"
+        cardBody.classList.add('expanded'); // Expandir la tarjeta
+    } else { // Si ya está expandida (mostrar menos), la contraemos
+        shortDesc.style.display = 'block';
+        fullDesc.style.display = 'none';
+        verMasBtn.textContent = 'Ver más'; // Cambiar el texto a "Ver más"
+        cardBody.classList.remove('expanded'); // Contraer la tarjeta
+    }
+}
+
+
+
+    // Esperar a que el DOM esté cargado para ejecutar la función
+    document.addEventListener('DOMContentLoaded', obtenerCatalogo);
+
+
+>>>>>>> bb90b3390a8a4fa158ac53c2ff679c37c65e82f5
     
