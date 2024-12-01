@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const clases = require('../controller/clasesController');
 
+const { attachUserPermissions } = require('../controller/middleware/permisosVista');
+const { verifyToken } = require('../controller/middleware/verificarToken');
+const { restrictToPermiso } = require('../controller/middleware/redirect');
 // Rutas de clases
 router.post('/agregar_clase', clases.agregarClase);
 router.put('/actualizar_clase/:id', clases.actualizarClase);
@@ -10,15 +13,17 @@ router.get('/traer_clases', clases.traerClases);
 router.get('/obtener_clase/:id_clase', clases.obtenerClase);
 
 // Ruta para el administrador de clases
-router.get('/clasesAdmin', 
+router.get('/clasesAdmin', verifyToken, restrictToPermiso('clases admin'), attachUserPermissions,  
     clases.traerClases, 
     clases.obtenerProfesores, 
     clases.obtenerCursos, 
     (req, res) => {
+        const userPermissions = req.usuario ? req.usuario.permisos : [];
         res.render('admin/clasesAdmin', { 
             data: res.locals.data,
             profesores: res.locals.profesores,
-            cursos: res.locals.cursos
+            cursos: res.locals.cursos,
+            permisos: userPermissions 
         });
     }
 );

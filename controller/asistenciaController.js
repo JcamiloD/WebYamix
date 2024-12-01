@@ -33,7 +33,6 @@ exports.traerAsistencia = async (req, res, next) => {
 exports.crearAsistencia = async (req, res) => {
     try {
         const { id_clase, fecha_asistencia, estudiantes } = req.body;
-        console.log(req.body)
         
         // Validar los datos antes de enviarlos
         if (!id_clase || !fecha_asistencia || !Array.isArray(estudiantes) || estudiantes.length === 0) {

@@ -6,9 +6,13 @@ const cursos = require('../controller/cursosController');
 
 const multer = require('multer');
 
+const { attachUserPermissions } = require('../controller/middleware/permisosVista');
+const { verifyToken } = require('../controller/middleware/verificarToken');
+const { restrictToPermiso } = require('../controller/middleware/redirect');
+
 const storage = multer.memoryStorage(); // Usar memoria en lugar de almacenamiento en disco
 const upload = multer({ storage: storage });
-
+router.use(attachUserPermissions);
 
 
 
@@ -25,8 +29,9 @@ router.delete('/eliminar_curso/:id', cursos.eliminarCurso);
 router.get('/obtener_curso/:id_curso', cursos.obtenerCurso);
 router.get('/traer_cursos', cursos.traerCursos);
 
-router.get('/cursosAdmin', cursos.traerCursos, (req, res) => {
-    res.render('admin/cursosAdmin',  { data: res.locals.data});
+router.get('/cursosAdmin',verifyToken, restrictToPermiso('cursos admin'),attachUserPermissions, cursos.traerCursos, (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('admin/cursosAdmin',  { data: res.locals.data,  permisos: userPermissions });
 });
 
 module.exports = router;

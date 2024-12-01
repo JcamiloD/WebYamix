@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { attachUserPermissions } = require('../controller/middleware/permisosVista');
 
+const { verifyToken } = require('../controller/middleware/verificarToken');
+const { restrictToPermiso } = require('../controller/middleware/redirect');
+
 router.use(attachUserPermissions);
 
 router.get('/', (req, res) => {
@@ -39,12 +42,13 @@ router.get('/calen', (req, res) => {
     });
 });
 
-router.get('/perfil', (req, res) => {
+router.get('/perfil',verifyToken,restrictToPermiso('perfil'), (req, res) => {
     const userPermissions = req.usuario ? req.usuario.permisos : [];
     res.render('web/perfil',{
         permisos: userPermissions
     });
 });
+
 router.get('/asistenciaProfe', (req, res) => {
     const userPermissions = req.usuario ? req.usuario.permisos : [];
     res.render('web/asistenciaProfe',{
@@ -68,4 +72,6 @@ router.get('/catalogo', (req, res) => {
         permisos: userPermissions
     });
 });
+
+
 module.exports = router;
