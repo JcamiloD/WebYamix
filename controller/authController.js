@@ -185,6 +185,8 @@ exports.login = async (req, res) => {
             let ruta = '';
             if (userRole === 'administrador') {
                 ruta = '/dashboard';
+            }else{
+                ruta = '/'
             }
 
             // Responder al frontend con la ruta

@@ -21,6 +21,7 @@
       <li class="nav-item nav-category">
         <span class="nav-link">Navegación</span>
       </li>
+      <% if (permisos.includes('dashboard')) { %>
       <li class="nav-item menu-items">
         <a class="nav-link" href="/dashboard">
           <span class="menu-icon">
@@ -29,6 +30,8 @@
           <span class="menu-title">Dashboard</span>
         </a>
       </li>
+      <% } %>
+      <% if (permisos.includes('roles')) { %>
       <li class="nav-item menu-items">
         <a class="nav-link" href="/permisos">
             <span class="menu-icon">
@@ -36,6 +39,9 @@
             </span>
             <span class="menu-title">Permisos</span>
         </a>
+        </li>
+    <% } %>
+      <% if (permisos.includes('usuarios')) { %>
         <li class="nav-item menu-items">
           <a class="nav-link" data-toggle="collapse" href="#usuariosSubmenu" aria-expanded="false" aria-controls="usuariosSubmenu">
             <span class="menu-icon">
@@ -55,6 +61,9 @@
             </ul>
           </div>
         </li>
+         <% } %>
+      <% if (permisos.includes('asistencia admin')) { %>
+
       <li class="nav-item menu-items">
         <a class="nav-link" href="/asistencia">
           <span class="menu-icon">
@@ -63,14 +72,18 @@
           <span class="menu-title">Asistencia</span>
         </a>
       </li>
+      <% } %>
+      <% if (permisos.includes('clases admin')) { %>
       <li class="nav-item menu-items">
         <a class="nav-link" href="/clasesAdmin">
           <span class="menu-icon">
             <i class="mdi mdi-chart-bar"></i>
           </span>
-          <span class="menu-title">Clases</span>
+          <span class="menu-title">Clases </span>
         </a>
       </li>
+      <% } %>
+      <% if (permisos.includes('cursos admin')) { %>
       <li class="nav-item menu-items">
         <a class="nav-link" href="/cursosAdmin">
           <span class="menu-icon">
@@ -79,6 +92,8 @@
           <span class="menu-title">Cursos</span>
         </a>
       </li>
+      <% } %>
+      <% if (permisos.includes('calendario admin')) { %>
     <li class="nav-item menu-items">
       <a class="nav-link" href="/calendarioAdmin">
         <span class="menu-icon">
@@ -87,6 +102,8 @@
         <span class="menu-title">Calendario</span>
       </a>
     </li>
+    <% } %>
+    <% if (permisos.includes('catalogo admin')) { %>
     <li class="nav-item menu-items">
       <a class="nav-link" href="/catalogoAdmin">
         <span class="menu-icon">
@@ -95,6 +112,7 @@
         <span class="menu-title">Catálogo</span>
       </a>
     </li>
+    <% } %>
       <li class="nav-item menu-items">
         <a class="nav-link" href="http://www.bootstrapdash.com/demo/corona-free/jquery/documentation/documentation.html">
           <span class="menu-icon">

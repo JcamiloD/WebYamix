@@ -3,10 +3,15 @@ const router = express.Router();
 const multer = require('multer');
 
 const { verifyToken } = require('../controller/middleware/verificarToken');
+const { restrictToPermiso } = require('../controller/middleware/redirect');
+
 const usuarios = require('../controller/usuarios_controller');
 
 const storage = multer.memoryStorage(); // Usar memoria en lugar de almacenamiento en disco
 const upload = multer({ storage: storage });
+const { attachUserPermissions } = require('../controller/middleware/permisosVista');
+
+router.use(attachUserPermissions);
 
 // Enrutador para manejar el formulario de carga
 router.post('/add_documento', upload.array('nuevoDocumento[]'), usuarios.addDocument);
@@ -56,8 +61,10 @@ router.post('/agregar_usuario', (req, res, next) => {
     next();
 }, usuarios.agregarUsuario);
 
-router.get('/usuariosAdmin', usuarios.traer, (req, res) => {
-    res.render('./admin/usuariosAdmin', { data: res.locals.data });
+router.get('/usuariosAdmin',verifyToken, restrictToPermiso('usuarios'),attachUserPermissions, usuarios.traer, (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    console.log(userPermissions)
+    res.render('./admin/usuariosAdmin', { data: res.locals.data,  permisos: userPermissions  });
 });
 router.get('/profesoresAdmin', usuarios.traer, (req, res) => {
     res.render('./admin/profesoresAdmin', { data: res.locals.data });

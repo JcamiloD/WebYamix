@@ -1,15 +1,19 @@
 const express = require('express');
 const router = express.Router();
 
-
-
+const { verifyToken } = require('../controller/middleware/verificarToken');
+const { restrictToPermiso } = require('../controller/middleware/redirect');
+const { attachUserPermissions } = require('../controller/middleware/permisosVista');
+router.use(attachUserPermissions);
 
 const roles = require('../controller/roles_controller');
 
 
 // Controlador traer roles
-router.get('/permisos',  roles.traer, (req, res) => {
-    res.render('./admin/permisos', { data: res.locals.data });
+router.get('/permisos',verifyToken,restrictToPermiso('roles'), attachUserPermissions, roles.traer, (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+
+    res.render('./admin/permisos', { data: res.locals.data,  permisos: userPermissions  });
 });
 
 // Ruta para agregar rol
