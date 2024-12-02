@@ -1,4 +1,6 @@
 const { promisify } = require('util');
+const jwt = require('jsonwebtoken'); // Asegúrate de tener este paquete para decodificar el token
+
 
 // Controlador para traer las asistencias y clases y renderizar en la vista
 exports.traerAsistencia = async (req, res, next) => {
@@ -61,5 +63,52 @@ exports.crearAsistencia = async (req, res) => {
     } catch (error) {
         console.error('Error al crear la asistencia:', error);
         res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
+// Traer asistencia del profesor desde la API
+exports.traerAsistenciaProfe = async (req, res, next) => {
+    try {
+        // Obtener el token de la cookie
+        const token = req.cookies.jwt;
+
+        // Verificar si el token existe
+        if (!token) {
+            return res.status(401).send('No se ha proporcionado un token');
+        }
+
+        // Decodificar el token para obtener el ID del usuario
+        const decoded = jwt.decode(token);
+        const id_usuario = decoded ? decoded.id : null;
+
+        if (!id_usuario) {
+            return res.status(401).send('El token no contiene un ID de usuario válido');
+        }
+
+        // Realizar la petición a la API para obtener las asistencias, pasando el id_usuario como parámetro
+        const responseAsistencias = await fetch(`${process.env.pathApi}/traerAsistenciaProfe/${id_usuario}`);
+        const dataAsistencias = await responseAsistencias.json();
+
+        // Realizar la petición a la API para obtener las clases
+        const responseClases = await fetch(`${process.env.pathApi}/traer_clases`);
+        const dataClases = await responseClases.json();
+
+        // Verificar que ambas peticiones fueron exitosas
+        if (responseAsistencias.ok && responseClases.ok) {
+            // Filtrar las clases para mostrar solo las que corresponden al usuario actual
+            const clasesUsuario = dataClases.filter(clase => clase.id_usuario === id_usuario);
+
+            // Pasar los datos de las asistencias y las clases filtradas a res.locals
+            res.locals.dataAsistencias = dataAsistencias;
+            res.locals.dataClases = clasesUsuario;  // Solo las clases del usuario
+
+            next(); // Continuamos con el siguiente middleware o controlador
+        } else {
+            console.error('Error al traer asistencias o clases:', dataAsistencias, dataClases);
+            res.status(responseAsistencias.status).send(dataAsistencias.message || 'Error al traer las asistencias o clases');
+        }
+    } catch (error) {
+        console.error('Error al obtener datos de la API:', error);
+        res.status(500).send('Error al obtener las asistencias o clases');
     }
 };

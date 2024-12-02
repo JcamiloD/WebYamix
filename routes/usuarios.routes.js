@@ -54,12 +54,25 @@ router.get('/usuariosEspera', verifyToken, usuarios.traerEspera, (req, res) => {
 // Controladores usuarios
 router.post('/agregar_usuario', (req, res, next) => {
     next();
-}, usuarios.agregarUsuario, (req, res) => {
-    res.redirect('/usuariosAdmin');
-});
+}, usuarios.agregarUsuario);
 
 router.get('/usuariosAdmin', usuarios.traer, (req, res) => {
     res.render('./admin/usuariosAdmin', { data: res.locals.data });
+});
+router.get('/profesoresAdmin', usuarios.traer, (req, res) => {
+    res.render('./admin/profesoresAdmin', { data: res.locals.data });
+});
+router.get('/estudiantesAdmin', usuarios.traer, (req, res) => {
+    res.render('./admin/estudiantesAdmin', { data: res.locals.data });
+});
+router.get('/userEsperaAdmin', usuarios.traer, (req, res) => {
+    res.render('./admin/userEsperaAdmin', { data: res.locals.data });
+});
+router.get('/userDeshabilitadoAdmin', usuarios.traer, (req, res) => {
+    res.render('./admin/userDeshabilitadoAdmin', { data: res.locals.data });
+});
+router.get('/userOtrosAdmin', usuarios.traer, (req, res) => {
+    res.render('./admin/userOtrosAdmin', { data: res.locals.data });
 });
 
 
@@ -75,12 +88,7 @@ router.post('/editar_usuario/:id',
         console.log('Body de la solicitud:', req.body); // Log del cuerpo de la solicitud
         next();
     }, 
-    usuarios.editarUsuario, 
-    (req, res) => {
-        console.log('Usuario editado, redirigiendo a la lista de usuarios');
-        res.redirect('/usuariosAdmin'); // Redirige a la lista de usuarios después de editar
-    }
-);
+    usuarios.editarUsuario);
 
 
 

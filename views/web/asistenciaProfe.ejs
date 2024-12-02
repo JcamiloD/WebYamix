@@ -90,136 +90,406 @@
   <div class="d-flex flex-column text-center mb-5">
     <h4 class="text-primary font-weight-bold">Asistencia</h4>
     <h4 class="display-4 font-weight-bold">Control de asistencia</h4>
-</div>
+  </div>
 
 
-<div class="mb-4 text-center">
+  <div class="mb-4 text-center">
     <select id="filtroAsistencia" class="form-control" style="max-width: 400px; margin: auto;">
         <option value="">Filtro asistencia</option>
         <!-- Opciones dinámicas se agregarán aquí -->
     </select>
-</div>
+  </div>
 
-<!-- Agregar asistencia -->
-<div class="mb-4 text-center">
-  <button class="btn btn-primary" id="agregarAsistenciaBtn" data-bs-toggle="modal" data-bs-target="#modalAsistencia">Agregar Asistencia</button>
-</div>
+  <!-- Agregar asistencia -->
+  <div class="mb-4 text-center">
+    <button class="btn btn-primary" id="agregarAsistenciaBtn" data-bs-toggle="modal" data-bs-target="#modalAsistencia">Agregar Asistencia</button>
+  </div>
 
   <div class="grid">
-    <div class="card">
-      <span class="icon">
-        <!-- Icono de la tarjeta -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4.5 9.5V5.5C4.5 4.94772 4.94772 4.5 5.5 4.5H9.5C10.0523 4.5 10.5 4.94772 10.5 5.5V9.5C10.5 10.0523 10.0523 10.5 9.5 10.5H5.5C4.94772 10.5 4.5 10.0523 4.5 9.5Z"></path>
-          <path d="M13.5 18.5V14.5C13.5 13.9477 13.9477 13.5 14.5 13.5H18.5C19.0523 13.5 19.5 13.9477 19.5 14.5V18.5C19.5 19.0523 19.0523 19.5 18.5 19.5H14.5C13.9477 19.5 13.5 19.0523 13.5 18.5Z"></path>
-          <path d="M4.5 19.5L7.5 13.5L10.5 19.5H4.5Z"></path>
-          <path d="M16.5 4.5C18.1569 4.5 19.5 5.84315 19.5 7.5C19.5 9.15685 18.1569 10.5 16.5 10.5C14.8431 10.5 13.5 9.15685 13.5 7.5C13.5 5.84315 14.8431 4.5 16.5 4.5Z"></path>
-        </svg>
-      </span>
-      <h4>Boxeo</h4>
-      <p>
-        <strong>fecha asistencia: </strong>20 de Noviembre del 2024<br />
-        <strong>Hora de inicio:</strong> 14:10:00<br />
-        <strong>Hora final:</strong> 16:10:00<br />
-        <strong>Instructor:</strong> Juan Pérez
-      </p>
-      <div class="shine"></div>
-      <div class="background">
-        <!-- Elementos de fondo -->
-      </div>
-      <div class="card-buttons">
-        <button class="btn btn-add" id="addButton" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal">+</button> <!-- Aquí abrimos la modal de asistencia de estudiantes -->
-        <button class="btn btn-view" data-bs-toggle="modal" data-bs-target="#viewModal">Ver</button>
-        <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editModal">Editar</button>
-      </div>
-    </div>
-    
-  </div>
-  
-  <!-- Modal Ver Detalle -->
-  <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="viewModalLabel">Ver Detalle</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <% dataAsistencias.forEach(asistencia => { %>
+      <div class="card">
+        <span class="icon">
+          <!-- Icono de la tarjeta -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.5 9.5V5.5C4.5 4.94772 4.94772 4.5 5.5 4.5H9.5C10.0523 4.5 10.5 4.94772 10.5 5.5V9.5C10.5 10.0523 10.0523 10.5 9.5 10.5H5.5C4.94772 10.5 4.5 10.0523 4.5 9.5Z"></path>
+            <path d="M13.5 18.5V14.5C13.5 13.9477 13.9477 13.5 14.5 13.5H18.5C19.0523 13.5 19.5 13.9477 19.5 14.5V18.5C19.5 19.0523 19.0523 19.5 18.5 19.5H14.5C13.9477 19.5 13.5 19.0523 13.5 18.5Z"></path>
+            <path d="M4.5 19.5L7.5 13.5L10.5 19.5H4.5Z"></path>
+            <path d="M16.5 4.5C18.1569 4.5 19.5 5.84315 19.5 7.5C19.5 9.15685 18.1569 10.5 16.5 10.5C14.8431 10.5 13.5 9.15685 13.5 7.5C13.5 5.84315 14.8431 4.5 16.5 4.5Z"></path>
+          </svg>
+        </span>
+        <h4><%= asistencia.nombre_curso %></h4>
+        <p>
+          <strong>Fecha asistencia: </strong> <% 
+          const fechaAsistencia = new Date(asistencia.fecha_asistencia);
+          const dia = fechaAsistencia.getDate();
+          const mes = fechaAsistencia.toLocaleString('es-ES', { month: 'long' }).charAt(0).toUpperCase() + fechaAsistencia.toLocaleString('es-ES', { month: 'long' }).slice(1);
+          const año = fechaAsistencia.getFullYear();
+          const fechaFinal = `${dia} de ${mes} del ${año}`;
+          %>
+          <%= fechaFinal %><br />
+          <strong>Hora de inicio: </strong><% 
+          const horaInicio = new Date(`1970-01-01T${asistencia.hora_inicio}`);
+          let horaInicioFormatted = horaInicio.getHours();
+          let minutosInicio = horaInicio.getMinutes();
+          const ampmInicio = horaInicioFormatted >= 12 ? 'p.m.' : 'a.m.';
+          horaInicioFormatted = horaInicioFormatted % 12 || 12;
+          minutosInicio = minutosInicio < 10 ? '0' + minutosInicio : minutosInicio;
+          const horaInicioFinal = `${horaInicioFormatted}:${minutosInicio} ${ampmInicio}`;
+          %>
+          <%= horaInicioFinal %><br />
+          <strong>Hora final: </strong><% 
+          const horaFinal = new Date(`1970-01-01T${asistencia.hora_final}`);
+          let horaFinalFormatted = horaFinal.getHours();
+          let minutosFinal = horaFinal.getMinutes();
+          const ampmFinal = horaFinalFormatted >= 12 ? 'p.m.' : 'a.m.';
+          horaFinalFormatted = horaFinalFormatted % 12 || 12;
+          minutosFinal = minutosFinal < 10 ? '0' + minutosFinal : minutosFinal;
+          const horaFinalFormattedFinal = `${horaFinalFormatted}:${minutosFinal} ${ampmFinal}`;
+          %>
+          <%= horaFinalFormattedFinal %><br />
+          <strong>Instructor: </strong><%= asistencia.nombre_instructor %>
+        </p>
+        <div class="shine"></div>
+        <div class="background">
+          <!-- Elementos de fondo -->
         </div>
-        <div class="modal-body">
-          <p><strong>Clase:</strong> Boxeo</p>
-          <p><strong>Fecha de Asistencia:</strong> 20 de Noviembre del 2024</p>
-          <p><strong>Hora de Inicio:</strong> 14:10:00</p>
-          <p><strong>Hora de Finalización:</strong> 16:10:00</p>
-          <p><strong>Instructor:</strong> Juan Pérez</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Modal Editar Fecha de Asistencia -->
-  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editModalLabel">Editar Fecha de Asistencia</h5>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+        <div class="card-buttons">
+          <button class="btn btn-view" data-bs-toggle="modal" data-bs-target="#viewModal"
+                  data-id_asistencia="<%= asistencia.id_asistencia %>"
+                  data-nombre_curso="<%= asistencia.nombre_curso %>"
+                  data-fecha_asistencia="<%= asistencia.fecha_asistencia %>"
+                  data-fecha_asistencia_final="<%= fechaFinal %>"
+                  data-hora_inicio="<%= horaInicioFinal %>"
+                  data-hora_final="<%= horaFinalFormattedFinal %>"
+                  data-nombre_instructor="<%= asistencia.nombre_instructor %>">
+            Ver Detalle
           </button>
         </div>
-        <div class="modal-body">
-          <form id="editForm">
-            <input type="hidden" name="id" id="editId">
-            <div class="form-group">
-              <label for="editFecha">Fecha de Asistencia</label>
-              <input type="date" name="fecha_asistencia" class="form-control" id="editFecha" required>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-dark mr-2" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-dark" form="editForm">Guardar Cambios</button>
-        </div>
       </div>
-    </div>
+    <% }) %>
   </div>
+
   
-  <!-- Modal Asistencia de Estudiantes -->
-<div class="modal fade" id="editEstudiantesModal" tabindex="-1" aria-labelledby="editEstudiantesModalLabel" aria-hidden="true">
+<!-- Modal Ver Detalle -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editEstudiantesModalLabel">Asistencia de Estudiantes</h5>
+        <h5 class="modal-title" id="viewModalLabel">Detalles de la asistencia</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p class="card-description">Estudiantes presentes y ausentes en la clase</p>
-        <div class="row">
+        <!-- Nombre de la clase y fecha -->
+        <p>
+          <strong>
+            <span id="modalNombreCurso"></span> - 
+            <span id="modalFechaAsistencia"></span>
+            <button type="button" class="btn btn-link" id="editFechaBtn">
+              <i class="fa fa-pencil-alt"></i>
+            </button>
+          </strong>
+        </p>
+        <!-- Horarios -->
+        <p><strong>Horario:</strong> <span id="modalHoraInicio"></span> a <span id="modalHoraFinal"></span></p>
+        <!-- Instructor -->
+        <p><strong>Instructor:</strong> <span id="modalNombreInstructor"></span></p>
+        <!-- Estudiantes -->
+        <div class="row mt-4">
           <div class="col-md-6">
             <h6>Estudiantes Presentes</h6>
-            <div id="presentStudentsContainer"></div>
+            <ul id="presentStudentsContainer"></ul>
           </div>
           <div class="col-md-6">
             <h6>Estudiantes Ausentes</h6>
-            <div id="absentStudentsContainer"></div>
+            <ul id="absentStudentsContainer"></ul>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary" id="saveChangesButton">Guardar cambios</button>
+        <button type="button" class="btn btn-danger" id="editButton">Editar Asistencia</button>
+        <button type="button" class="btn btn-primary" id="saveChangesButton" style="display: none;">Guardar Cambios</button>
       </div>
     </div>
   </div>
 </div>
- <!-- Modal para agregar asistencia -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const viewButtons = document.querySelectorAll(".btn-view");
+    let idAsistencia;
+
+    viewButtons.forEach((button) => {
+      button.addEventListener("click", async function () {
+        idAsistencia = this.dataset.id_asistencia;
+        const nombreCurso = this.dataset.nombre_curso;
+        const fechaAsistenciaFormateada = formatDate(this.dataset.fecha_asistencia);
+        const horaInicio = this.dataset.hora_inicio;
+        const horaFinal = this.dataset.hora_final;
+        const nombreInstructor = this.dataset.nombre_instructor;
+
+        // Asignar valores al modal
+        document.getElementById("modalNombreCurso").textContent = nombreCurso;
+        document.getElementById("modalFechaAsistencia").textContent = fechaAsistenciaFormateada;
+        document.getElementById("modalHoraInicio").textContent = horaInicio;
+        document.getElementById("modalHoraFinal").textContent = horaFinal;
+        document.getElementById("modalNombreInstructor").textContent = nombreInstructor;
+
+        // Cargar estudiantes
+        try {
+          const response = await fetch(`http://localhost:4000/api/estudiantesPorAsistencia/${idAsistencia}`);
+          if (!response.ok) throw new Error("Error al cargar estudiantes");
+
+          const data = await response.json();
+          const presentContainer = document.getElementById("presentStudentsContainer");
+          const absentContainer = document.getElementById("absentStudentsContainer");
+
+          // Limpiar los contenedores antes de llenarlos
+          presentContainer.innerHTML = "";
+          absentContainer.innerHTML = "";
+
+          // Procesar estudiantes y mostrarlos sin checkboxes
+          data.estudiantes.forEach((est) => {
+            const listItem = `
+              <li class="student-item" data-id="${est.id_usuario}">
+                <div class="student-info">
+                  <span>${est.nombre} ${est.apellido}</span>
+                </div>
+              </li>
+            `;
+
+            if (est.presente === 1) {
+              presentContainer.innerHTML += listItem;
+            } else {
+              absentContainer.innerHTML += listItem;
+            }
+          });
+
+          // Almacenar los datos de estudiantes para usarlos cuando se edite la asistencia
+          window.estudiantes = data.estudiantes; // Guardar los estudiantes en un objeto global o en un lugar accesible
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Error al cargar los estudiantes.");
+        }
+      });
+    });
+
+    // Función para activar o desactivar el modo de edición
+    function toggleEditMode(editMode) {
+      // Verificar si estudiantes están disponibles
+      if (!window.estudiantes || window.estudiantes.length === 0) {
+        console.error('No hay estudiantes disponibles.');
+        return;
+      }
+
+      const studentItems = document.querySelectorAll(".student-item");
+
+      studentItems.forEach((item) => {
+        const studentId = item.dataset.id;
+
+        // Buscar al estudiante correspondiente en los datos de estudiantes
+        const estudiante = window.estudiantes.find(est => est.id_usuario === parseInt(studentId));
+
+        if (!estudiante) {
+          console.error(`Estudiante con id ${studentId} no encontrado.`);
+          return;
+        }
+
+        if (editMode) {
+          // Crear el checkbox con su estado dependiendo de la propiedad "presente"
+          const checkbox = `
+            <div class="form-check" style="margin: 0; padding: 0;">
+              <input type="checkbox" class="form-check-input" id="student-${studentId}" ${estudiante.presente === 1 ? 'checked' : ''}>
+              <label class="form-check-label" for="student-${studentId}" style="padding-left: 0;">
+                ${estudiante.nombre} ${estudiante.apellido}
+              </label>
+            </div>`;
+
+          // Actualizar el contenido HTML con el checkbox
+          item.innerHTML = checkbox;
+
+          // Asegurarse de que los elementos no mantengan el estilo de lista
+          item.style.listStyleType = "none"; // Eliminar el marcador de lista
+
+          // Eliminar cualquier margen o relleno adicional que esté afectando el diseño
+          item.style.margin = "0";
+          item.style.padding = "0";
+        } else {
+          // Volver a mostrar los puntos y asegurar que no hay estilos de lista previos
+          item.innerHTML = `<span>• ${estudiante.nombre} ${estudiante.apellido}</span>`;
+          item.style.listStyleType = "initial"; // Restaurar el marcador predeterminado de lista
+
+          // Restaurar margen y relleno predeterminados si es necesario
+          item.style.margin = "0 0 5px 0"; // Puedes ajustar el margen según tu preferencia
+          item.style.padding = "0";
+        }
+      });
+    }
+
+    // Función para formatear la fecha a "DD de MMMM del YYYY"
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+
+      const day = ("0" + date.getDate()).slice(-2);
+      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+      const month = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+      return `${day} de ${month} del ${year}`;
+    }
+
+    // Función para editar la fecha
+    document.getElementById("editFechaBtn").addEventListener("click", async function () {
+      const fechaEl = document.getElementById("modalFechaAsistencia");
+      const button = document.querySelector(`.btn-view[data-id_asistencia='${idAsistencia}']`);
+
+      if (!button) {
+        console.error("No se encontró el botón correspondiente.");
+        alert("No se puede editar la fecha.");
+        return;
+      }
+
+      const existingInput = fechaEl.querySelector("input[type='date']");
+      if (existingInput) {
+        const nuevaFecha = existingInput.value;
+        if (isFutureDate(nuevaFecha)) {
+          alert("No se puede seleccionar una fecha futura.");
+          return;
+        }
+
+        try {
+          const nuevaFechaUTC = convertToUTC(nuevaFecha);
+
+          const response = await fetch(`http://localhost:4000/api/actualizar_asistencia/${idAsistencia}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fecha_asistencia: nuevaFechaUTC }),
+          });
+
+          if (!response.ok) throw new Error("Error al actualizar la fecha");
+
+          const result = await response.json();
+          alert(result.message);
+
+          fechaEl.innerHTML = formatDate(nuevaFechaUTC);
+          button.dataset.fecha_asistencia = nuevaFechaUTC;
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Error al guardar los cambios de la fecha");
+        }
+      } else {
+        const fechaSinFormato = button.dataset.fecha_asistencia;
+
+        if (!fechaSinFormato) {
+          console.error("El valor de fecha_asistencia no está disponible.");
+          alert("No se puede editar la fecha porque no está disponible.");
+          return;
+        }
+
+        const fechaFormateada = new Date(fechaSinFormato).toISOString().split("T")[0];
+        const fechaActual = new Date();
+        fechaActual.setHours(0, 0, 0, 0);
+        const fechaActualFormateada = convertToLocalDate(fechaActual);
+
+        const inputFecha = `<input type="date" class="form-control" value="${fechaFormateada}" max="${fechaActualFormateada}" />`;
+
+        fechaEl.innerHTML = inputFecha;
+        const inputDateField = fechaEl.querySelector("input[type='date']");
+        inputDateField.max = fechaActualFormateada;
+
+        inputDateField.addEventListener("change", function () {
+          const selectedDate = new Date(this.value);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          if (selectedDate > today) {
+            alert("No se puede seleccionar una fecha futura.");
+            this.value = fechaActualFormateada;
+          }
+        });
+      }
+    });
+
+    function convertToUTC(localDate) {
+      const localDateObj = new Date(localDate);
+      return new Date(localDateObj.getUTCFullYear(), localDateObj.getUTCMonth(), localDateObj.getUTCDate()).toISOString();
+    }
+
+    function convertToLocalDate(date) {
+      const localDate = new Date(date);
+      const offset = -5; // Zona horaria de Colombia (UTC -5)
+      localDate.setHours(localDate.getHours() + offset);
+      return localDate.toISOString().split("T")[0];
+    }
+
+    function isFutureDate(fecha) {
+      const fechaSeleccionada = new Date(fecha);
+      const fechaHoy = new Date();
+      fechaHoy.setHours(0, 0, 0, 0);
+      return fechaSeleccionada > fechaHoy;
+    }
+
+    // Editar asistencia
+    document.getElementById("editButton").addEventListener("click", () => {
+      // Reemplazar puntos con checkboxes
+      toggleEditMode(true);
+
+      document.getElementById("editButton").style.display = "none";
+      document.getElementById("saveChangesButton").style.display = "block";
+    });
+
+    // Guardar cambios
+    document.getElementById("saveChangesButton").addEventListener("click", async () => {
+      const checkboxes = document.querySelectorAll(".form-check-input");
+      const cambiosDeAsistencia = [];
+
+      checkboxes.forEach((checkbox) => {
+        const idEstudiante = checkbox.id.split('-')[1]; // Asegúrate de que el id del checkbox sea correcto
+        const asistio = checkbox.checked ? 1 : 0;
+        cambiosDeAsistencia.push({ id_usuario: idEstudiante, presente: asistio });
+      });
+
+      try {
+        const response = await fetch(`http://localhost:4000/api/actualizar_asistencia_estudiantes/`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_asistencia: idAsistencia, cambios: cambiosDeAsistencia }),
+        });
+
+        if (!response.ok) throw new Error("Error al actualizar asistencia de estudiantes");
+
+        const result = await response.json();
+        alert(result.message);
+
+        // Cerrar modal
+        const modal = new bootstrap.Modal(document.getElementById("viewModal"));
+        modal.hide();
+
+        // Reiniciar la página o cargar el contenido actualizado
+        location.reload(); // Recarga la página para actualizar los datos
+
+        // Alternativamente, si no quieres recargar la página, puedes resetear el estado de la vista aquí
+        // Ejemplo: restablecer los checkboxes y ocultar el botón de guardar cambios
+        document.getElementById("editButton").style.display = "block";
+        document.getElementById("saveChangesButton").style.display = "none";
+        toggleEditMode(false); // Esto quitaría los checkboxes si no quieres que se mantengan
+
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Error al actualizar asistencia de estudiantes");
+      }
+    });
+  });
+</script>
+
+
+  
+<!-- Modal para agregar asistencia -->
 <div class="modal fade" id="modalAsistencia" tabindex="-1" role="dialog" aria-labelledby="modalAsistenciaLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalAsistenciaLabel">Registrar Asistencia</h5>
-        <!-- Cambiar a "btn-close" y "data-bs-dismiss" -->
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -228,19 +498,42 @@
           <!-- Campo de fecha -->
           <div class="form-group">
             <label for="fechaAsistencia">Fecha</label>
-            <input type="date" class="form-control" id="fechaAsistencia" required>
+            <input type="date" class="form-control" id="fechaAsistencia" required max="<%= new Date().toISOString().split('T')[0] %>">
           </div>
 
           <!-- Campo de clase como un select -->
           <div class="form-group">
-            <label for="nombreEstudiante">Clase</label>
-            <select class="form-control" id="nombreEstudiante" required>
-              <option value="">Selecciona una clase</option>
-              <option value="Artes Marciales">Artes Marciales</option>
-              <option value="Defensa Personal">Defensa Personal</option>
-              <option value="Boxeo">Boxeo</option>
-              <option value="Parkour">Parkour</option>
-            </select>
+            <label for="id_clase">Clase:</label>
+            <select class="form-control" id="id_clase" name="id_clase" required>
+                <option value="" disabled selected>Seleccione una clase</option>
+                <% if (dataClases && dataClases.length) { %>
+                    <% dataClases.forEach(function(clase) { 
+                        if (clase.estado === 'activo') {
+                            function formatTimeTo12Hour(time) {
+                                let [hours, minutes] = time.split(":");
+                                let suffix = hours >= 12 ? "p.m." : "a.m.";
+                                hours = hours % 12 || 12; // Convertir a formato 12 horas
+                                return `${hours}:${minutes} ${suffix}`;
+                            }
+
+                            let startTime = formatTimeTo12Hour(clase.hora_inicio);
+                            let endTime = formatTimeTo12Hour(clase.hora_final);
+                            %>
+                            <option value="<%= clase.id_clase %>">
+                                <%= clase.nombre_curso %> - <%= startTime %> a <%= endTime %>
+                            </option>
+                            <% 
+                          } 
+                      }); %>
+                  <% } else { %>
+                      <option value="">No hay clases disponibles</option>
+                  <% } %>
+              </select>
+          </div>     
+
+          <!-- Contenedor de estudiantes -->
+          <div id="estudiantes_container" class="form-group">
+            <!-- Los checkboxes de estudiantes se agregarán aquí -->
           </div>
 
           <!-- Botón de envío -->
@@ -252,88 +545,104 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Ejemplo de productos (en la práctica, estos vendrían de una base de datos o una API)
-  const productos = [
-    {nombre: 'Boxeo', fecha: '20 de Noviembre del 2024', horaInicio: '14:10:00', horaFinal: '16:10:00', instructor: 'Juan Pérez'},
-    {nombre: 'Artes Marciales', fecha: '22 de Noviembre del 2024', horaInicio: '10:00:00', horaFinal: '12:00:00', instructor: 'Ana Gómez'},
-    {nombre: 'Parkour', fecha: '23 de Noviembre del 2024', horaInicio: '15:00:00', horaFinal: '17:00:00', instructor: 'Carlos Martínez'},
-    // Agregar más productos aquí para que haya más de 15
-  ];
+  document.addEventListener('DOMContentLoaded', () => {
+    // Llenar la lista de estudiantes cuando se selecciona la clase
+    document.getElementById('id_clase').addEventListener('change', async function () {
+      const idClase = this.value;
+      
+      try {
+        const response = await fetch(`http://localhost:4000/api/claseEstudiante/${idClase}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const estudiantes = await response.json();
+        
+        // Limpiar la lista de estudiantes
+        const estudiantesContainer = document.getElementById('estudiantes_container');
+        if (!estudiantesContainer) {
+          console.error('Error: No se encontró el contenedor de estudiantes');
+          return;
+        }
+        estudiantesContainer.innerHTML = '';
+        
+        // Llenar la lista con los estudiantes obtenidos
+        estudiantes.forEach(estudiante => {
+          const checkboxHtml = `
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" name="estudiantes" id="estudiante-${estudiante.id_usuario}" data-estudiante-id="${estudiante.id_usuario}">
+              <label class="form-check-label" for="estudiante-${estudiante.id_usuario}">
+                ${estudiante.nombre} ${estudiante.apellido}
+              </label>
+            </div>
+          `;
+          estudiantesContainer.innerHTML += checkboxHtml;
+        });
+      } catch (error) {
+        console.error('Error al obtener los estudiantes:', error);
+      }
+    });
 
-  const itemsPerPage = 15;
-  let currentPage = 1;
+    // Manejo del formulario de asistencia
+    document.getElementById('formAsistencia').addEventListener('submit', async function (event) {
+      event.preventDefault();
   
-  // Función para mostrar los productos en la página actual
-  function showProducts() {
-    const start = (currentPage - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    const productosPagina = productos.slice(start, end);
-
-    // Limpiar el contenedor de productos
-    const productosContainer = document.getElementById('productos-container');
-    productosContainer.innerHTML = '';
-
-    // Agregar los productos de la página actual
-    productosPagina.forEach(producto => {
-      const productCard = document.createElement('div');
-      productCard.classList.add('card');
-      productCard.innerHTML = `
-        <span class="icon">
-          <!-- Icono aquí -->
-        </span>
-        <h4>${producto.nombre}</h4>
-        <p>
-          <strong>Fecha asistencia: </strong>${producto.fecha}<br />
-          <strong>Hora de inicio:</strong> ${producto.horaInicio}<br />
-          <strong>Hora final:</strong> ${producto.horaFinal}<br />
-          <strong>Instructor:</strong> ${producto.instructor}
-        </p>
-        <div class="shine"></div>
-        <div class="background"></div>
-        <div class="card-buttons">
-          <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#editEstudiantesModal">+</button>
-          <button class="btn btn-view" data-bs-toggle="modal" data-bs-target="#viewModal">Ver</button>
-          <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editModal">Editar</button>
-        </div>
-      `;
-      productosContainer.appendChild(productCard);
-    });
-
-    // Actualizar el número de página
-    document.getElementById('pageNumber').textContent = currentPage;
-  }
-
-  // Función para manejar la paginación
-  function handlePagination() {
-    const prevButton = document.getElementById('prevPage');
-    const nextButton = document.getElementById('nextPage');
-
-    prevButton.disabled = currentPage === 1;
-    nextButton.disabled = currentPage * itemsPerPage >= productos.length;
-
-    prevButton.addEventListener('click', function() {
-      if (currentPage > 1) {
-        currentPage--;
-        showProducts();
+      const fechaAsistencia = document.getElementById('fechaAsistencia').value;
+      const idClase = document.getElementById('id_clase').value;
+      
+      // Obtener los estudiantes seleccionados
+      const allCheckboxes = document.querySelectorAll('input[name="estudiantes"]');
+      const estudiantes = Array.from(allCheckboxes).map(checkbox => ({
+        id_usuario: checkbox.dataset.estudianteId, // Usamos el data-estudiante-id para obtener el ID
+        presente: checkbox.checked ? 1 : 0
+      }));
+      
+      // Verificar que los campos no estén vacíos
+      if (!fechaAsistencia || !idClase) {
+        alert('Por favor, complete todos los campos.');
+        return;
+      }
+  
+      const data = {
+        fecha_asistencia: fechaAsistencia,
+        id_clase: idClase,
+        estudiantes
+      };
+      
+      try {
+        const response = await fetch('/crear_asistencia', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+  
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.message || 'Error en el servidor');
+        }
+        
+        alert(result.message);
+  
+        // Limpiar el formulario y la lista de estudiantes
+        document.getElementById('formAsistencia').reset();
+        document.getElementById('estudiantes_container').innerHTML = '';
+        
+        // Recargar la vista
+        window.location.reload();
+      } catch (error) {
+        console.error('Error al enviar datos:', error);
+        alert('Error al enviar datos: ' + error.message);
       }
     });
-
-    nextButton.addEventListener('click', function() {
-      if (currentPage * itemsPerPage < productos.length) {
-        currentPage++;
-        showProducts();
-      }
-    });
-  }
-
-  // Inicializar paginación y mostrar los productos
-  showProducts();
-  handlePagination();
-});
+  });
+</script>
 
 
-  </script>
+
+
+
   
  
 <style>
@@ -860,6 +1169,33 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   }
+
+  /* Estilo básico para los checkboxes */
+.form-check-input {
+  border: 2px solid #dc3545; /* Color de borde rojo */
+  background-color: #ffffff; /* Fondo blanco */
+  height: 18px;
+  width: 18px;
+}
+
+/* Al marcar el checkbox */
+.form-check-input:checked {
+  background-color: #dc3545; /* Fondo rojo cuando está marcado */
+  border-color: #dc3545; /* Borde rojo cuando está marcado */
+}
+
+/* Estilo para cuando el checkbox tiene un hover */
+.form-check-input:hover {
+  background-color: #f5a5a5; /* Color claro cuando se pasa el mouse */
+  border-color: #f5a5a5; /* Borde claro cuando se pasa el mouse */
+}
+
+/* Estilo para el texto del label */
+.form-check-label {
+  font-size: 14px;
+  color: #333333; /* Texto oscuro para buen contraste */
+}
+
 </style>
 
   <div id="pagination" class="text-center mt-4">
@@ -916,8 +1252,10 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
   <!-- Footer End -->
        <!-- JavaScript Libraries -->
+
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
        <script src="c/lib/easing/easing.min.js"></script>
        <script src="c/lib/waypoints/waypoints.min.js"></script>
    
