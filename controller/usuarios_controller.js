@@ -152,6 +152,9 @@ exports.agregarUsuario = async (req, res, next) => {
         const data = await response.json();
         res.locals.data = data;
         next();
+        // Usar el encabezado Referer para redirigir a la vista anterior
+        const previousUrl = req.get('Referer') || '/usuariosAdmin'; // Fallback a '/usuariosAdmin' si no hay Referer
+        res.redirect(previousUrl);
     } catch (error) {
         console.error('Error al agregar usuario:', error);
         res.status(500).send('Error interno del servidor');
@@ -199,7 +202,9 @@ exports.editarUsuario = async (req, res) => {
         });
         if (!response.ok) throw new Error(`Error en la API: ${response.statusText}`);
 
-        res.redirect('/usuariosAdmin'); // Asegúrate de que la redirección sea adecuada
+         // Usar el encabezado Referer para redirigir a la vista anterior
+         const previousUrl = req.get('Referer') || '/usuariosAdmin'; // Fallback a '/usuariosAdmin' si no hay Referer
+         res.redirect(previousUrl);
     } catch (error) {
         console.error('Error al editar el usuario:', error);
         res.status(500).json({ error: 'Error al editar el usuario' });

@@ -49,12 +49,14 @@ router.get('/perfil',verifyToken,restrictToPermiso('perfil'), (req, res) => {
     });
 });
 
+
 router.get('/asistenciaProfe', (req, res) => {
     const userPermissions = req.usuario ? req.usuario.permisos : [];
     res.render('web/asistenciaProfe',{
         permisos: userPermissions
     });
 });
+
 router.get('/login', (req, res) => {
     res.render('web/login');
 });
