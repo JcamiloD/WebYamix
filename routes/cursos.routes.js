@@ -29,7 +29,7 @@ router.delete('/eliminar_curso/:id', cursos.eliminarCurso);
 router.get('/obtener_curso/:id_curso', cursos.obtenerCurso);
 router.get('/traer_cursos', cursos.traerCursos);
 
-router.get('/cursosAdmin',verifyToken, restrictToPermiso('cursos admin'),attachUserPermissions, cursos.traerCursos, (req, res) => {
+router.get('/cursosAdmin',verifyToken, restrictToPermiso('cursos'),attachUserPermissions, cursos.traerCursos, (req, res) => {
     const userPermissions = req.usuario ? req.usuario.permisos : [];
     res.render('admin/cursosAdmin',  { data: res.locals.data,  permisos: userPermissions });
 });

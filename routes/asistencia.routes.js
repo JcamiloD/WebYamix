@@ -15,12 +15,11 @@ router.get('/asistencia',verifyToken,restrictToPermiso('asistencia admin'),attac
     res.render('./admin/asistencia', { data: res.locals.data,  permisos: userPermissions });
 });
 
-router.post('/crear_asistencia',verifyToken,restrictToPermiso('asistencia admin', 'asistencia profesor'), asistencias.crearAsistencia)
+router.post('/crear_asistencia',verifyToken, asistencias.crearAsistencia)
 
 // Rutas de la asistencia del profe
 router.get('/asistenciaProfe', asistencias.traerAsistenciaProfe, (req, res) => {
     const userPermissions = req.usuario ? req.usuario.permisos : [];
-
     // Aquí se pasan los datos de asistencias y clases de res.locals a la vista
     res.render('web/asistenciaProfe', {
         permisos: userPermissions,

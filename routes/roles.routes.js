@@ -10,7 +10,7 @@ const roles = require('../controller/roles_controller');
 
 
 // Controlador traer roles
-router.get('/permisos',verifyToken,restrictToPermiso('roles'), attachUserPermissions, roles.traer, (req, res) => {
+router.get('/permisos',verifyToken,restrictToPermiso('permisos'), attachUserPermissions, roles.traer, (req, res) => {
     const userPermissions = req.usuario ? req.usuario.permisos : [];
 
     res.render('./admin/permisos', { data: res.locals.data,  permisos: userPermissions  });

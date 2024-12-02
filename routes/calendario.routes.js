@@ -14,7 +14,7 @@ router.delete('/eliminar_evento/:id', eventos.eliminarEvento);
 router.get('/traerEventosPorNombreClase/:nombre_clase', eventos.traerEventosPorNombreCurso); 
 
 
-router.get('/calendarioAdmin',verifyToken,restrictToPermiso('calendario admin'),attachUserPermissions,
+router.get('/calendarioAdmin',verifyToken,restrictToPermiso('calendario'),attachUserPermissions,
     eventos.obtenerCursoss, 
     (req, res) => {
         const userPermissions = req.usuario ? req.usuario.permisos : [];

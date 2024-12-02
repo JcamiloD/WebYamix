@@ -63,23 +63,30 @@ router.post('/agregar_usuario', (req, res, next) => {
 
 router.get('/usuariosAdmin',verifyToken, restrictToPermiso('usuarios'),attachUserPermissions, usuarios.traer, (req, res) => {
     const userPermissions = req.usuario ? req.usuario.permisos : [];
-    console.log(userPermissions)
     res.render('./admin/usuariosAdmin', { data: res.locals.data,  permisos: userPermissions  });
 });
-router.get('/profesoresAdmin', usuarios.traer, (req, res) => {
-    res.render('./admin/profesoresAdmin', { data: res.locals.data });
+
+
+router.get('/profesoresAdmin',verifyToken, restrictToPermiso('usuarios'), attachUserPermissions,usuarios.traer, (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('./admin/profesoresAdmin', { data: res.locals.data,  permisos: userPermissions });
 });
-router.get('/estudiantesAdmin', usuarios.traer, (req, res) => {
-    res.render('./admin/estudiantesAdmin', { data: res.locals.data });
+
+router.get('/estudiantesAdmin', verifyToken, restrictToPermiso('usuarios'),attachUserPermissions, usuarios.traer, (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('./admin/estudiantesAdmin', { data: res.locals.data,  permisos: userPermissions });
 });
-router.get('/userEsperaAdmin', usuarios.traer, (req, res) => {
-    res.render('./admin/userEsperaAdmin', { data: res.locals.data });
+router.get('/userEsperaAdmin', verifyToken, restrictToPermiso('usuarios'), attachUserPermissions, usuarios.traer, (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('./admin/userEsperaAdmin', { data: res.locals.data,  permisos: userPermissions });
 });
-router.get('/userDeshabilitadoAdmin', usuarios.traer, (req, res) => {
-    res.render('./admin/userDeshabilitadoAdmin', { data: res.locals.data });
+router.get('/userDeshabilitadoAdmin', verifyToken,restrictToPermiso('usuarios'),attachUserPermissions, usuarios.traer, (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('./admin/userDeshabilitadoAdmin', { data: res.locals.data,  permisos: userPermissions });
 });
-router.get('/userOtrosAdmin', usuarios.traer, (req, res) => {
-    res.render('./admin/userOtrosAdmin', { data: res.locals.data });
+router.get('/userOtrosAdmin',verifyToken,restrictToPermiso('usuarios'),attachUserPermissions, usuarios.traer, (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('./admin/userOtrosAdmin', { data: res.locals.data,  permisos: userPermissions });
 });
 
 

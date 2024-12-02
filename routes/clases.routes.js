@@ -13,7 +13,7 @@ router.get('/traer_clases', clases.traerClases);
 router.get('/obtener_clase/:id_clase', clases.obtenerClase);
 
 // Ruta para el administrador de clases
-router.get('/clasesAdmin', verifyToken, restrictToPermiso('clases admin'), attachUserPermissions,  
+router.get('/clasesAdmin', verifyToken, restrictToPermiso('clases'), attachUserPermissions,  
     clases.traerClases, 
     clases.obtenerProfesores, 
     clases.obtenerCursos, 
