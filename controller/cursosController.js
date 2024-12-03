@@ -3,6 +3,136 @@ const { promisify } = require('util');
 
 const FormData = require('form-data');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
+
+
+exports.obtenerDatosParaVista = async (req) => {
+    try {
+        const token = req.cookies.jwt;
+        let dataRolEstado = { id_rol: null, estado: 'sin_token' };
+        let clasesUsuario = [];
+
+        if (token) {
+            const decodedToken = jwt.decode(token);
+            const id_usuario = decodedToken.id;
+
+            // Solicitar datos de rol y estado
+            const responseRolEstado = await fetch(`${process.env.pathApi}/obtenerRolYEstado/${id_usuario}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (responseRolEstado.ok) {
+                dataRolEstado = await responseRolEstado.json(); // Incluye `id_rol`, `estado` y `clases`
+                clasesUsuario = dataRolEstado.clases || [];
+            } else {
+                console.error("Error al obtener los datos de rol y estado.");
+                dataRolEstado = { id_rol: null, estado: 'error' };
+            }
+        } else {
+            console.warn("Token no encontrado.");
+        }
+
+        // Solicitar clases disponibles (siempre, incluso sin token)
+        const responseClasesDisponibles = await fetch(`${process.env.pathApi}/traerParaCur`);
+
+        let clasesDisponibles = [];
+        if (responseClasesDisponibles.ok) {
+            clasesDisponibles = await responseClasesDisponibles.json();
+        } else {
+            console.error("Error al obtener las clases disponibles.");
+        }
+
+        // Devolver los datos separados
+        return {
+            dataRolEstado,
+            permisos: req.usuario ? req.usuario.permisos : [],
+            clasesUsuario,
+            clasesDisponibles
+        };
+    } catch (error) {
+        console.error("Error al cargar los datos:", error);
+        return {
+            dataRolEstado: { id_rol: null, estado: 'error' },
+            permisos: [],
+            clasesUsuario: [],
+            clasesDisponibles: []
+        };
+    }
+};
+
+exports.agregarAclase = async (req, res) => {
+    const { id_clase } = req.body;
+    
+    // Extraer id_usuario del token
+    const token = req.cookies.jwt;
+    if (!token) return res.status(403).send("Token no proporcionado");
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const id_usuario = decoded.id;
+
+        // Llamar a la API para agregar el usuario a la clase
+        const response = await fetch(`${process.env.pathApi}/agregarAclase/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id_usuario,
+                id_clase
+            })
+        });
+
+        if (response.ok) {
+            res.status(200).send("Usuario agregado a la clase");
+        } else {
+            res.status(500).send("Error al agregar usuario a la clase");
+        }
+    } catch (error) {
+        console.error("Error al verificar el token:", error);
+        res.status(500).send("Error interno");
+    }
+};
+
+exports.eliminarDeClase = async (req, res) => {
+    const { id_clase } = req.body;
+    
+    // Extraer id_usuario del token
+    const token = req.cookies.jwt;
+    if (!token) return res.status(403).send("Token no proporcionado");
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const id_usuario = decoded.id;
+
+        // Llamar a la API para eliminar el usuario de la clase
+        const response = await fetch(`${process.env.pathApi}/eliminarDeClase/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id_usuario,
+                id_clase
+            })
+        });
+
+        if (response.ok) {
+            res.status(200).send("Usuario eliminado de la clase");
+        } else {
+            res.status(500).send("Error al eliminar usuario de la clase");
+        }
+    } catch (error) {
+        console.error("Error al verificar el token:", error);
+        res.status(500).send("Error interno");
+    }
+};
+
+
 
 
 
