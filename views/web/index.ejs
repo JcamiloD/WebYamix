@@ -559,18 +559,25 @@
               const textClass = isFirstStyle ? "text-white" : "text-secondary";
               const iconClass = isFirstStyle ? "flaticon-training" : "flaticon-weightlifting";
               const iconColor = isFirstStyle ? "text-primary" : "text-secondary";
-              const buttonText = isFirstStyle ? "Unete" : "Unete";
+              const buttonText = isFirstStyle ? "Unete" : "Abandonar";
+              const buttonClass = isFirstStyle ? "btn-outline-light" : "btn-outline-danger";
+              const modalTarget = isFirstStyle ? "#modalUnirse" : "#modalAbandonar"; // Cambiar entre las modales
+
 
               const content = `
-                  <div class="d-flex align-items-center ${bgClass} ${textClass} px-5" style="min-height: 300px;">
-                      <i class="${iconClass} display-3 ${iconColor} mr-3"></i>
-                      <div>
-                          <h2 class="${textClass} mb-3">${clase.nombre_curso}</h2>
-                          <p>${clase.descripcion}</p>
-                          <a href="#" class="btn btn-lg btn-outline-light mt-4 px-4">${buttonText}</a>
-                      </div>
-                  </div>
-              `;
+                <div class="d-flex align-items-center ${bgClass} ${textClass} px-5" style="min-height: 300px;">
+                    <i class="${iconClass} display-3 ${iconColor} mr-3"></i>
+                    <div>
+                        <h2 class="${textClass} mb-3">${clase.nombre_curso}</h2>
+                        <p>${clase.descripcion}</p>
+                        <a href="#" class="btn btn-lg ${buttonClass} mt-4 px-4" data-bs-toggle="modal" data-bs-target="${modalTarget}">
+                            ${buttonText}
+                        </a>
+                    </div>
+                </div>
+            `;
+
+
               col.innerHTML = content;
               row.appendChild(col);
           });
@@ -582,6 +589,93 @@
       console.error("Error al cargar las clases:", error);
   }
 });</script>
+
+<!-- Modal para unirse -->
+<div class="modal fade" id="modalUnirse" tabindex="-1" role="dialog" aria-labelledby="modalUnirseLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalUnirseLabel">Unirse a la Clase</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formUnirse">
+
+          <!-- Campo de clase -->
+          <div class="form-group">
+            <label for="claseUnirse">Clase:</label>
+            <select class="form-control" id="claseUnirse" name="claseUnirse" required>
+              <option value="" disabled selected>Seleccione una clase</option>
+              <!-- Datos quemados para el select -->
+              <option value="1">Clase de Parkour - 10:00 a.m. a 11:00 a.m.</option>
+              <option value="2">Clase de Boxeo - 11:30 a.m. a 12:30 p.m.</option>
+              <option value="3">Clase de Artes Marciales Mixtas - 1:00 p.m. a 2:00 p.m.</option>
+            </select>
+          </div>
+
+          <!-- Campo de horario -->
+          <div class="form-group">
+            <label for="horarioUnirse">Horario:</label>
+            <select class="form-control" id="horarioUnirse" name="horarioUnirse" required>
+              <option value="" disabled selected>Seleccione un horario</option>
+              <!-- Datos quemados para los horarios -->
+              <option value="10:00">10:00 a.m. - 11:00 a.m.</option>
+              <option value="11:30">11:30 a.m. - 12:30 p.m.</option>
+              <option value="13:00">1:00 p.m. - 2:00 p.m.</option>
+            </select>
+          </div>
+
+          <!-- Botón de unirse -->
+          <button type="submit" class="btn btn-outline-success">Unirse</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para abandonar -->
+<div class="modal fade" id="modalAbandonar" tabindex="-1" role="dialog" aria-labelledby="modalAbandonarLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAbandonarLabel">Abandonar la Clase</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formAbandonar">
+
+          <!-- Campo de clase -->
+          <div class="form-group">
+            <label for="claseAbandonar">Clase:</label>
+            <select class="form-control" id="claseAbandonar" name="claseAbandonar" required>
+              <option value="" disabled selected>Seleccione una clase</option>
+              <!-- Datos quemados para el select -->
+              <option value="1">Clase de Parkour - 10:00 a.m. a 11:00 a.m.</option>
+              <option value="2">Clase de Boxeo - 11:30 a.m. a 12:30 p.m.</option>
+              <option value="3">Clase de Artes Marciales Mixtas - 1:00 p.m. a 2:00 p.m.</option>
+            </select>
+          </div>
+
+          <!-- Campo de horario -->
+          <div class="form-group">
+            <label for="horarioAbandonar">Horario:</label>
+            <select class="form-control" id="horarioAbandonar" name="horarioAbandonar" required>
+              <option value="" disabled selected>Seleccione un horario</option>
+              <!-- Datos quemados para los horarios -->
+              <option value="10:00">10:00 a.m. - 11:00 a.m.</option>
+              <option value="11:30">11:30 a.m. - 12:30 p.m.</option>
+              <option value="13:00">1:00 p.m. - 2:00 p.m.</option>
+            </select>
+          </div>
+
+          <!-- Botón de abandonar -->
+          <button type="submit" class="btn btn-outline-danger">Abandonar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Features Start -->  
 <div id="customCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
     <!-- Indicadores -->
@@ -939,7 +1033,7 @@
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="c/lib/easing/easing.min.js"></script>
     <script src="c/lib/waypoints/waypoints.min.js"></script>
 
