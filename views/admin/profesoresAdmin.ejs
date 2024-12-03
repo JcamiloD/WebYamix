@@ -204,7 +204,7 @@
                                                                 </button>
                                                     
                                                                 <!-- Botón para deshabilitar (enviar la solicitud directamente) -->
-                                                                <% if (usuario.estado === 'habilitado' || usuario.estado === 'espera') { %>
+                                                                <% if (usuario.estado === 'habilitado') { %>
                                                                     <button type="button" class="icon-btn"
                                                                             data-id_usuario="<%= usuario.id_usuario %>"
                                                                             data-nombre="<%= usuario.nombre %>"
@@ -219,7 +219,7 @@
                                                                 <% } %>
 
                                                                 <!-- Botón para habilitar (enviar la solicitud directamente) -->
-                                                                <% if (usuario.estado === 'deshabilitado') { %>
+                                                                <% if (usuario.estado === 'deshabilitado' || usuario.estado === 'espera') { %>
                                                                     <button type="button" class="icon-btn"
                                                                             data-id_usuario="<%= usuario.id_usuario %>"
                                                                             data-nombre="<%= usuario.nombre %>"
