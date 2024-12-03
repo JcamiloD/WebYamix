@@ -7,9 +7,7 @@
     </button>
     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
         <div class="navbar-nav ml-auto p-4 bg-secondary">
-                <a href="/" class="nav-item nav-link">Home</a>
-                <a href="/about" class="nav-item nav-link">Nosotros</a>
-                <a href="/clases" class="nav-item nav-link ">Clases</a>
+                <a href="/" class="nav-item nav-link">Inicio</a>
                 <a href="/catalogo" class="nav-item nav-link">Catalogo</a>
             <% if (!permisos || permisos.length === 0) { %>
                 <!-- Enlaces para usuarios no autenticados -->
@@ -24,7 +22,7 @@
                     <a href="/calendarioUser" class="nav-item nav-link">Calendario</a>
                 <% } %>
                 <% if (permisos.includes('dashboard')) { %>
-                    <a href="/dashboard" class="nav-item nav-link">Dashboard</a>
+                    <a href="/dashboard" class="nav-item nav-link">Admin</a>
                 <% } %>
                 <% if (permisos.includes('catalogo estudiante')) { %>
                     <a href="/catalogo" class="nav-item nav-link">Catálogo</a>
@@ -40,3 +38,53 @@
         </div>
     </div>
 </nav>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById("logout-link").addEventListener("click", async (event) => {
+        event.preventDefault(); // Prevenir la navegación predeterminada
+    
+        try {
+            const response = await fetch("http://localhost:3000/logout", {
+                method: "GET", // Cambia a GET si tu API maneja logout de esa manera
+                credentials: "include", // Asegura que las cookies sean enviadas
+            });
+    
+            if (response.ok) {
+                // Mostrar alerta de éxito con cierre automático
+                Swal.fire({
+                    icon: "success",
+                    title: "Deslogueo exitoso",
+                    text: "Has salido correctamente de tu cuenta.",
+                    timer: 3000, // Tiempo en milisegundos (3 segundos)
+                    showConfirmButton: false, // No mostrar botón de confirmación
+                }).then(() => {
+                    // Redirigir después de cerrar la alerta automáticamente
+                    window.location.href = "/";
+                });
+            } else {
+                // Mostrar alerta de error
+                const errorData = await response.json();
+                Swal.fire({
+                    icon: "error",
+                    title: "Error al desloguear",
+                    text: errorData.message || "Ocurrió un error al intentar cerrar sesión.",
+                    timer: 3000, // Tiempo en milisegundos (3 segundos)
+                    showConfirmButton: false,
+                });
+            }
+        } catch (error) {
+            // Manejo de errores en caso de fallo de red
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "No se pudo establecer conexión con el servidor.",
+                timer: 3000, // Tiempo en milisegundos (3 segundos)
+                showConfirmButton: false,
+            });
+        }
+    });
+    </script>

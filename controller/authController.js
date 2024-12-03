@@ -183,11 +183,16 @@ exports.login = async (req, res) => {
             const userRole = decodedToken.rol;
 
             let ruta = '';
+
             if (userRole === 'administrador') {
                 ruta = '/dashboard';
+            }else if (userRole === 'profesor'){
+                ruta = '/asistenciaProfe'
             }else{
                 ruta = '/'
             }
+
+
 
             // Responder al frontend con la ruta
             return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', ruta });
