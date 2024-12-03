@@ -592,87 +592,291 @@
   
   fetchClases();
 </script>
-<script>document.addEventListener("DOMContentLoaded", async () => {
-  try {
-      const response = await fetch("http://localhost:4000/api/traerParaCur");
-      const clases = await response.json();
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const dataRolEstado = <%- JSON.stringify(dataRolEstado) %>;
+        const clasesUsuario = dataRolEstado.clases || [];
+        const clasesDisponibles = <%- JSON.stringify(clasesDisponibles) %>;
 
-      if (!clases || clases.length === 0) {
-          console.warn("No se encontraron clases activas.");
-          return;
-      }
+        console.log("Datos de rol y estado:", dataRolEstado);
+        console.log("Clases del usuario:", clasesUsuario);
+        console.log("Clases disponibles:", clasesDisponibles);
 
-      // Agrupar clases en lotes de 3 para cada slide
-      const groupedClasses = [];
-      for (let i = 0; i < clases.length; i += 3) {
-          groupedClasses.push(clases.slice(i, i + 3));
-      }
+        const groupedClasses = [];
+        for (let i = 0; i < clasesDisponibles.length; i += 3) {
+            groupedClasses.push(clasesDisponibles.slice(i, i + 3));
+        }
 
-      const indicators = document.querySelector("#carouselIndicators");
-      const carouselInner = document.querySelector("#carouselInner");
+        const indicators = document.querySelector("#carouselIndicators");
+        const carouselInner = document.querySelector("#carouselInner");
 
-      // Limpiar contenido previo del carrusel
-      indicators.innerHTML = "";
-      carouselInner.innerHTML = "";
+        indicators.innerHTML = "";
+        carouselInner.innerHTML = "";
 
-      // Generar contenido dinámico del carrusel
-      groupedClasses.forEach((group, groupIndex) => {
-          // Crear indicador
-          const indicator = document.createElement("li");
-          indicator.setAttribute("data-target", "#customCarousel");
-          indicator.setAttribute("data-slide-to", groupIndex);
-          if (groupIndex === 0) indicator.classList.add("active");
-          indicators.appendChild(indicator);
-
-          // Crear slide
-          const slide = document.createElement("div");
-          slide.classList.add("carousel-item");
-          if (groupIndex === 0) slide.classList.add("active");
-
-          const row = document.createElement("div");
-          row.classList.add("row");
-
-          // Crear columnas dinámicamente
-          group.forEach((clase, index) => {
-              const col = document.createElement("div");
-              col.classList.add("col-lg-4", "p-0");
-
-              // Alternar entre los estilos de las tarjetas
-              const isFirstStyle = index % 2 === 0;
-              const bgClass = isFirstStyle ? "bg-secondary" : "bg-primary";
-              const textClass = isFirstStyle ? "text-white" : "text-secondary";
-              const iconClass = isFirstStyle ? "flaticon-training" : "flaticon-weightlifting";
-              const iconColor = isFirstStyle ? "text-primary" : "text-secondary";
-
-              const content = `
-                <div class="d-flex align-items-center ${bgClass} ${textClass} px-5" style="min-height: 300px;">
-                    <i class="${iconClass} display-3 ${iconColor} mr-3"></i>
-                    <div>
-                        <h2 class="${textClass} mb-3">${clase.nombre_curso}</h2>
-                        <p>${clase.descripcion}</p>
-                        <!-- Botón para unirse -->
-                        <a href="#" class="btn btn-lg btn-outline-light mt-4 px-4" data-bs-toggle="modal" data-bs-target="#modalUnirse">
-                            Unirse
-                        </a>
-                        <!-- Botón para abandonar -->
-                        <a href="#" class="btn btn-lg btn-outline-danger mt-4 px-4" data-bs-toggle="modal" data-bs-target="#modalAbandonar">
-                            Abandonar
-                        </a>
-                    </div>
+        if (!groupedClasses.length) {
+            const emptyMessage = `
+                <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
+                    <h3 class="text-muted">No hay clases disponibles en este momento.</h3>
                 </div>
+            `;
+            const slide = document.createElement("div");
+            slide.classList.add("carousel-item", "active");
+            slide.innerHTML = emptyMessage;
+            carouselInner.appendChild(slide);
+            return;
+        }
+
+        groupedClasses.forEach((group, groupIndex) => {
+            const indicator = document.createElement("li");
+            indicator.setAttribute("data-target", "#customCarousel");
+            indicator.setAttribute("data-slide-to", groupIndex);
+            if (groupIndex === 0) indicator.classList.add("active");
+            indicators.appendChild(indicator);
+
+            const slide = document.createElement("div");
+            slide.classList.add("carousel-item");
+            if (groupIndex === 0) slide.classList.add("active");
+
+            const row = document.createElement("div");
+            row.classList.add("row");
+
+            group.forEach((clase, index) => {
+                const col = document.createElement("div");
+                col.classList.add("col-lg-4", "p-0");
+
+                const isFirstStyle = index % 2 === 0;
+                const bgClass = isFirstStyle ? "bg-secondary" : "bg-primary";
+                const textClass = isFirstStyle ? "text-white" : "text-secondary";
+                const iconClass = isFirstStyle ? "flaticon-training" : "flaticon-weightlifting";
+                const iconColor = isFirstStyle ? "text-primary" : "text-secondary";
+                const buttonClass = isFirstStyle ? "btn-outline-primary" : "btn-outline-secondary";
+
+                const isEnrolledInClass = clasesUsuario.some(claseUsuario => String(claseUsuario.id_curso) === String(clase.id_curso));
+                const showJoinButton = !!(dataRolEstado.id_rol && (dataRolEstado.id_rol === 1 || dataRolEstado.id_rol === 4) && dataRolEstado.estado === 'habilitado');
+                const showLeaveButton = !!(dataRolEstado.id_rol && isEnrolledInClass);
+
+                const content = `
+                  <div class="d-flex align-items-center ${bgClass} ${textClass} px-5" style="min-height: 300px;">
+                      <i class="${iconClass} display-3 ${iconColor} mr-3"></i>
+                      <div>
+                          <h2 class="${textClass} mb-3">${clase.nombre_curso}</h2>
+                          <p>${clase.descripcion}</p>
+                          ${showJoinButton ? `
+                              <a href="#" class="btn btn-lg btn-outline-light mt-4 px-4" data-bs-toggle="modal" data-bs-target="#modalUnirse" data-id-curso="${clase.id_curso}">
+                                  Unirse
+                              </a>
+                          ` : ''}
+                          ${showLeaveButton ? `
+                              <a href="#" class="btn ${buttonClass} btn-lg mt-4 px-4" data-bs-toggle="modal" data-bs-target="#modalAbandonar" data-id-curso="${clase.id_curso}">
+                                  Abandonar
+                              </a>
+                          ` : ''}
+                      </div>
+                  </div>
               `;
 
-              col.innerHTML = content;
-              row.appendChild(col);
-          });
 
-          slide.appendChild(row);
-          carouselInner.appendChild(slide);
-      });
-  } catch (error) {
-      console.error("Error al cargar las clases:", error);
-  }
-});</script>
+                col.innerHTML = content;
+                row.appendChild(col);
+            });
+
+            slide.appendChild(row);
+            carouselInner.appendChild(slide);
+        });
+    } catch (error) {
+        console.error("Error al cargar las clases:", error);
+    }
+});
+</script>
+
+
+<script>
+  // Función para convertir hora de formato 24h a 12h con a.m./p.m.
+function convertirHora(hora24) {
+    const [hora, minutos] = hora24.split(":");
+    const horaNumerica = parseInt(hora, 10);
+    const amPm = horaNumerica >= 12 ? "p.m." : "a.m.";
+    const hora12 = horaNumerica % 12 || 12;
+    return `${hora12}:${minutos} ${amPm}`;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Manejador de eventos para la modal "Unirse"
+    const modalUnirse = document.getElementById("modalUnirse");
+    modalUnirse.addEventListener("show.bs.modal", async (event) => {
+        const idCurso = event.relatedTarget.getAttribute("data-id-curso");  // Obtener el id_curso de la tarjeta
+        try {
+            const response = await fetch("http://localhost:4000/api/traer_clases");
+            const clases = await response.json();
+
+            // Filtrar las clases que coincidan con el id_curso de la tarjeta
+            const clasesFiltradas = clases.filter(clase => String(clase.id_curso) === idCurso);
+
+            // Formatear las clases para el select
+            const clasesFormateadas = clasesFiltradas.map(clase => ({
+                id: clase.id_clase,
+                texto: `${clase.nombre_curso} - ${convertirHora(clase.hora_inicio)} a ${convertirHora(clase.hora_final)}`
+            }));
+
+            // Llenar el select de la modal "Unirse"
+            llenarSelect("#claseUnirse", clasesFormateadas);
+        } catch (error) {
+            console.error("Error al cargar las clases para unirse:", error);
+        }
+    });
+
+    // Manejador de eventos para la modal "Abandonar"
+    const modalAbandonar = document.getElementById("modalAbandonar");
+    modalAbandonar.addEventListener("show.bs.modal", async (event) => {
+        const idCurso = event.relatedTarget.getAttribute("data-id-curso");  // Obtener el id_curso de la tarjeta
+        try {
+            const response = await fetch("http://localhost:4000/api/traer_clases");
+            const clases = await response.json();
+
+            // Filtrar las clases que el usuario está inscrito, basándonos en clasesUsuario
+            const clasesUsuario = <%- JSON.stringify(dataRolEstado.clases) %>;  // Clases del usuario
+
+            // Filtrar las clases que sean del curso y que el usuario esté inscrito
+            const clasesFiltradas = clases.filter(clase => 
+                String(clase.id_curso) === idCurso &&  // La clase debe ser del curso
+                clasesUsuario.some(c => String(c.id_clase) === String(clase.id_clase))  // El usuario debe estar inscrito en esa clase
+            );
+
+            // Formatear las clases para el select
+            const clasesFormateadas = clasesFiltradas.map(clase => ({
+                id: clase.id_clase,
+                texto: `${clase.nombre_curso} - ${convertirHora(clase.hora_inicio)} a ${convertirHora(clase.hora_final)}`
+            }));
+
+            // Llenar el select de la modal "Abandonar"
+            llenarSelect("#claseAbandonar", clasesFormateadas);
+        } catch (error) {
+            console.error("Error al cargar las clases para abandonar:", error);
+        }
+    });
+
+    // Manejador de envío para la modal "Unirse"
+    const formUnirse = document.getElementById("formUnirse");
+    formUnirse.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const idClase = document.getElementById("claseUnirse").value;  // Obtener el id de la clase seleccionada
+
+        try {
+            const response = await fetch("/agregarAclase", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id_clase: idClase
+                })
+            });
+
+            if (response.ok) {
+                alert("Te has unido a la clase exitosamente!");
+                // Recargar la vista
+                location.reload();
+            } else {
+                alert("Hubo un error al intentar unirse.");
+            }
+        } catch (error) {
+            console.error("Error al unirse a la clase:", error);
+        }
+    });
+
+    // Manejador de envío para la modal "Abandonar"
+    const formAbandonar = document.getElementById("formAbandonar");
+    formAbandonar.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const idClase = document.getElementById("claseAbandonar").value;  // Obtener el id de la clase seleccionada
+
+        try {
+            const response = await fetch("/eliminarDeClase", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id_clase: idClase
+                })
+            });
+
+            if (response.ok) {
+                alert("Has abandonado la clase exitosamente!");
+                // Recargar la vista
+                location.reload();
+            } else {
+                alert("Hubo un error al intentar abandonar.");
+            }
+        } catch (error) {
+            console.error("Error al abandonar la clase:", error);
+        }
+    });
+});
+
+// Función para llenar un select con opciones
+function llenarSelect(selector, opciones) {
+    const select = document.querySelector(selector);
+    if (!select) return;
+
+    select.innerHTML = '<option value="" disabled selected>Seleccione una clase</option>';
+
+    opciones.forEach(opcion => {
+        const optionElement = document.createElement("option");
+        optionElement.value = opcion.id;
+        optionElement.textContent = opcion.texto;
+        select.appendChild(optionElement);
+    });
+}
+</script>
+
+
+  <style>
+    /* Reducir el tamaño de las flechas del carrusel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 30px; /* Tamaño del icono */
+    height: 30px; /* Tamaño del icono */
+    background-size: 30px 30px; /* Ajustar el tamaño del fondo del icono */
+}
+
+/* Reducir el tamaño de las áreas de clic de las flechas */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 80px; /* Tamaño del área de clic */
+    height: 100%; /* Tamaño del área de clic */
+}
+
+  </style>
+  
+<!-- Features Start -->
+<div id="customCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
+  <!-- Indicadores -->
+  <ol class="carousel-indicators" id="carouselIndicators">
+      <!-- Los indicadores se llenarán dinámicamente -->
+  </ol>
+
+  <!-- Slides -->
+  <div class="carousel-inner" id="carouselInner">
+      <!-- Los slides se llenarán dinámicamente -->
+  </div>
+
+  <!-- Controles del carrusel (flechas de navegación) -->
+  <a class="carousel-control-prev" href="#customCarousel" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#customCarousel" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+  </a>
+</div>
+<!-- Features End -->
+
+
 
 <!-- Modal para unirse -->
 <div class="modal fade" id="modalUnirse" tabindex="-1" role="dialog" aria-labelledby="modalUnirseLabel" aria-hidden="true">
@@ -685,27 +889,11 @@
       <div class="modal-body">
         <form id="formUnirse">
 
-          <!-- Campo de clase -->
+          <!-- Campo de clase en el modal para unirse -->
           <div class="form-group">
             <label for="claseUnirse">Clase:</label>
             <select class="form-control" id="claseUnirse" name="claseUnirse" required>
-              <option value="" disabled selected>Seleccione una clase</option>
-              <!-- Datos quemados para el select -->
-              <option value="1">Clase de Parkour - 10:00 a.m. a 11:00 a.m.</option>
-              <option value="2">Clase de Boxeo - 11:30 a.m. a 12:30 p.m.</option>
-              <option value="3">Clase de Artes Marciales Mixtas - 1:00 p.m. a 2:00 p.m.</option>
-            </select>
-          </div>
-
-          <!-- Campo de horario -->
-          <div class="form-group">
-            <label for="horarioUnirse">Horario:</label>
-            <select class="form-control" id="horarioUnirse" name="horarioUnirse" required>
-              <option value="" disabled selected>Seleccione un horario</option>
-              <!-- Datos quemados para los horarios -->
-              <option value="10:00">10:00 a.m. - 11:00 a.m.</option>
-              <option value="11:30">11:30 a.m. - 12:30 p.m.</option>
-              <option value="13:00">1:00 p.m. - 2:00 p.m.</option>
+                <option value="" disabled selected>Seleccione una clase</option>
             </select>
           </div>
 
@@ -728,27 +916,11 @@
       <div class="modal-body">
         <form id="formAbandonar">
 
-          <!-- Campo de clase -->
+          <!-- Campo de clase en el modal para abandonar -->
           <div class="form-group">
             <label for="claseAbandonar">Clase:</label>
             <select class="form-control" id="claseAbandonar" name="claseAbandonar" required>
-              <option value="" disabled selected>Seleccione una clase</option>
-              <!-- Datos quemados para el select -->
-              <option value="1">Clase de Parkour - 10:00 a.m. a 11:00 a.m.</option>
-              <option value="2">Clase de Boxeo - 11:30 a.m. a 12:30 p.m.</option>
-              <option value="3">Clase de Artes Marciales Mixtas - 1:00 p.m. a 2:00 p.m.</option>
-            </select>
-          </div>
-
-          <!-- Campo de horario -->
-          <div class="form-group">
-            <label for="horarioAbandonar">Horario:</label>
-            <select class="form-control" id="horarioAbandonar" name="horarioAbandonar" required>
-              <option value="" disabled selected>Seleccione un horario</option>
-              <!-- Datos quemados para los horarios -->
-              <option value="10:00">10:00 a.m. - 11:00 a.m.</option>
-              <option value="11:30">11:30 a.m. - 12:30 p.m.</option>
-              <option value="13:00">1:00 p.m. - 2:00 p.m.</option>
+                <option value="" disabled selected>Seleccione una clase</option>
             </select>
           </div>
 
@@ -759,19 +931,7 @@
     </div>
   </div>
 </div>
-<!-- Features Start -->  
-<div id="customCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
-    <!-- Indicadores -->
-    <ol class="carousel-indicators" id="carouselIndicators">
-        <!-- Los indicadores se llenarán dinámicamente -->
-    </ol>
 
-    <!-- Slides -->
-    <div class="carousel-inner" id="carouselInner">
-        <!-- Los slides se llenarán dinámicamente -->
-    </div>
-</div>
-<!-- Features End -->
 
 
 
@@ -1039,6 +1199,7 @@
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="c/lib/easing/easing.min.js"></script>
     <script src="c/lib/waypoints/waypoints.min.js"></script>
 
