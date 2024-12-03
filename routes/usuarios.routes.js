@@ -113,6 +113,26 @@ router.get('/inscripciones', usuarios.traer, (req, res) => {
     res.render('./admin/inscripciones', { data: res.locals.data });
 });
 
+router.get(
+    '/perfil',
+    verifyToken,
+    restrictToPermiso('perfil'),
+    usuarios.obtenerUsuarioCompleto,
+    usuarios.obtenerInasistencias,
+    attachUserPermissions,
+    (req, res) => {
+      const userPermissions = req.usuario ? req.usuario.permisos : [];
+      const token = req.token; // Obtener el token desde req
+      res.render('web/perfil', {
+        permisos: userPermissions,
+        usuario: res.locals.usuario || { documentos: [] },
+        inasistencias: res.locals.inasistencias || [],
+        jwt: token, // Pasar el token a la vista
+      });
+    }
+  );
+  
+
 
 
 module.exports = router;
