@@ -592,8 +592,7 @@
   
   fetchClases();
 </script>
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
+<script>document.addEventListener("DOMContentLoaded", async () => {
   try {
       const response = await fetch("http://localhost:4000/api/traerParaCur");
       const clases = await response.json();
@@ -644,10 +643,6 @@ document.addEventListener("DOMContentLoaded", async () => {
               const textClass = isFirstStyle ? "text-white" : "text-secondary";
               const iconClass = isFirstStyle ? "flaticon-training" : "flaticon-weightlifting";
               const iconColor = isFirstStyle ? "text-primary" : "text-secondary";
-              const buttonText = isFirstStyle ? "Unete" : "Abandonar";
-              const buttonClass = isFirstStyle ? "btn-outline-light" : "btn-outline-danger";
-              const modalTarget = isFirstStyle ? "#modalUnirse" : "#modalAbandonar"; // Cambiar entre las modales
-
 
               const content = `
                 <div class="d-flex align-items-center ${bgClass} ${textClass} px-5" style="min-height: 300px;">
@@ -655,13 +650,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div>
                         <h2 class="${textClass} mb-3">${clase.nombre_curso}</h2>
                         <p>${clase.descripcion}</p>
-                        <a href="#" class="btn btn-lg ${buttonClass} mt-4 px-4" data-bs-toggle="modal" data-bs-target="${modalTarget}">
-                            ${buttonText}
+                        <!-- Botón para unirse -->
+                        <a href="#" class="btn btn-lg btn-outline-light mt-4 px-4" data-bs-toggle="modal" data-bs-target="#modalUnirse">
+                            Unirse
+                        </a>
+                        <!-- Botón para abandonar -->
+                        <a href="#" class="btn btn-lg btn-outline-danger mt-4 px-4" data-bs-toggle="modal" data-bs-target="#modalAbandonar">
+                            Abandonar
                         </a>
                     </div>
                 </div>
-            `;
-
+              `;
 
               col.innerHTML = content;
               row.appendChild(col);
@@ -673,10 +672,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
       console.error("Error al cargar las clases:", error);
   }
-<<<<<<< HEAD
-});
-</script>
-=======
 });</script>
 
 <!-- Modal para unirse -->
@@ -764,8 +759,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     </div>
   </div>
 </div>
-
->>>>>>> 34f348f4664c7cdc3096d5ea37c0a32c5bd18918
 <!-- Features Start -->  
 <div id="customCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
     <!-- Indicadores -->
