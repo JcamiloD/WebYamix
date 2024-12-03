@@ -24,9 +24,19 @@
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h3 class="card-title">Cursos</h3>
-                                            <button class="btn btn-outline-secondary btn-fw" data-toggle="modal" data-target="#addModal">
-                                                <i class="fas fa-plus"></i> Agregar
-                                            </button>
+                                            <div>
+                                                <button id="exportPdf" class="btn btn-outline-secondary btn-fw">
+                                                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                                                </button>
+                                                <button class="btn btn-outline-secondary btn-fw" onclick="exportToExcel()">
+                                                    <i class="fas fa-file-excel"></i> Exportar a Excel
+                                                </button>
+                                                <button class="btn btn-outline-secondary btn-fw" data-toggle="modal"
+                                                    data-target="#addModal">
+                                                    <i class="fas fa-plus"></i> Agregar
+                                                </button>
+        
+                                            </div>
                                         </div>
                                         <div class="table-responsive">
                                             <table id="miTabla" class="table table-bordered">
@@ -452,7 +462,51 @@ function confirmarEliminacion(idCurso) {
     });
 }
 
+document.getElementById('exportPdf').addEventListener('click', async () => {
+    const { jsPDF } = window.jspdf; 
+    const doc = new jsPDF();
+    const logo = new Image();
+    logo.src = 'img/yamix_logo_mini.png';
 
+    logo.onload = async () => {
+        const logoWidth = 40; // Ancho del logo
+        const logoHeight = 20; // Alto del logo
+        const logoX = 10; // Posición X
+        const logoY = 10; // Posición Y
+
+      
+        doc.addImage(logo, 'PNG', logoX, logoY, logoWidth, logoHeight);
+
+
+        const canvas = await html2canvas(document.querySelector('.table-responsive'));
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = 210; 
+        const pageHeight = 295; 
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 30; 
+
+     
+        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            doc.addPage();
+            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
+
+       
+        doc.save('cursos.pdf');
+    };
+});
+
+
+function exportToExcel() {
+    let wb = XLSX.utils.table_to_book(document.getElementById('miTabla'), { sheet: "cursos" });
+    XLSX.writeFile(wb, 'cursos.xlsx');
+}
             </script>
             
             
@@ -462,7 +516,9 @@ function confirmarEliminacion(idCurso) {
     <!-- plugins:js -->
     <%- include('partials/scripts') %>
 
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
         <!-- End custom js for this page -->
 </body>
 

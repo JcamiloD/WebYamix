@@ -168,7 +168,7 @@
 
       <div class="d-flex flex-column text-center mb-5">
         <h4 class="text-primary font-weight-bold">Eventos</h4>
-        <h4 class="display-4 font-weight-bold">aca veras los eventos que se vienen</h4>
+        <h4 class="display-4 font-weight-bold">Aquí verás los próximos eventos</h4>
       </div>
  <!-- Servicios que Ofrecemos Start -->
 <div id="servicesCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
@@ -189,7 +189,89 @@
     </a>
   </div>
   <!-- Servicios que Ofrecemos End -->
-  
+  <style>
+    @import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: "Montserrat", sans-serif;
+        }
+
+        /*Cards*/
+        .container-card {
+          width: 100%;
+          display: flex;
+          max-width: 1100px;
+          margin: auto;
+        }
+        .title-cards {
+          width: 100%;
+          max-width: 1080px;
+          margin: auto;
+          padding: 20px;
+          margin-top: 20px;
+          text-align: center;
+          color: #7a7a7a;
+        }
+        .card {
+        flex: 0 0 calc(33.33% - 40px); 
+        max-width: calc(33.33% - 40px);
+        margin: 20px; 
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);
+        transition: all 400ms ease-out;
+        cursor: default;
+      }
+
+        .card:hover {
+          box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.4);
+          transform: translateY(-3%);
+        }
+        .card img {
+          width: 100%;
+          height: 210px;
+        }
+        .card .contenido-card {
+          padding: 15px;
+          text-align: center;
+        }
+        .card .contenido-card h3 {
+          margin-bottom: 15px;
+          color: #7a7a7a;
+        }
+        .card .contenido-card p {
+          line-height: 1.8;
+          color: #6a6a6a;
+          font-size: 14px;
+          margin-bottom: 5px;
+        }
+        .card .contenido-card a {
+          display: inline-block;
+          padding: 10px;
+          margin-top: 10px;
+          text-decoration: none;
+          color: #e31c25;
+          border: 1px solid #e31c25;
+          border-radius: 4px;
+          transition: all 400ms ease;
+          margin-bottom: 5px;
+        }
+        .card .contenido-card a:hover {
+          background: #e31c25;
+          color: #fff;
+        }
+        @media only screen and (min-width: 320px) and (max-width: 768px) {
+          .container-card {
+            flex-wrap: wrap;
+          }
+          .card {
+            margin: 15px;
+          }
+        }
+        </style>
   <script>
   // Función para obtener eventos de la API y llenar el carrusel
   async function cargarEventos() {
@@ -270,6 +352,8 @@
   // Llamar a la función para cargar los eventos cuando se cargue la página
   document.addEventListener('DOMContentLoaded', cargarEventos);
   </script>
+
+
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap");
   
@@ -508,7 +592,8 @@
   
   fetchClases();
 </script>
-<script>document.addEventListener("DOMContentLoaded", async () => {
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
   try {
       const response = await fetch("http://localhost:4000/api/traerParaCur");
       const clases = await response.json();
@@ -588,6 +673,10 @@
   } catch (error) {
       console.error("Error al cargar las clases:", error);
   }
+<<<<<<< HEAD
+});
+</script>
+=======
 });</script>
 
 <!-- Modal para unirse -->
@@ -676,6 +765,7 @@
   </div>
 </div>
 
+>>>>>>> 34f348f4664c7cdc3096d5ea37c0a32c5bd18918
 <!-- Features Start -->  
 <div id="customCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
     <!-- Indicadores -->
@@ -898,85 +988,7 @@
         </div>
     </div>
 
-    <style>
-    @import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          font-family: "Montserrat", sans-serif;
-        }
-        /*Cards*/
-        .container-card {
-          width: 100%;
-          display: flex;
-          max-width: 1100px;
-          margin: auto;
-        }
-        .title-cards {
-          width: 100%;
-          max-width: 1080px;
-          margin: auto;
-          padding: 20px;
-          margin-top: 20px;
-          text-align: center;
-          color: #7a7a7a;
-        }
-        .card {
-          width: 100%;
-          margin: 20px;
-          border-radius: 6px;
-          overflow: hidden;
-          background: #fff;
-          box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.2);
-          transition: all 400ms ease-out;
-          cursor: default;
-        }
-        .card:hover {
-          box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.4);
-          transform: translateY(-3%);
-        }
-        .card img {
-          width: 100%;
-          height: 210px;
-        }
-        .card .contenido-card {
-          padding: 15px;
-          text-align: center;
-        }
-        .card .contenido-card h3 {
-          margin-bottom: 15px;
-          color: #7a7a7a;
-        }
-        .card .contenido-card p {
-          line-height: 1.8;
-          color: #6a6a6a;
-          font-size: 14px;
-          margin-bottom: 5px;
-        }
-        .card .contenido-card a {
-          display: inline-block;
-          padding: 10px;
-          margin-top: 10px;
-          text-decoration: none;
-          color: #e31c25;
-          border: 1px solid #e31c25;
-          border-radius: 4px;
-          transition: all 400ms ease;
-          margin-bottom: 5px;
-        }
-        .card .contenido-card a:hover {
-          background: #e31c25;
-          color: #fff;
-        }
-        @media only screen and (min-width: 320px) and (max-width: 768px) {
-          .container-card {
-            flex-wrap: wrap;
-          }
-          .card {
-            margin: 15px;
-          }
-        }</style>
+   
 
     <!-- Footer Start -->
     <div class="footer container-fluid mt-5 py-5 px-sm-3 px-md-5 text-white">
