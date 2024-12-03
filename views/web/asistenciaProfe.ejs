@@ -55,11 +55,12 @@
 
   <div class="mb-4 text-center">
     <select id="filtroAsistencia" class="form-control" style="max-width: 400px; margin: auto;">
-        <option value="">Filtro asistencia</option>
-        <!-- Opciones dinámicas se agregarán aquí -->
+      <option value="">Filtro asistencia</option>
+      <!-- Opciones dinámicas se agregarán aquí -->
     </select>
   </div>
 
+  
   <!-- Agregar asistencia -->
   <div class="mb-4 text-center">
     <button class="btn btn-primary" id="agregarAsistenciaBtn" data-bs-toggle="modal" data-bs-target="#modalAsistencia">Agregar Asistencia</button>
@@ -597,6 +598,40 @@
       }
     });
   });
+  // Obtener el select del filtro y las tarjetas de asistencia
+const filtroAsistencia = document.getElementById('filtroAsistencia');
+const cards = document.querySelectorAll('.card');
+
+// Obtener todos los nombres de cursos para agregarlos al select dinámicamente
+const cursos = Array.from(new Set(Array.from(cards).map(card => card.querySelector('h4').textContent.trim())));
+
+// Agregar las opciones al select
+cursos.forEach(curso => {
+  const option = document.createElement('option');
+  option.value = curso.toLowerCase();  // Usamos el nombre del curso en minúsculas para el filtro
+  option.textContent = curso;
+  filtroAsistencia.appendChild(option);
+});
+
+// Agregar un evento para filtrar las tarjetas cuando el usuario cambia el filtro
+filtroAsistencia.addEventListener('change', function() {
+  const filterValue = this.value.toLowerCase();
+
+  // Iterar sobre todas las tarjetas de asistencia
+  cards.forEach(card => {
+    // Obtener el nombre del curso de cada tarjeta
+    const nombreCurso = card.querySelector('h4').textContent.toLowerCase();
+
+    // Si el valor del filtro coincide con el nombre del curso, mostrar la tarjeta
+    if (filterValue === '' || nombreCurso.includes(filterValue)) {
+      card.style.display = 'block';  // Mostrar tarjeta si coincide
+    } else {
+      card.style.display = 'none';   // Ocultar tarjeta si no coincide
+    }
+  });
+});
+
+
 </script>
 
 
@@ -1158,12 +1193,7 @@
 
 </style>
 
-  <div id="pagination" class="text-center mt-4">
-    <button id="prevPage" class="btn btn-outline-primary">Anterior</button>
-    <span id="pageNumber" class="mx-3"></span>
-    <button id="nextPage" class="btn btn-outline-primary">Siguiente</button>
-  </div>
-  
+ 
 <!-- Footer Start -->
 <div class="footer container-fluid mt-5 py-5 px-sm-3 px-md-5 text-white">
     <div class="row pt-5">

@@ -51,16 +51,17 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h3 class="card-title">Catálogo</h3>
                                     <div>
-                                        <button class="btn btn-outline-secondary btn-fw" data-toggle="modal"
-                                            data-target="#addModal">
-                                            <i class="fas fa-plus"></i> Agregar
-                                        </button>
                                         <button id="exportPdf" class="btn btn-outline-secondary btn-fw">
                                             <i class="fas fa-file-pdf"></i> Exportar PDF
                                         </button>
                                         <button class="btn btn-outline-secondary btn-fw" onclick="exportToExcel()">
                                             <i class="fas fa-file-excel"></i> Exportar a Excel
                                         </button>
+                                        <button class="btn btn-outline-secondary btn-fw" data-toggle="modal"
+                                            data-target="#addModal">
+                                            <i class="fas fa-plus"></i> Agregar
+                                        </button>
+
                                     </div>
                                 </div>
                                 </p>
@@ -367,49 +368,58 @@
         </script>
 
         <script>
-            const { jsPDF } = window.jspdf;
-            document.getElementById('exportPdf').addEventListener('click', () => {
-                const { jsPDF } = window.jspdf;
+          document.getElementById('exportPdf').addEventListener('click', () => {
+    // Asegúrate de que jsPDF esté disponible desde window.jspdf
+    const { jsPDF } = window.jspdf;
 
-                const tableElement = document.querySelector('.table-responsive');
+    // Verifica si jsPDF está correctamente cargado
+    if (!jsPDF) {
+        console.error('jsPDF no está disponible');
+        return;
+    }
 
-                // Ajustar estilos temporalmente
-                tableElement.style.overflow = 'visible';
-                tableElement.style.height = 'auto';
+    const tableElement = document.querySelector('.table-responsive');
 
-                html2canvas(tableElement, {
-                    scale: 2, // Aumentar la resolución de la imagen
-                    useCORS: true // Manejar imágenes externas si es necesario
-                }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png'); // Usar PNG para mayor calidad
-                    const imgWidth = 210; // Ancho de la página en mm
-                    const pageHeight = 295; // Altura de la página en mm
-                    const imgHeight = canvas.height * imgWidth / canvas.width; // Altura de la imagen en mm
-                    let heightLeft = imgHeight;
-                    let position = 0;
+    // Ajustar estilos temporalmente
+    tableElement.style.overflow = 'visible';
+    tableElement.style.height = 'auto';
 
-                    const doc = new jsPDF();
+    html2canvas(tableElement, {
+        scale: 2, // Aumentar la resolución de la imagen
+        useCORS: true // Manejar imágenes externas si es necesario
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png'); // Usar PNG para mayor calidad
+        const imgWidth = 210; // Ancho de la página en mm
+        const pageHeight = 295; // Altura de la página en mm
+        const imgHeight = canvas.height * imgWidth / canvas.width; // Altura de la imagen en mm
+        let heightLeft = imgHeight;
+        let position = 0;
 
-                    doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
+        const doc = new jsPDF(); // Crear el documento PDF
 
-                    // Añadir más páginas si es necesario
-                    while (heightLeft > 0) {
-                        position = heightLeft - imgHeight;
-                        doc.addPage();
-                        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                        heightLeft -= pageHeight;
-                    }
+        // Añadir la imagen al documento
+        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
 
-                    doc.save('tabla.pdf');
+        // Añadir más páginas si es necesario
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            doc.addPage();
+            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
 
-                    // Restaurar los estilos después de capturar
-                    tableElement.style.overflow = '';
-                    tableElement.style.height = '';
-                }).catch(error => {
-                    console.error('Error capturando la tabla:', error);
-                });
-            });
+        // Guardar el documento como archivo PDF
+        doc.save('catalogo.pdf');
+
+        // Restaurar los estilos después de capturar
+        tableElement.style.overflow = '';
+        tableElement.style.height = '';
+    }).catch(error => {
+        console.error('Error capturando la tabla:', error);
+    });
+});
+
 
 
         </script>
@@ -419,10 +429,10 @@
                 let table = document.getElementById('miTabla');
 
                 // Usa la biblioteca XLSX para convertir la tabla a un libro de Excel
-                let wb = XLSX.utils.table_to_book(table, { sheet: "Administradores" });
+                let wb = XLSX.utils.table_to_book(table, { sheet: "catalogo" });
 
                 // Guarda el archivo Excel con el nombre 'administradores.xlsx'
-                XLSX.writeFile(wb, 'administradores.xlsx');
+                XLSX.writeFile(wb, 'catalogo.xlsx');
             }
         </script>
 
@@ -469,7 +479,11 @@
                     }
                 });
             }
+            
         </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 
 </html>
