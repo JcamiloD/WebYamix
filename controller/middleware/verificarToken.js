@@ -25,7 +25,7 @@ exports.verifyToken = (req, res, next) => {
             id_usuario: decodedToken.id,
             rol: nombre_rol,
         };
-
+        req.token = token;
         next();
     });
 };

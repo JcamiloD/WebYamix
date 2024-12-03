@@ -42,12 +42,6 @@ router.get('/calen', (req, res) => {
     });
 });
 
-router.get('/perfil',verifyToken,restrictToPermiso('perfil'), attachUserPermissions,(req, res) => {
-    const userPermissions = req.usuario ? req.usuario.permisos : [];
-    res.render('web/perfil',{
-        permisos: userPermissions
-    });
-});
 
 
 

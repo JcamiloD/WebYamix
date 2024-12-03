@@ -230,3 +230,77 @@ exports.eliminarUsuario = async (req, res, next) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
+
+
+//perfil
+
+exports.obtenerUsuarioCompleto = async (req, res, next) => {
+    try {
+        // Obtener el token JWT desde las cookies
+        const token = req.cookies.jwt;
+
+        if (!token) {
+            throw new Error('No se encontró el token de autenticación');
+        }
+
+        // Decodificar el token para obtener el id_usuario
+        const decoded = jwt.decode(token);
+        const id_usuario = decoded.id;
+
+
+
+        // Realizar la solicitud al backend usando fetch
+        const url = `${process.env.pathApi}/usuario-completo/${id_usuario}`;
+
+
+        const response = await fetch(url);
+
+        // Verificar si la respuesta fue exitosa (código 200)
+        if (!response.ok) {
+            throw new Error(`Error al obtener el usuario: ${response.statusText}`);
+        }
+
+        // Convertir la respuesta JSON en un objeto JavaScript
+        const usuario = await response.json();
+        // Guardar los datos del usuario en `req.usuario` para pasarlos a las siguientes funciones/middlewares
+        res.locals.usuario = usuario;
+
+        next();
+    } catch (error) {
+        // Manejar el error si ocurre algún problema en la solicitud
+        console.error("Hubo un problema al obtener los datos del usuario:", error);
+        res.status(500).send('Error al obtener los datos del usuario');
+    }
+};
+
+
+
+
+exports.obtenerInasistencias = async (req, res, next) => {
+    const token = req.cookies.jwt;
+    const decoded = jwt.decode(token);
+        const id = decoded.id;
+    try {
+        // Construye la URL completa utilizando la variable de entorno pathApi
+        const url = `${process.env.pathApi}/inasistencias/${id}`;
+
+        // Realiza la solicitud GET al endpoint de las inasistencias
+        const response = await fetch(url);
+
+        // Verifica si la respuesta es exitosa
+        if (!response.ok) {
+            throw new Error('No se pudo obtener el conteo de inasistencias');
+        }
+
+        // Convierte la respuesta a JSON
+        const data = await response.json();
+
+        // Devuelve el conteo de inasistencias
+        res.locals.inasistencias = data
+        next();
+    } catch (error) {
+        console.error('Error al obtener inasistencias:', error);
+        // Manejo de errores, puedes devolver una respuesta de error
+        return res.status(500).json({ message: 'Error al obtener las inasistencias' });
+    }
+};
