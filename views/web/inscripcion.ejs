@@ -60,7 +60,6 @@
     <script src='https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js'></script>
 
     <script>
-        // Validar formulario antes de enviarlo
         async function validarFormulario(event) {
             event.preventDefault();
             console.log("Procesando formulario...");
@@ -75,6 +74,7 @@
                     title: "Error",
                     text: "Por favor, verifica que no eres un robot."
                 });
+                grecaptcha.reset(); // Reiniciar reCAPTCHA inmediatamente
                 return;
             }
     
@@ -97,6 +97,7 @@
                         title: "Error",
                         text: "Verificación de reCAPTCHA fallida."
                     });
+                    grecaptcha.reset(); // Reiniciar reCAPTCHA inmediatamente
                     return;
                 }
             } catch (error) {
@@ -106,11 +107,12 @@
                     title: "Error",
                     text: "Hubo un error al verificar reCAPTCHA."
                 });
+                grecaptcha.reset(); // Reiniciar reCAPTCHA inmediatamente
                 return;
             }
     
             // Validaciones de campos
-            const form = document.getElementById('restablecerForm'); // Cambiar el ID aquí
+            const form = document.getElementById('restablecerForm');
             const nombre = form.nombre.value.trim();
             const apellido = form.apellido.value.trim();
             const correo = form.correo.value.trim();
@@ -124,6 +126,7 @@
                     title: "Error",
                     text: "Todos los campos son obligatorios."
                 });
+                grecaptcha.reset(); // Reiniciar reCAPTCHA inmediatamente
                 return;
             }
     
@@ -133,6 +136,7 @@
                     title: "Error",
                     text: "Las contraseñas no coinciden."
                 });
+                grecaptcha.reset(); // Reiniciar reCAPTCHA inmediatamente
                 return;
             }
     
@@ -143,6 +147,7 @@
                     title: "Error",
                     text: "La contraseña debe tener al menos 6 caracteres, incluyendo letras, números y caracteres especiales."
                 });
+                grecaptcha.reset(); // Reiniciar reCAPTCHA inmediatamente
                 return;
             }
     
@@ -153,6 +158,7 @@
                     title: "Error",
                     text: "La edad debe estar entre 8 y 65 años."
                 });
+                grecaptcha.reset(); // Reiniciar reCAPTCHA inmediatamente
                 return;
             }
     
@@ -192,6 +198,7 @@
                         title: "Error",
                         text: registroResult.message || "Hubo un error al registrar."
                     });
+                    grecaptcha.reset(); // Reiniciar reCAPTCHA inmediatamente
                 }
             } catch (error) {
                 console.error("Error al registrar usuario:", error);
@@ -200,10 +207,10 @@
                     title: "Error",
                     text: "Hubo un error al procesar tu solicitud."
                 });
+                grecaptcha.reset(); // Reiniciar reCAPTCHA inmediatamente
             }
         }
     
-        // Calcular edad en base a la fecha de nacimiento
         function calcularEdad(fechaNacimiento) {
             const fecha = new Date(fechaNacimiento);
             const hoy = new Date();
@@ -214,17 +221,18 @@
             }
             return edad;
         }
-         // Función para mostrar/ocultar contraseñas
-    function togglePassword(inputId, icon) {
-        const input = document.getElementById(inputId);
-        if (input.type === "password") {
-            input.type = "text";
-            icon.name = "eye-outline";
-        } else {
-            input.type = "password";
-            icon.name = "eye-off-outline";
+    
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.name = "eye-outline";
+            } else {
+                input.type = "password";
+                icon.name = "eye-off-outline";
+            }
         }
-    }
     </script>
+    
 </body>
 </html>
