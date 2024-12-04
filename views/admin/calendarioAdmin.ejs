@@ -123,23 +123,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="notificar" class="col-sm-12 control-label">Notificar a Usuarios</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" name="notificar" id="notificar" required>
-                                <option value="no">No</option>
-                                <option value="si">Sí</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group" id="descripcionNotificacionDiv" style="display:none;">
-                        <label for="descripcion_notificacion" class="col-sm-12 control-label">Descripción de la
-                            Notificación</label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" name="descripcion_notificacion" id="descripcion_notificacion"
-                                placeholder="Mensaje que será enviado a los usuarios" rows="3"></textarea>
-                        </div>
-                    </div>
 
                 </div>
                 <div class="form-group">
@@ -174,22 +157,7 @@
     </div>
 </div>
 
-<script>
-    document.getElementById('notificar').addEventListener('change', function () {
-        var notificarValue = this.value;
-        var descripcionNotificacionDiv = document.getElementById('descripcionNotificacionDiv');
-        var descripcionNotificacionField = document.getElementById('descripcion_notificacion');
 
-        if (notificarValue === 'si') {
-            descripcionNotificacionDiv.style.display = 'block';  // Mostrar el campo
-            descripcionNotificacionField.required = true;  // Hacerlo obligatorio
-        } else {
-            descripcionNotificacionDiv.style.display = 'none';  // Ocultar el campo
-            descripcionNotificacionField.required = false;  // Hacerlo no obligatorio
-            descripcionNotificacionField.value = '';  // Limpiar el valor si está oculto
-        }
-    });
-</script>
 <!-- Modal para actualizar evento -->
 <div class="modal fade" id="modalUpdateEvento" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -261,22 +229,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="notificar" class="col-sm-12 control-label">Notificar a Usuarios</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" name="notificar" id="notificar" required>
-                                <option value="no">No</option>
-                                <option value="si">Sí</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group" id="descripcionNotificacionDiv" style="display:none;">
-                        <label for="descripcion_notificacion" class="col-sm-12 control-label">Descripción de la Notificación</label>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" name="descripcion_notificacion" id="descripcion_notificacion" placeholder="Mensaje que será enviado a los usuarios" rows="3"></textarea>
-                        </div>
-                    </div>
+                  
 
                     <div class="form-group">
                         <label for="color_eventoUpdate" class="col-sm-12 control-label">Color del Evento</label>
@@ -322,38 +275,13 @@
         document.getElementById('fecha_finUpdate').value = evento.fecha_hora_final;
         document.getElementById('id_cursoUpdate').value = evento.id_curso; 
         document.getElementById('estadoUpdate').value = evento.estado;
-        document.getElementById('notificar').value = evento.notificar;
-
+       
       
-        var notificarValue = evento.notificar;
-        var descripcionNotificacionDiv = document.getElementById('descripcionNotificacionDiv');
-        var descripcionNotificacionField = document.getElementById('descripcion_notificacion');
-
-        if (notificarValue === 'si') {
-            descripcionNotificacionDiv.style.display = 'block';  
-            descripcionNotificacionField.required = true;  
-            descripcionNotificacionField.value = evento.descripcion_notificacion;  
-        } else {
-            descripcionNotificacionDiv.style.display = 'none';  
-            descripcionNotificacionField.required = false;  
-        }
+        
     }
 
   
-    document.getElementById('notificar').addEventListener('change', function() {
-        var notificarValue = this.value;
-        var descripcionNotificacionDiv = document.getElementById('descripcionNotificacionDiv');
-        var descripcionNotificacionField = document.getElementById('descripcion_notificacion');
-
-        if (notificarValue === 'si') {
-            descripcionNotificacionDiv.style.display = 'block';  
-            descripcionNotificacionField.required = true; 
-        } else {
-            descripcionNotificacionDiv.style.display = 'none'; 
-            descripcionNotificacionField.required = false;  
-            descripcionNotificacionField.value = '';  
-        }
-    });
+  
 </script>
 
 
@@ -494,8 +422,6 @@
                         ubicacion: event.location, 
                         color_evento: event.color, 
            
-                        notificar: event.notificar, 
-                        descripcion_notificacion: event.descripcion_notificacion, 
                         estado: event.estado 
                     },
                     success: function (response) {
@@ -541,13 +467,7 @@
 
     $('#id_cursoUpdate').val(event.id_curso || '');
 
-    
-    if (event.notificar === 'sí') {
-        $('#notificacion_description').show(); 
-    } else {
-        $('#notificacion_description').hide(); 
-    }
-
+  
 
     $('body').append($('#modalUpdateEvento').clone()); 
     $('#modalUpdateEvento').modal('show');

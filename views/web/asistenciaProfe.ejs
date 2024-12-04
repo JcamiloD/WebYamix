@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Calendario</title>
+    <title>Asistencia</title>
 
  <!-- Favicon -->
  <link href="c/img/favicon.ico" rel="icon">
@@ -48,25 +48,62 @@
   <!-- Page Header End -->
 
   <div class="d-flex flex-column text-center mb-5">
-    <h4 class="text-primary font-weight-bold">Asistencia</h4>
+
     <h4 class="display-4 font-weight-bold">Control de asistencia</h4>
   </div>
 
 
-  <div class="mb-4 text-center">
-    <select id="filtroAsistencia" class="form-control" style="max-width: 400px; margin: auto;">
-      <option value="">Filtro asistencia</option>
-      <!-- Opciones dinámicas se agregarán aquí -->
-    </select>
+  <div class="filters-container mb-4 text-center">
+    <!-- Filtro de asistencia -->
+    <div class="filter-item" style="margin-right: 20px;">
+      <select id="filtroAsistencia" class="form-control" style="max-width: 400px;">
+        <option value="">Filtro asistencia</option>
+        <!-- Opciones dinámicas se agregarán aquí -->
+      </select>
+    </div>
+  
+    <!-- Filtro por mes -->
+    <div class="filter-item">
+      <label for="monthFilter">Filtrar por mes:</label>
+      <select id="monthFilter">
+        <option value="">Todos</option>
+        <option value="Enero">Enero</option>
+        <option value="Febrero">Febrero</option>
+        <option value="Marzo">Marzo</option>
+        <option value="Abril">Abril</option>
+        <option value="Mayo">Mayo</option>
+        <option value="Junio">Junio</option>
+        <option value="Julio">Julio</option>
+        <option value="Agosto">Agosto</option>
+        <option value="Septiembre">Septiembre</option>
+        <option value="Octubre">Octubre</option>
+        <option value="Noviembre">Noviembre</option>
+        <option value="Diciembre">Diciembre</option>
+      </select>
+    </div>
   </div>
-
+  
+  <style>
+    .filters-container {
+      display: flex;
+      justify-content: center; 
+      align-items: center; /
+    }
+    .filter-item {
+      margin-right: 20px; 
+    }
+    .filter-item:last-child {
+      margin-right: 0;
+    }
+  </style>
+  
   
   <!-- Agregar asistencia -->
   <div class="mb-4 text-center">
     <button class="btn btn-primary" id="agregarAsistenciaBtn" data-bs-toggle="modal" data-bs-target="#modalAsistencia">Agregar Asistencia</button>
   </div>
 
-  <div class="grid">
+  <div class="grid" id="asistenciasGrid">
     <% dataAsistencias.forEach(asistencia => { %>
       <div class="card">
         <span class="icon">
@@ -130,7 +167,11 @@
     <% }) %>
   </div>
 
-  
+  <div id="pagination" class="text-center mt-4">
+    <button id="prevPage" class="btn btn-outline-primary">Anterior</button>
+    <span id="pageNumber" class="mx-3"></span>
+    <button id="nextPage" class="btn btn-outline-primary">Siguiente</button>
+  </div>
 <!-- Modal Ver Detalle -->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -176,6 +217,85 @@
 </div>
 
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+  const itemsPerPage = 10;  // Número de elementos por página
+  const grid = document.getElementById('asistenciasGrid');
+  const cards = Array.from(grid.getElementsByClassName('card')); 
+  const prevPageBtn = document.getElementById('prevPage');
+  const nextPageBtn = document.getElementById('nextPage');
+  const pageNumberDisplay = document.getElementById('pageNumber');
+  let currentPage = 1;
+  const totalPages = Math.ceil(cards.length / itemsPerPage);
+
+
+  function updatePage() {
+ 
+    cards.forEach((card, index) => {
+      if (index >= (currentPage - 1) * itemsPerPage && index < currentPage * itemsPerPage) {
+        card.style.display = 'block'; 
+      } else {
+        card.style.display = 'none'; 
+      }
+    });
+
+    pageNumberDisplay.textContent = `Página ${currentPage}`;
+
+
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+  }
+
+
+  prevPageBtn.addEventListener('click', function () {
+    if (currentPage > 1) {
+      currentPage--;
+      updatePage();
+    }
+  });
+
+
+  nextPageBtn.addEventListener('click', function () {
+    if (currentPage < totalPages) {
+      currentPage++;
+      updatePage();
+    }
+  });
+
+
+  updatePage();
+});
+
+  document.addEventListener("DOMContentLoaded", () => {
+  const monthFilter = document.getElementById("monthFilter");
+  const resetFilter = document.getElementById("resetFilter");
+  const cards = document.querySelectorAll(".card");
+
+  // Evento para filtrar tarjetas por mes
+  monthFilter.addEventListener("change", () => {
+    const selectedMonth = monthFilter.value;
+
+    cards.forEach(card => {
+      const cardText = card.querySelector("p").innerText; // Obtener el texto de la tarjeta
+      const monthMatch = cardText.match(/de\s(\w+)\sdel/); // Extraer el mes del texto
+      
+      if (monthMatch) {
+        const cardMonth = monthMatch[1]; // Obtener el mes de la tarjeta
+        if (selectedMonth === "" || cardMonth === selectedMonth) {
+          card.style.display = "block"; // Mostrar tarjeta si coincide el mes
+        } else {
+          card.style.display = "none"; // Ocultar tarjeta si no coincide el mes
+        }
+      }
+    });
+  });
+
+  // Evento para reiniciar el filtro
+  resetFilter.addEventListener("click", () => {
+    monthFilter.value = ""; // Reiniciar el select
+    cards.forEach(card => card.style.display = "block"); // Mostrar todas las tarjetas
+  });
+});
+
   document.addEventListener("DOMContentLoaded", function () {
     const viewButtons = document.querySelectorAll(".btn-view");
     let idAsistencia;

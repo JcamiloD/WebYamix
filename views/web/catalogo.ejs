@@ -47,17 +47,17 @@
 
   <div class="container pt-5 team">
     <div class="d-flex flex-column text-center mb-5">
-        <h4 class="text-primary font-weight-bold">Catálogo</h4>
+
         <h4 class="display-4 font-weight-bold">Productos recomendados</h4>
     </div>
 
-    <!-- Filtro de productos -->
-    <div class="mb-4 text-center">
-        <select id="filtroProducto" class="form-control" style="max-width: 400px; margin: auto;">
-            <option value="">Todos los productos</option>
-            <!-- Opciones dinámicas se agregarán aquí -->
-        </select>
-    </div>
+<!-- Filtro de cursos -->
+<div class="mb-4 text-center">
+    <select id="filtroCurso" class="form-control" style="max-width: 400px; margin: auto;">
+        <option value="">Todos los cursos</option>
+        <!-- Opciones dinámicas se agregarán aquí -->
+    </select>
+</div>
 
     <div id="productosCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
         <div class="carousel-inner">
@@ -132,116 +132,117 @@
 
 
 <script>
-    let productosOriginales = []; // Almacena los productos originales para filtrar
-    
-    async function obtenerCatalogo() {
-        try {
-            const response = await fetch("http://localhost:4000/api/get-all");
-            const productos = await response.json();
-    
-            if (!productos || productos.length === 0) {
-                console.warn("No se encontraron productos.");
-                return;
-            }
-    
-            productosOriginales = productos; // Guardar los productos originales
-            cargarProductosEnCarrusel(productos);
-            llenarFiltroProductos(productos);
-        } catch (error) {
-            console.error("Error al cargar los productos:", error);
+  let productosOriginales = []; // Almacena los productos originales para filtrar
+
+async function obtenerCatalogo() {
+    try {
+        const response = await fetch("http://localhost:4000/api/get-all");
+        const productos = await response.json();
+
+        if (!productos || productos.length === 0) {
+            console.warn("No se encontraron productos.");
+            return;
         }
+
+        productosOriginales = productos; // Guardar los productos originales
+        cargarProductosEnCarrusel(productos);
+        llenarFiltroCursos(productos);
+    } catch (error) {
+        console.error("Error al cargar los productos:", error);
     }
-    
-    // Llenar el `<select>` con los nombres de productos únicos
-    function llenarFiltroProductos(productos) {
-        const filtro = document.getElementById("filtroProducto");
-        filtro.innerHTML = '<option value="">Todos los productos</option>'; // Opción predeterminada
-    
-        const nombresUnicos = [...new Set(productos.map(p => p.nombre_producto))]; // Obtener nombres únicos
-        nombresUnicos.forEach(nombre => {
-            const option = document.createElement("option");
-            option.value = nombre;
-            option.textContent = nombre;
-            filtro.appendChild(option);
-        });
-    }
-    
-    // Filtrar los productos según el valor seleccionado en el `<select>`
-    function filtrarProductosPorNombre() {
-        const filtro = document.getElementById("filtroProducto").value;
-        const productosFiltrados = filtro
-            ? productosOriginales.filter(producto => producto.nombre_producto === filtro)
-            : productosOriginales;
-    
-        cargarProductosEnCarrusel(productosFiltrados);
-    }
-    
-    // Cargar productos en el carrusel
-    function cargarProductosEnCarrusel(productos) {
-        const carouselInner = document.querySelector('#productosCarousel .carousel-inner');
-        carouselInner.innerHTML = ''; // Limpiar contenido previo
-    
-        let slide = '';
-        let itemCount = 0;
-    
-        productos.forEach((producto, index) => {
-            if (itemCount % 4 === 0) {
-                if (itemCount > 0) slide += '</div>'; // Cerrar fila previa
-                slide += `<div class="carousel-item${itemCount === 0 ? ' active' : ''}"><div class="row">`;
-            }
-    
-            const maxLength = 22;
-            const descripcionCorta = producto.descripcion.slice(0, maxLength);
-            const tieneVerMas = producto.descripcion.length > maxLength;
-    
-            slide += `
-                <div class="col-md-3">
-                    <div class="card border-0 bg-secondary text-center text-white">
-                        <img class="card-img-top" src="${producto.imagen_producto}" alt="${producto.nombre_producto}">
-                        <div class="card-body bg-secondary">
-                            <h4 class="card-title text-primary">${producto.nombre_producto}</h4>
-                            <p class="card-text" id="desc-${producto.id_catalogo}">
-                                ${descripcionCorta}
-                            </p>
-                            <p class="card-text ${tieneVerMas ? 'ver-mas' : ''}" id="full-desc-${producto.id_catalogo}" style="display: none;">
-                                ${producto.descripcion}
-                            </p>
-                            ${tieneVerMas ? `<span class="ver-mas-btn" onclick="mostrarMasMenos(${producto.id_catalogo})">Ver más</span>` : ''}
-                            <a href="${producto.link}" class="btn btn-lg px-4 btn-outline-primary" target="_blank">Ver producto</a>
-                        </div>
+}
+
+// Llenar el `<select>` con los nombres de cursos únicos
+function llenarFiltroCursos(productos) {
+    const filtro = document.getElementById("filtroCurso");
+    filtro.innerHTML = '<option value="">Todos los cursos</option>'; // Opción predeterminada
+
+    const cursosUnicos = [...new Set(productos.map(p => p.nombre_curso))]; // Obtener nombres de cursos únicos
+    cursosUnicos.forEach(curso => {
+        const option = document.createElement("option");
+        option.value = curso;
+        option.textContent = curso;
+        filtro.appendChild(option);
+    });
+}
+
+// Filtrar los productos según el curso seleccionado en el `<select>`
+function filtrarProductosPorCurso() {
+    const filtro = document.getElementById("filtroCurso").value;
+    const productosFiltrados = filtro
+        ? productosOriginales.filter(producto => producto.nombre_curso === filtro)
+        : productosOriginales;
+
+    cargarProductosEnCarrusel(productosFiltrados);
+}
+
+// Cargar productos en el carrusel
+function cargarProductosEnCarrusel(productos) {
+    const carouselInner = document.querySelector('#productosCarousel .carousel-inner');
+    carouselInner.innerHTML = ''; // Limpiar contenido previo
+
+    let slide = '';
+    let itemCount = 0;
+
+    productos.forEach((producto, index) => {
+        if (itemCount % 4 === 0) {
+            if (itemCount > 0) slide += '</div>'; // Cerrar fila previa
+            slide += `<div class="carousel-item${itemCount === 0 ? ' active' : ''}"><div class="row">`;
+        }
+
+        const maxLength = 22;
+        const descripcionCorta = producto.descripcion.slice(0, maxLength);
+        const tieneVerMas = producto.descripcion.length > maxLength;
+
+        slide += `
+            <div class="col-md-3">
+                <div class="card border-0 bg-secondary text-center text-white">
+                    <img class="card-img-top" src="${producto.imagen_producto}" alt="${producto.nombre_producto}">
+                    <div class="card-body bg-secondary">
+                        <h4 class="card-title text-primary">${producto.nombre_producto}</h4>
+                        <p class="card-text" id="desc-${producto.id_catalogo}">
+                            ${descripcionCorta}
+                        </p>
+                        <p class="card-text ${tieneVerMas ? 'ver-mas' : ''}" id="full-desc-${producto.id_catalogo}" style="display: none;">
+                            ${producto.descripcion}
+                        </p>
+                        ${tieneVerMas ? `<span class="ver-mas-btn" onclick="mostrarMasMenos(${producto.id_catalogo})">Ver más</span>` : ''}
+                        <a href="${producto.link}" class="btn btn-lg px-4 btn-outline-primary" target="_blank">Ver producto</a>
                     </div>
                 </div>
-            `;
-    
-            itemCount++;
-            if (itemCount % 4 === 0 || index === productos.length - 1) slide += '</div></div>';
-        });
-    
-        carouselInner.innerHTML = slide; // Inyectar contenido
+            </div>
+        `;
+
+        itemCount++;
+        if (itemCount % 4 === 0 || index === productos.length - 1) slide += '</div></div>';
+    });
+
+    carouselInner.innerHTML = slide; // Inyectar contenido
+}
+
+// Mostrar más/menos descripción
+function mostrarMasMenos(id) {
+    const shortDesc = document.getElementById(`desc-${id}`);
+    const fullDesc = document.getElementById(`full-desc-${id}`);
+    const verMasBtn = document.querySelector(`#desc-${id} + .ver-mas-btn`);
+
+    if (shortDesc.style.display !== 'none') {
+        shortDesc.style.display = 'none';
+        fullDesc.style.display = 'block';
+        verMasBtn.textContent = 'Ver menos';
+    } else {
+        shortDesc.style.display = 'block';
+        fullDesc.style.display = 'none';
+        verMasBtn.textContent = 'Ver más';
     }
-    
-    // Mostrar más/menos descripción
-    function mostrarMasMenos(id) {
-        const shortDesc = document.getElementById(`desc-${id}`);
-        const fullDesc = document.getElementById(`full-desc-${id}`);
-        const verMasBtn = document.querySelector(`#desc-${id} + .ver-mas-btn`);
-    
-        if (shortDesc.style.display !== 'none') {
-            shortDesc.style.display = 'none';
-            fullDesc.style.display = 'block';
-            verMasBtn.textContent = 'Ver menos';
-        } else {
-            shortDesc.style.display = 'block';
-            fullDesc.style.display = 'none';
-            verMasBtn.textContent = 'Ver más';
-        }
-    }
-    
-    // Escuchar cambios en el `<select>` y filtrar
-    document.getElementById("filtroProducto").addEventListener("change", filtrarProductosPorNombre);
-    
-    // Ejecutar al cargar la página
-    document.addEventListener('DOMContentLoaded', obtenerCatalogo);
+}
+
+// Escuchar cambios en el `<select>` y filtrar
+document.getElementById("filtroCurso").addEventListener("change", filtrarProductosPorCurso);
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', obtenerCatalogo);
+
     </script>
 
 <style>
