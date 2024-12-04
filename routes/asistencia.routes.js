@@ -18,7 +18,7 @@ router.get('/asistencia',verifyToken,restrictToPermiso('asistencia admin'),attac
 router.post('/crear_asistencia',verifyToken, asistencias.crearAsistencia)
 
 // Rutas de la asistencia del profe
-router.get('/asistenciaProfe', asistencias.traerAsistenciaProfe, (req, res) => {
+router.get('/asistenciaProfe', asistencias.traerAsistenciaProfe,attachUserPermissions, (req, res) => {
     const userPermissions = req.usuario ? req.usuario.permisos : [];
     // Aquí se pasan los datos de asistencias y clases de res.locals a la vista
     res.render('web/asistenciaProfe', {
@@ -29,5 +29,15 @@ router.get('/asistenciaProfe', asistencias.traerAsistenciaProfe, (req, res) => {
 });
 
 
+
+//perfil
+
+router.get('/historialAsistencia',attachUserPermissions, asistencias.getAssistancesFromAPI, (req,res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('web/historialAsistencia',{
+        permisos: userPermissions,
+        data: res.locals.data
+    })
+})
 
 module.exports = router;

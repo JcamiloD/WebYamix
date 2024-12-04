@@ -136,13 +136,15 @@
       <% if (usuario && (usuario.nombre_rol !== 'administrador' && usuario.nombre_rol !== 'profesor')) { %>
       <!-- Mostrar Inasistencias solo si el rol no es admin -->
       <h2>Inasistencias</h2>
+      
       <% if (inasistencias && inasistencias.inasistencias > 0) { %>
         <p>Inasistencias: <%= inasistencias.inasistencias %></p>
+        <a type="button" class="btn btn-primary" href="/historialAsistencia" >Ver historial</a>
       <% } else { %>
         <p>No hay inasistencias registradas para este estudiante.</p>
       <% } %>
       <% } %>
-  
+      
       <!-- Mostrar Documentación solo si el rol no es admin -->
       <% if (usuario && usuario.nombre_rol !== 'administrador') { %>
         <h2>Documentación</h2>
@@ -151,13 +153,20 @@
             <% usuario.documentos.forEach(function(doc) { %> <!-- Iteramos sobre los documentos -->
               <li>
                 <a href="<%= doc.ruta_archivo %>" target="_blank">Documento</a>
+                
+              </li>
+              <li>
+                
               </li>
             <% }); %>
+            
           </ul>
+          
         <% } else { %>
           <p>No hay documentos disponibles.</p>
+          
         <% } %>
-  
+          
         <!-- Botón para abrir el modal de documentos -->
         <button id="editDocsBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#docsModal" 
                 data-id_usuario="<%= usuario ? usuario.id_usuario : '' %>">

@@ -111,3 +111,52 @@ exports.traerAsistenciaProfe = async (req, res, next) => {
         res.status(500).send('Error al obtener las asistencias o clases');
     }
 };
+
+
+exports.getAssistancesFromAPI = async (req, res, next) => {
+    try {
+        // Obtener el token JWT de las cookies
+        const token = req.cookies.jwt;
+
+        // Decodificar el token para obtener el id del usuario
+        const decoded = jwt.decode(token);
+        const id_usuario = decoded ? decoded.id : null;
+
+        if (!id_usuario) {
+            return res.status(401).json({
+                message: 'No se pudo obtener el ID del usuario del token.'
+            });
+        }
+
+
+        // URL de la API para obtener asistencias
+        const apiUrl = `http://localhost:4000/api/assistances/${id_usuario}`;
+
+        // Realizar la solicitud a la API
+        const response = await fetch(apiUrl);
+
+        // Verificar si la solicitud fue exitosa
+        if (!response.ok) {
+            const error = await response.json();
+            return res.status(response.status).json({
+                message: 'Error al obtener datos de la API.',
+                error: error.message || 'Error desconocido.'
+            });
+        }
+
+        // Procesar la respuesta de la API
+        const apiData = await response.json();
+
+        // Guardar los datos en res.locals para usarlos en la vista
+        res.locals.data = apiData.data;
+        
+
+        next();
+    } catch (error) {
+        console.error('Error al consumir la API:', error);
+        res.status(500).json({
+            message: 'Hubo un error al consumir la API.',
+            error: error.message
+        });
+    }
+};
