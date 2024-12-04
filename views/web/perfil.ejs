@@ -479,7 +479,7 @@ document.getElementById('addDocumentForm').addEventListener('submit', function(e
 let clasesGlobal = [];  // Variable para almacenar las clases
 
 async function fetchClases() {
-  const token = '<%= jwt %>'; // Insertar el token desde el servidor
+  const token = '<%= jwt %>'; 
 
   if (!token) {
     console.error('Token no encontrado');
