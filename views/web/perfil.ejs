@@ -490,7 +490,7 @@ async function fetchClases() {
   const id = decoded.id;
 
   try {
-    const response = await fetch(`http://localhost:4000/api/ClaseEstudiante/${id}`);
+    const response = await fetch(`http://localhost:4000/api/claseParaEstudiante/${id}`);
     const clases = await response.json();
     clasesGlobal = clases;
 
