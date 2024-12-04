@@ -37,7 +37,7 @@
       .user-card {
         position: relative;
         width: 550px;
-        height: 190px;
+        height: 340px;
         background: #fff;
         padding: 15px;
         border-radius: 20px;
@@ -110,9 +110,18 @@
         <div class="user-card">
           <div class="card-content">
             <div class="user-details">
-              <h2><%= usuario.nombre %> <%= usuario.apellido %><br><span><%= usuario.correo %></span></h2>
-              <h3>Fecha de nacimiento: <%= new Date(usuario.fecha_nacimiento).toLocaleDateString() %></h3> <!-- Formateamos la fecha -->
-              <h3><%= usuario.nombre_rol %></h3> <!-- Mostramos el nombre del rol -->
+              <h3>Nombre: </h3>
+              <p><%= usuario.nombre %> <%= usuario.apellido %></p> <!-- Contenido dentro de un párrafo -->
+              
+              <h3>Correo: </h3>
+              <p><%= usuario.correo %></p> <!-- Contenido dentro de un párrafo -->
+              
+              <h3>Fecha de nacimiento: </h3>
+              <p><%= new Date(usuario.fecha_nacimiento).toLocaleDateString() %></p> <!-- Contenido dentro de un párrafo -->
+              
+              <h3>Rol: </h3>
+              <p><%= usuario.nombre_rol %></p> <!-- Contenido dentro de un párrafo -->
+              
               <div class="button-group">
                 <button id="editBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" 
                         data-nombre="<%= usuario.nombre %>"
