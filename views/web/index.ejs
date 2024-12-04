@@ -15,7 +15,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
     <!-- Flaticon Font -->
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
     <link rel="stylesheet" href="c/lib/flaticon/font/flaticon.css">
 
@@ -271,10 +272,11 @@
             margin: 15px;
           }
         }
-        </style>
+  </style>
+  
   <script>
-  // Función para obtener eventos de la API y llenar el carrusel
-  async function cargarEventos() {
+   // Función para obtener eventos de la API y llenar el carrusel
+   async function cargarEventos() {
     try {
       // Obtener eventos
       const responseEventos = await fetch('http://localhost:4000/api/traer_eventosU');
@@ -332,6 +334,7 @@
             <div class="contenido-card">
               <h3>${evento.nombre_evento}</h3>
               <p>${evento.descripcion}</p>
+              <a href="javascript:void(0);" class="verDetalle" data-id="${evento.id_evento}">Ver detalle</a>
               <a href="/eventos">Leer Más</a>
             </div>
           `;
@@ -344,15 +347,153 @@
   
         slideIndex++;
       }
+
+     // Añadir event listeners a los botones "Ver detalle"
+     document.querySelectorAll('.verDetalle').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const eventoId = e.target.getAttribute('data-id');
+                mostrarDetallesModal(eventoId);
+            });
+        });
+
     } catch (error) {
-      console.error('Error al cargar los eventos:', error);
+        console.error('Error al cargar los eventos:', error);
     }
+}
+
+// Llamar a la función para cargar los eventos cuando se cargue la página
+document.addEventListener('DOMContentLoaded', cargarEventos);
+
+async function mostrarDetallesModal(eventoId) {
+    try {
+        const response = await fetch(`http://localhost:4000/api/obtener_evento/${eventoId}`);
+        const evento = await response.json();
+
+        // Rellenar los campos de la modal con los datos del evento
+        $('#detalleNombre').text(evento.nombre_evento || 'Sin nombre');
+        $('#detalleDescripcion').text(evento.descripcion || 'Sin descripción');
+        $('#detalleUbicacion').text(evento.ubicacion || 'Sin ubicación');
+        $('#detalleFechaInicio').text(evento.fecha_hora_inicio ? moment(evento.fecha_hora_inicio).format('DD/MM/YYYY HH:mm') : 'Sin inicio');
+        $('#detalleFechaFin').text(evento.fecha_hora_final ? moment(evento.fecha_hora_final).format('DD/MM/YYYY HH:mm') : 'Sin finalización');
+        $('#detalleCurso').text(evento.nombre_curso || 'No asignado');
+
+        // Mostrar la modal
+        $('#modalVerDetalle').modal('show');
+    } catch (error) {
+        console.error('Error al obtener los detalles del evento:', error);
+    }
+}
+
+
+$(document).ready(function() {
+   
+    $('#modalVerDetalle').on('hidden.bs.modal', function () {
+    
+    });
+
+    
+    $('.close, .btn-secondary').on('click', function() {
+        $('#modalVerDetalle').modal('hide');
+    });
+});
+  </script>
+  
+<style>
+  .modal-header .close {
+    color: #ff0000;  /* Rojo */
+    font-size: 30px;  /* Aumentar tamaño de la X */
+    opacity: 1;  /* Asegura que el color no tenga opacidad */
+    transition: color 0.3s ease, transform 0.3s ease; /* Animación para cambio de color */
   }
   
-  // Llamar a la función para cargar los eventos cuando se cargue la página
-  document.addEventListener('DOMContentLoaded', cargarEventos);
-  </script>
+  .modal-header .close:hover,
+  .modal-header .close:focus {
+    color: #c00;  /* Rojo más oscuro en hover */
+    transform: scale(1.2);  /* Efecto de ampliación al pasar el mouse */
+  }
+  
+  /* Estilo para el botón de "Cerrar" en el pie de la modal */
+  .modal-footer .btn-secondary {
+    background-color: #ff0000; /* Rojo de fondo */
+    border: none;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .modal-footer .btn-secondary:hover {
+    background-color: #c00; /* Rojo más oscuro al pasar el mouse */
+  }
+  
+  /* Añadir un borde redondeado a la modal */
+  .modal-content {
+    border-radius: 10px;
+  }
+</style>
 
+<div class="modal fade" id="modalVerDetalle" tabindex="-1" role="dialog" aria-labelledby="modalVerDetalleLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modalVerDetalleLabel">Detalle del Evento</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <div class="form-group">
+                  <label class="col-sm-12 control-label">Nombre del Evento:</label>
+                  <div class="col-sm-10">
+                      <p id="detalleNombre" class="form-control-static"></p>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label class="col-sm-12 control-label">Curso:</label>
+                  <div class="col-sm-10">
+                      <p id="detalleCurso" class="form-control-static"></p>
+                  </div>
+              </div>
+
+              <div class="form-group">
+                  <label class="col-sm-12 control-label">Descripción:</label>
+                  <div class="col-sm-10">
+                      <p id="detalleDescripcion" class="form-control-static"></p>
+                  </div>
+              </div>
+
+              <div class="form-group">
+                  <label class="col-sm-12 control-label">Ubicación:</label>
+                  <div class="col-sm-10">
+                      <p id="detalleUbicacion" class="form-control-static"></p>
+                  </div>
+              </div>
+                
+              <div class="form-group">
+                  <label class="col-sm-12 control-label">Fecha y Hora de Inicio:</label>
+                  <div class="col-sm-10">
+                      <p id="detalleFechaInicio" class="form-control-static"></p>
+                  </div>
+              </div>
+
+              <div class="form-group">
+                  <label class="col-sm-12 control-label">Fecha y Hora de Finalización:</label>
+                  <div class="col-sm-10">
+                      <p id="detalleFechaFin" class="form-control-static"></p>
+                  </div>
+              </div>
+
+          
+         
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+
+          </div>
+      </div>
+  </div>
+</div>
 
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap");
@@ -592,6 +733,7 @@
   
   fetchClases();
 </script>
+
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -935,89 +1077,6 @@ function llenarSelect(selector, opciones) {
 
 
 
-<div class="container pt-5 team">
-    <div class="d-flex flex-column text-center mb-5">
-      <h4 class="text-primary font-weight-bold">Catalogo</h4>
-      <h4 class="display-4 font-weight-bold">Productos recomendados</h4>
-    </div>
-    
-    <!-- Carrusel de productos -->
-    <div id="productosCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
-      <div class="carousel-inner">
-        <!-- Aquí se cargarán los productos dinámicamente -->
-      </div>
-      <a class="carousel-control-prev" href="#productosCarousel" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-      </a>
-      <a class="carousel-control-next" href="#productosCarousel" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-      </a>
-    </div>
-  </div>
-  
-  <script>
-  async function obtenerCatalogo() {
-    try {
-      const response = await fetch("http://localhost:4000/api/get-all");
-      const productos = await response.json();
-  
-      if (!productos || productos.length === 0) {
-        console.warn("No se encontraron productos.");
-        return;
-      }
-  
-      cargarProductosEnCatalogo(productos);
-    } catch (error) {
-      console.error("Error al cargar los productos:", error);
-    }
-  }
-  
-  function cargarProductosEnCatalogo(productos) {
-    const carouselInner = document.querySelector("#productosCarousel .carousel-inner");
-    carouselInner.innerHTML = ""; // Limpiar contenido previo
-  
-    // Dividir los productos en grupos de 4 para las diapositivas del carrusel
-    let productosPorCarrusel = [];
-    for (let i = 0; i < productos.length; i += 4) {
-      productosPorCarrusel.push(productos.slice(i, i + 4));
-    }
-  
-    productosPorCarrusel.forEach((grupo, index) => {
-      const slide = document.createElement("div");
-      slide.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-  
-      const carouselItems = document.createElement("div");
-      carouselItems.className = "profile-container";
-  
-      grupo.forEach((producto) => {
-        const tarjeta = document.createElement("div");
-        tarjeta.className = "profile-card";
-  
-        // Aplicar la imagen de fondo con formato estándar
-        tarjeta.style.background = `url(${producto.imagen_producto}) no-repeat 50% / cover`;
-  
-        // Contenido de la tarjeta
-        const contenido = `
-          <div class="profile-content">
-            <h2>${producto.nombre_producto}</h2>
-            <span>${producto.descripcion.slice(0, 22)}${producto.descripcion.length > 22 ? "..." : ""}</span>
-          </div>
-        `;
-  
-        tarjeta.innerHTML = contenido;
-        carouselItems.appendChild(tarjeta);
-      });
-  
-      slide.appendChild(carouselItems);
-      carouselInner.appendChild(slide);
-    });
-  }
-  
-  // Esperar a que el DOM esté cargado para ejecutar la función
-  document.addEventListener("DOMContentLoaded", obtenerCatalogo);
-  </script>
 
 
 <style>
@@ -1197,9 +1256,11 @@ function llenarSelect(selector, opciones) {
 
 
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+     
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
     <script src="c/lib/easing/easing.min.js"></script>
     <script src="c/lib/waypoints/waypoints.min.js"></script>
 
