@@ -645,15 +645,7 @@
 
                     <!-- content-wrapper ends -->
                     <!-- partial:../../partials/_footer.html -->
-                    <footer class="footer">
-                        <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright ©
-                                bootstrapdash.com 2020</span>
-                            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a
-                                    href="https://www.bootstrapdash.com/bootstrap-admin-template/"
-                                    target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
-                        </div>
-                    </footer>
+                    
                     <!-- partial -->
                 </div>
                 <!-- main-panel ends -->
@@ -968,9 +960,7 @@
                                 var gmail = $(button).data('gmail');
                                 var estado = $(button).data('estado'); // El estado (habilitado o deshabilitado)
                                 var id_rol = $(button).data('id_rol');
-                        
                                 
-                        
                                 // Crear un objeto con los datos a enviar
                                 var dataToSend = {
                                     id_usuario: id_usuario,
@@ -981,9 +971,7 @@
                                     estado: estado,  // Estado nuevo (habilitado o deshabilitado)
                                     id_rol: id_rol,
                                 };
-                        
-                               
-                        
+                                
                                 console.log(id_usuario, nombre, apellido, fecha_nacimiento, gmail, estado, id_rol);
                         
                                 // Enviar los datos con AJAX
@@ -992,17 +980,35 @@
                                     type: 'POST',
                                     data: dataToSend, // Enviar solo los campos que tienen valores válidos
                                     success: function(response) {
-                                        alert('Estado actualizado correctamente');
-                                        // Aquí puedes actualizar la vista, recargar la página o modificar algo en el DOM
-                                        location.reload();  // Recargar la página (opcional)
+                                        // Alerta de éxito con SweetAlert
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Éxito',
+                                            text: 'Estado actualizado correctamente.',
+                                            confirmButtonText: 'Aceptar'
+                                        }).then(() => {
+                                            // Recargar la página después de mostrar la alerta
+                                            location.reload();  // Recargar la página (opcional)
+                                        });
                                     },
                                     error: function(xhr, status, error) {
                                         console.error('Error al cambiar el estado:', error);
-                                        alert('Hubo un problema al actualizar el estado.');
+                        
+                                        // Extraer el mensaje de error del servidor
+                                        var errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Hubo un problema al actualizar el estado.';
+                                        
+                                        // Alerta de error con SweetAlert
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: errorMessage,
+                                            confirmButtonText: 'Aceptar'
+                                        });
                                     }
                                 });
                             }
                         </script>
+                        
                         
                         
             
