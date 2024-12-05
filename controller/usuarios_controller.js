@@ -193,23 +193,32 @@ exports.editarUsuario = async (req, res) => {
 
     try {
         const response = await fetch(`${process.env.pathApi}/editar_usuario/${id}`, {
-            method: 'POST', 
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${req.cookies.jwt}`, // Autenticación JWT si es necesario
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(req.body),
         });
-        if (!response.ok) throw new Error(`Error en la API: ${response.statusText}`);
 
-         // Usar el encabezado Referer para redirigir a la vista anterior
-         const previousUrl = req.get('Referer') || '/usuariosAdmin'; // Fallback a '/usuariosAdmin' si no hay Referer
-         res.redirect(previousUrl);
+        // Revisar si la respuesta de la API no es satisfactoria
+        if (!response.ok) {
+            const errorData = await response.json(); // Obtener el cuerpo del error
+            const errorMessage = errorData.error || `Error en la API: ${response.statusText}`;
+            throw new Error(errorMessage);
+        }
+
+        // Usar el encabezado Referer para redirigir a la vista anterior
+        const previousUrl = req.get('Referer') || '/usuariosAdmin'; // Fallback a '/usuariosAdmin' si no hay Referer
+        res.redirect(previousUrl);
     } catch (error) {
-        console.error('Error al editar el usuario:', error);
-        res.status(500).json({ error: 'Error al editar el usuario' });
+        console.error('Error al editar el usuario:', error.message);
+
+        // Enviar el mensaje detallado de error al frontend
+        res.status(500).json({ error: error.message || 'Error al editar el usuario' });
     }
 };
+
 
 // Eliminar usuario
 exports.eliminarUsuario = async (req, res, next) => {

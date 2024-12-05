@@ -41,30 +41,68 @@ exports.obtenerProfesores = async (req, res, next) => {
 };
 
 
-// Controlador para actualizar una clase
 exports.actualizarClase = async (req, res) => {
     const { id } = req.params;
 
+    console.log('Datos recibidos en el controlador:');
+    console.log('ID:', id);
+    console.log('Cuerpo de la solicitud (req.body):', req.body);
+
     try {
-        const response = await fetch(`http://localhost:4000/api/actualizar_clase/${id}`, {
-            method: 'POST', // Cambia a 'PUT' si la API lo requiere
+        const response = await fetch(`${process.env.pathApi}/actualizar_clase/${id}`, {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(req.body)
+            body: JSON.stringify(req.body),
         });
 
+        console.log('Respuesta de la API - status:', response.status);
+
+        // Capturar y registrar la respuesta completa (texto o JSON)
+        const rawResponse = await response.text();
+        console.log('Respuesta de la API - raw:', rawResponse);
+
         if (!response.ok) {
-            const errorData = await response.json();
+            let errorData;
+            try {
+                errorData = JSON.parse(rawResponse);
+            } catch (err) {
+                console.error('Error al parsear respuesta como JSON:', rawResponse);
+                return res.status(response.status).json({ 
+                    success: false, 
+                    message: 'Respuesta no válida de la API',
+                    details: rawResponse 
+                });
+            }
+
             console.error('Error al actualizar la clase:', errorData);
-            return res.status(response.status).json({ error: errorData.error || 'Error al actualizar la clase' });
+            return res.status(response.status).json({ 
+                success: false, 
+                message: errorData.message || 'Error al actualizar la clase',
+                details: errorData 
+            });
         }
 
-        const result = await response.json();
-        res.json({ success: true, data: result });
+        // Si el JSON es válido, continúa
+        const result = JSON.parse(rawResponse);
+        console.log('Clase actualizada exitosamente:', result);
+
+        res.json({ 
+            success: true, 
+            message: result.message || 'Clase actualizada exitosamente', 
+            data: result 
+        });
     } catch (error) {
-        console.error('Error al actualizar la clase:', error);
-        res.status(500).send('Error interno del servidor');
+        console.error('Error interno del servidor:', error.message);
+
+        res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor',
+            details: error.message,
+        });
     }
 };
+
+
 
 
 

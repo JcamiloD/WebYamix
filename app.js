@@ -12,7 +12,6 @@ const dashboard = require('./routes/dashboard.routes.js')
 const usuarios = require('./routes/usuarios.routes.js')
 
 const asistencia = require('./routes/asistencia.routes.js')
-const historialAsistencia = require('./routes/historialAsistencia.routes.js')
 
 const catalogo = require('./routes/catalogo.routes.js')
 
@@ -60,7 +59,7 @@ dotenv.config({ path: './env/.env' });
 
 
 
-app.use('/',rutas, auth,dashboard, usuarios, cursos, clases, roles,eventos, catalogo,asistencia, historialAsistencia);
+app.use('/',rutas, auth,dashboard, usuarios, cursos, clases, roles,eventos, catalogo,asistencia);
 
 
 
