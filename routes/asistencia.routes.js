@@ -28,6 +28,13 @@ router.get('/asistenciaProfe', asistencias.traerAsistenciaProfe,attachUserPermis
     });
 });
 
+// Historial en Admin
+router.get('/historialAsistenciaAdmin',verifyToken,restrictToPermiso('asistencia admin'), attachUserPermissions, asistencias.traerAsistencia, (req, res) => {
+    const userPermissions = req.usuario ? req.usuario.permisos : [];
+    res.render('./admin/historialAsistencia', { data: res.locals.data, permisos: userPermissions});
+});
+
+
 
 
 //perfil

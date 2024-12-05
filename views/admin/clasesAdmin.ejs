@@ -4,6 +4,19 @@
 <head>
     <%- include('partials/head') %>
     <%- include('partials/scripts') %>
+    <style>
+        .icon-btn {
+                background-color: transparent;
+                border: none;
+                color: white;
+                font-size: 1.2rem;
+                cursor: pointer;
+            }
+
+            .icon-btn:hover {
+                color: #ddd;
+            }
+    </style>
 </head>
 
 <body>
@@ -90,10 +103,33 @@
                                                                         <i class="fas fa-edit"></i>
                                                                     </button>
 
-                                                                    <button type="button" class="button-iconn"
-                                                                        onclick="confirmarEliminacion(<%= clase.id_clase %>)">
-                                                                        <i class="fas fa-trash"></i>
-                                                                    </button>
+                                                                    <!-- Botón para inactivar -->
+                                                                    <% if (clase.estado === 'activo') { %>
+                                                                        <button type="button" class="icon-btn"
+                                                                                data-id="<%= clase.id_clase %>"
+                                                                                data-id_curso="<%= clase.id_curso %>"
+                                                                                data-hora-inicio="<%= clase.hora_inicio %>"
+                                                                                data-hora-final="<%= clase.hora_final %>"
+                                                                                data-usuario="<%= clase.id_usuario || 'sin profesor' %>"
+                                                                                data-estado="inactivo"
+                                                                                onclick="cambiarEstado(this)">
+                                                                            <i class="mdi mdi-block-helper"></i>
+                                                                        </button>
+                                                                    <% } %>
+
+                                                                    <!-- Botón para activar (enviar la solicitud directamente) -->
+                                                                    <% if (clase.estado === 'inactivo') { %>
+                                                                        <button type="button" class="icon-btn"
+                                                                                data-id="<%= clase.id_clase %>"
+                                                                                data-id_curso="<%= clase.id_curso %>"
+                                                                                data-hora-inicio="<%= clase.hora_inicio %>"
+                                                                                data-hora-final="<%= clase.hora_final %>"
+                                                                                data-usuario="<%= clase.id_usuario || 'sin profesor' %>"
+                                                                                data-estado="activo"
+                                                                                onclick="cambiarEstado(this)">
+                                                                            <i class="mdi mdi-check-circle-outline"></i>
+                                                                        </button>
+                                                                    <% } %>
                                                                 </td>
                                                             </tr>
                                                             <% }) %>
@@ -294,6 +330,80 @@
                         <!-- page-body-wrapper ends -->
                         <!-- plugins:js -->
                     </div>
+
+                    <script>
+                        function cambiarEstado(button) {
+                        const idClase = $(button).data('id'); // ID de la clase
+                        const formData = {
+                            id_curso: $(button).data('id_curso'), // ID del curso
+                            hora_inicio: $(button).data('hora-inicio'), // Hora de inicio
+                            hora_final: $(button).data('hora-final'), // Hora final
+                            id_usuario: $(button).data('usuario'), // ID del usuario
+                            estado: $(button).data('estado') // Nuevo estado (activo o inactivo)
+                        };
+
+                        // Validación de horarios
+                        if (!validateTime(formData.hora_inicio, formData.hora_final)) return;
+
+                        $('#spinner').show(); // Mostrar spinner
+
+                        fetch(`/actualizar_clase/${idClase}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData),
+                        })
+                            .then(response => response.json()) // Obtener respuesta JSON
+                            .then(data => {
+                                $('#spinner').hide(); // Ocultar spinner
+
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Éxito',
+                                        text: data.message || 'Clase actualizada correctamente.',
+                                        confirmButtonText: 'Aceptar'
+                                    }).then(() => {
+                                        window.location.reload(); // Recargar la página
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data.message || 'Ocurrió un error al actualizar la clase.',
+                                        confirmButtonText: 'Aceptar'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                $('#spinner').hide(); // Ocultar spinner
+
+                                console.error('Error al actualizar el estado de la clase:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: error.message || 'Error desconocido al actualizar la clase.',
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            });
+                    }
+
+                    // Función para validar los horarios
+                    function validateTime(horaInicio, horaFinal) {
+                        const start = new Date(`1970-01-01T${horaInicio}`);
+                        const end = new Date(`1970-01-01T${horaFinal}`);
+                        if (end <= start) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Horario inválido',
+                                text: 'La hora de inicio debe ser anterior a la hora final.',
+                                confirmButtonText: 'Aceptar'
+                            });
+                            return false;
+                        }
+                        return true;
+                    }
+                    </script>
+                                      
                     
                     <script>
                            
