@@ -59,3 +59,70 @@
         });
     });
 </script>
+<style>
+    /* Estilo global para el contenedor del modal */
+.swal2-popup {
+    background-color: #fdfdfd; /* Fondo blanco */
+    border: 2px solid #e0e0e0; /* Borde */
+    border-radius: 10px; /* Bordes redondeados */
+    font-family: 'Poppins', sans-serif; /* Fuente personalizada */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra */
+}
+
+/* Estilo del título */
+.swal2-title {
+    font-size: 1.8rem; /* Tamaño */
+    color: #333333; /* Color del texto */
+    margin-bottom: 10px; /* Espaciado */
+    font-weight: bold; /* Negrita */
+}
+
+/* Estilo del contenido de texto */
+.swal2-html-container {
+    font-size: 1rem;
+    color: #555555;
+    text-align: center; /* Centrar el texto */
+}
+
+/* Estilo para los botones de confirmación */
+.swal2-confirm {
+    background-color: #ff4b5c; /* Fondo rojo */
+    color: #ffffff; /* Texto blanco */
+    font-size: 1rem; /* Tamaño */
+    padding: 10px 20px;
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.swal2-confirm:hover {
+    background-color: #e04450; /* Fondo rojo más oscuro */
+}
+
+/* Estilo para los botones de cancelación (si se usan) */
+.swal2-cancel {
+    background-color: #dddddd; /* Fondo gris */
+    color: #333333;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.swal2-cancel:hover {
+    background-color: #bbbbbb;
+}
+.swal2-modal .swal2-title {
+    font-size: 0px;
+    line-height: 1;
+    font-weight: 500;
+    color: #ffffff;
+    font-weight: initial;
+    margin-bottom: 0;
+}
+
+
+</style>
