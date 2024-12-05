@@ -745,6 +745,22 @@ $(document).ready(function() {
         console.log("Clases del usuario:", clasesUsuario);
         console.log("Clases disponibles:", clasesDisponibles);
 
+        // Traer las clases desde la API
+        const response = await fetch("http://localhost:4000/api/traer_clases");
+        const clasesData = await response.json();
+
+        // Agrupar las clases por curso
+        const clasesPorCurso = clasesData.reduce((acc, clase) => {
+            const cursoId = clase.id_curso;
+            if (!acc[cursoId]) {
+                acc[cursoId] = [];
+            }
+            acc[cursoId].push(clase);
+            return acc;
+        }, {});
+
+        console.log("Clases agrupadas por curso:", clasesPorCurso);
+
         const groupedClasses = [];
         for (let i = 0; i < clasesDisponibles.length; i += 3) {
             groupedClasses.push(clasesDisponibles.slice(i, i + 3));
@@ -794,9 +810,34 @@ $(document).ready(function() {
                 const iconColor = isFirstStyle ? "text-primary" : "text-secondary";
                 const buttonClass = isFirstStyle ? "btn-outline-primary" : "btn-outline-secondary";
 
+                // Obtener las clases del curso actual
+                const clasesCurso = clasesPorCurso[clase.id_curso] || [];
+
+                // Imprimir las clases asociadas a este curso para depurar
+                console.log(`Clases del curso ${clase.nombre_curso}:`, clasesCurso);
+
+                // Verificar si el usuario está inscrito en todas las clases de ese curso
+                const allClassesOfCourseEnrolled = clasesCurso
+                    .every(c => clasesUsuario.some(claseUsuario => String(claseUsuario.id_clase) === String(c.id_clase)));
+
+                // Si el curso tiene solo una clase, asegurarse de que el usuario esté inscrito en ella
+                const isSingleClassCourse = clasesCurso.length === 1;
+                const allClassesOfCourseEnrolledFixed = isSingleClassCourse
+                    ? clasesUsuario.some(claseUsuario => String(claseUsuario.id_curso) === String(clase.id_curso))
+                    : allClassesOfCourseEnrolled;
+
+                // Mostrar el botón "Unirse" si no está inscrito en todas las clases del curso
+                const showJoinButton = !!(dataRolEstado.id_rol && (dataRolEstado.id_rol === 1 || dataRolEstado.id_rol === 4) && dataRolEstado.estado === 'habilitado' && !allClassesOfCourseEnrolledFixed);
+
+                // Mostrar el botón "Abandonar" solo si el usuario está inscrito en alguna de las clases de ese curso
                 const isEnrolledInClass = clasesUsuario.some(claseUsuario => String(claseUsuario.id_curso) === String(clase.id_curso));
-                const showJoinButton = !!(dataRolEstado.id_rol && (dataRolEstado.id_rol === 1 || dataRolEstado.id_rol === 4) && dataRolEstado.estado === 'habilitado');
                 const showLeaveButton = !!(dataRolEstado.id_rol && isEnrolledInClass);
+
+                // Imprimir el valor de showJoinButton para depurar
+                console.log(`Mostrar botón Unirse para el curso ${clase.id_curso}: ${showJoinButton}`);
+
+                // Imprimir el valor de showLeaveButton para depurar
+                console.log(`Mostrar botón Abandonar para el curso ${clase.id_curso}: ${showLeaveButton}`);
 
                 const content = `
                   <div class="d-flex align-items-center ${bgClass} ${textClass} px-5" style="min-height: 300px;">
@@ -818,7 +859,6 @@ $(document).ready(function() {
                   </div>
               `;
 
-
                 col.innerHTML = content;
                 row.appendChild(col);
             });
@@ -829,8 +869,10 @@ $(document).ready(function() {
     } catch (error) {
         console.error("Error al cargar las clases:", error);
     }
-});
+  });
 </script>
+
+
 
 
 <script>
@@ -852,8 +894,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch("http://localhost:4000/api/traer_clases");
             const clases = await response.json();
 
-            // Filtrar las clases que coincidan con el id_curso de la tarjeta
-            const clasesFiltradas = clases.filter(clase => String(clase.id_curso) === idCurso);
+            // Obtener las clases en las que el usuario ya está inscrito
+            const clasesUsuario = <%- JSON.stringify(dataRolEstado.clases) %>;  // Clases del usuario
+
+            // Filtrar las clases que coincidan con el id_curso y que el usuario no esté inscrito
+            const clasesFiltradas = clases.filter(clase => 
+                String(clase.id_curso) === idCurso &&  // La clase debe ser del curso
+                !clasesUsuario.some(c => String(c.id_clase) === String(clase.id_clase))  // El usuario no debe estar inscrito en esa clase
+            );
 
             // Formatear las clases para el select
             const clasesFormateadas = clasesFiltradas.map(clase => ({
@@ -973,6 +1021,7 @@ function llenarSelect(selector, opciones) {
         select.appendChild(optionElement);
     });
 }
+
 </script>
 
 

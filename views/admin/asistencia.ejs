@@ -302,26 +302,38 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Llenar las clases en el select dinámicamente
-            document.getElementById('id_clase').addEventListener('change', async function () {
-                const idClase = this.value;
-                
+            // Llenar los estudiantes cuando cambie la clase o la fecha
+            const fechaAsistenciaInput = document.getElementById('fecha_asistencia');
+            const idClaseSelect = document.getElementById('id_clase');
+            
+            const estudiantesContainer = document.getElementById('estudiantes_container');
+
+            const cargarEstudiantes = async () => {
+                const idClase = idClaseSelect.value;
+                const fechaAsistencia = fechaAsistenciaInput.value;
+
+                if (!idClase || !fechaAsistencia) {
+                    return; // No realizar la consulta si no se han seleccionado la clase o la fecha
+                }
+
                 try {
-                    const response = await fetch(`http://localhost:4000/api/claseEstudiante/${idClase}`);
+                    // Realizar una solicitud GET pasando la fecha como parámetro en la URL
+                    const response = await fetch(`http://localhost:4000/api/claseEstudiante/${idClase}?fecha_asistencia=${fechaAsistencia}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
                     if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                        throw new Error(`Error en la solicitud: ${response.status}`);
                     }
-                    
+
                     const estudiantes = await response.json();
-                    
+
                     // Limpiar la lista de estudiantes
-                    const estudiantesContainer = document.getElementById('estudiantes_container');
-                    if (!estudiantesContainer) {
-                        console.error('Error: No se encontró el contenedor de estudiantes');
-                        return;
-                    }
                     estudiantesContainer.innerHTML = '';
-                    
+
                     // Llenar la lista con los estudiantes obtenidos
                     estudiantes.forEach(estudiante => {
                         const checkboxHtml = `
@@ -337,7 +349,13 @@
                 } catch (error) {
                     console.error('Error al obtener los estudiantes:', error);
                 }
-            });
+            };
+
+            // Cargar los estudiantes cuando cambie la fecha
+            fechaAsistenciaInput.addEventListener('change', cargarEstudiantes);
+
+            // Cargar los estudiantes cuando cambie la clase
+            idClaseSelect.addEventListener('change', cargarEstudiantes);
             
             document.getElementById('addForm').addEventListener('submit', async function (event) {
                 event.preventDefault();
