@@ -374,8 +374,16 @@ $('#addForm').on('submit', function (event) {
     .then(data => {
         $('#spinner').hide(); // Ocultar spinner
 
-        // Verificar si la respuesta es exitosa
-        if (data.success) {
+        // Verificar si la respuesta contiene un error
+        if (data.error) {
+                // Mostrar alerta si el curso ya existe
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Curso duplicado',
+                    text: data.error, // Mostrar el mensaje del backend
+                    confirmButtonText: 'Aceptar'
+                });
+            }  else if (data.success) {
             Swal.fire({
                 icon: 'success',
                 title: 'Curso agregado',
@@ -385,11 +393,10 @@ $('#addForm').on('submit', function (event) {
                 window.location.reload(); // Recargar la página
             });
         } else {
-            // Mostrar el error específico si ocurre
             Swal.fire({
                 icon: 'error',
                 title: 'Error al agregar el curso',
-                text: data.error || 'Ocurrió un error al agregar el curso. Por favor, inténtalo más tarde.',
+                text: 'Ocurrió un error inesperado. Por favor, inténtalo más tarde.',
                 confirmButtonText: 'Aceptar'
             });
         }

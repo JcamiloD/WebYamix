@@ -49,7 +49,6 @@
   <!-- Page Header End -->
 
 
-
   <div class="filters-container mb-4 text-center">
     <!-- Filtro de asistencia -->
     <div class="filter-item" style="margin-right: 20px;">
@@ -79,27 +78,6 @@
       </select>
     </div>
   </div>
-  
-  <style>
-    .filters-container {
-      display: flex;
-      justify-content: center; 
-      align-items: center; /
-    }
-    .filter-item {
-      margin-right: 20px; 
-    }
-    .filter-item:last-child {
-      margin-right: 0;
-    }
-  </style>
-  
-  
-  <!-- Agregar asistencia -->
-  <div class="mb-4 text-center">
-    <button class="btn btn-primary" id="agregarAsistenciaBtn" data-bs-toggle="modal" data-bs-target="#modalAsistencia">Agregar Asistencia</button>
-  </div>
-
   <div class="grid" id="asistenciasGrid">
     <% if (data && data.asistencias && data.asistencias.length > 0) { %>
         <% data.asistencias.forEach(function(asistencia) { %>
@@ -128,6 +106,150 @@
         <p>No se encontraron asistencias.</p>
     <% } %>
 </div>
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+  console.log('Script de paginación inicializado');
+  const itemsPerPage = 10; // Número de elementos por página
+  const grid = document.getElementById('asistenciasGrid');
+  const cards = Array.from(grid.getElementsByClassName('card'));
+  const prevPageBtn = document.getElementById('prevPage');
+  const nextPageBtn = document.getElementById('nextPage');
+  const pageNumberDisplay = document.getElementById('pageNumber');
+  let currentPage = 1;
+  const totalPages = Math.ceil(cards.length / itemsPerPage);
+
+  function updatePage() {
+    console.log(`Actualizando página: ${currentPage}`);
+    cards.forEach((card, index) => {
+      if (index >= (currentPage - 1) * itemsPerPage && index < currentPage * itemsPerPage) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    pageNumberDisplay.textContent = `Página ${currentPage}`;
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+  }
+
+  prevPageBtn.addEventListener('click', function () {
+    if (currentPage > 1) {
+      currentPage--;
+      console.log('Página anterior seleccionada');
+      updatePage();
+    }
+  });
+
+  nextPageBtn.addEventListener('click', function () {
+    if (currentPage < totalPages) {
+      currentPage++;
+      console.log('Página siguiente seleccionada');
+      updatePage();
+    }
+  });
+
+  updatePage();
+});
+
+// Filtro por mes
+document.addEventListener("DOMContentLoaded", () => {
+ 
+  const monthFilter = document.getElementById("monthFilter");
+  const resetFilter = document.getElementById("resetFilter");
+  const cards = document.querySelectorAll(".card");
+
+  monthFilter.addEventListener("change", () => {
+  const selectedMonth = monthFilter.value;
+ 
+
+  cards.forEach(card => {
+    // Obtener solo el bloque de texto relevante de la tarjeta
+    const dateTextMatch = card.innerText.match(/Fecha asistencia:\s+(.+)/);
+    if (dateTextMatch) {
+      const dateText = dateTextMatch[1].trim(); // Limpiar espacios innecesarios
+   
+
+      // Buscar el mes dentro del bloque de texto extraído
+      const monthMatch = dateText.match(/de\s+(\w+)\s+de/);
+      if (monthMatch) {
+        const cardMonth = monthMatch[1].toLowerCase(); // Convertir a minúsculas para comparar
+      
+        if (selectedMonth === "" || cardMonth === selectedMonth.toLowerCase()) {
+          card.style.display = "block";
+        } else {
+          card.style.display = "none";
+        }
+      } else {
+      
+        card.style.display = "none"; // Ocultar tarjeta si no hay mes válido
+      }
+    } else {
+     
+      card.style.display = "none"; // Ocultar tarjeta si no hay fecha
+    }
+  });
+});
+
+
+
+  resetFilter.addEventListener("click", () => {
+    console.log('Filtro de mes reiniciado');
+    monthFilter.value = "";
+    cards.forEach(card => card.style.display = "block");
+  });
+});
+
+// Filtro de asistencia
+document.addEventListener("DOMContentLoaded", () => {
+  console.log('Script de filtro de asistencia inicializado');
+  const filtroAsistencia = document.getElementById('filtroAsistencia');
+  const cards = document.querySelectorAll('.card');
+
+  const cursos = Array.from(new Set(Array.from(cards).map(card => card.querySelector('h4').textContent.trim())));
+  console.log('Cursos únicos encontrados:', cursos);
+
+  cursos.forEach(curso => {
+    const option = document.createElement('option');
+    option.value = curso.toLowerCase();
+    option.textContent = curso;
+    filtroAsistencia.appendChild(option);
+  });
+
+  filtroAsistencia.addEventListener('change', function () {
+    const filterValue = this.value.toLowerCase();
+    console.log(`Filtro de asistencia seleccionado: ${filterValue}`);
+
+    cards.forEach(card => {
+      const nombreCurso = card.querySelector('h4').textContent.toLowerCase();
+      console.log(`Nombre del curso en tarjeta: ${nombreCurso}`);
+
+      if (filterValue === '' || nombreCurso.includes(filterValue)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+
+  </script>
+  <style>
+    .filters-container {
+      display: flex;
+      justify-content: center; 
+      align-items: center; /
+    }
+    .filter-item {
+      margin-right: 20px; 
+    }
+    .filter-item:last-child {
+      margin-right: 0;
+    }
+  </style>
+  
+
+
 
   <div id="pagination" class="text-center mt-4">
     <button id="prevPage" class="btn btn-outline-primary">Anterior</button>
