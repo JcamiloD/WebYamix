@@ -396,7 +396,7 @@ $('#addForm').on('submit', function (event) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error al agregar el curso',
-                text: 'Ocurrió un error inesperado. Por favor, inténtalo más tarde.',
+                text: 'El curso ya existe. Por favor, elige otro nombre.',
                 confirmButtonText: 'Aceptar'
             });
         }
@@ -407,7 +407,7 @@ $('#addForm').on('submit', function (event) {
         Swal.fire({
             icon: 'error',
             title: 'Error interno',
-            text: 'Ocurrió un error al agregar el curso. Por favor, inténtalo más tarde.',
+            text: 'El curso ya existe. Por favor, elige otro nombre.',
             confirmButtonText: 'Aceptar'
         });
     });

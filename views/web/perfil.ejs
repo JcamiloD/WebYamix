@@ -506,9 +506,10 @@ async function fetchClases() {
 
   const decoded = JSON.parse(atob(token.split('.')[1]));
   const id = decoded.id;
+  const rol = decoded.rol
 
   try {
-    const response = await fetch(`http://localhost:4000/api/claseParaEstudiante/${id}`);
+    const response = await fetch(`http://localhost:4000/api/claseParaEstudiante/${id}?rol=${rol}`);
     const clases = await response.json();
     clasesGlobal = clases;
 
