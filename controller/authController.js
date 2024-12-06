@@ -192,10 +192,9 @@ exports.login = async (req, res) => {
                 ruta = '/'
             }
 
-
-
+            
             // Responder al frontend con la ruta
-            return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', ruta });
+            return res.status(apiResponse.status).json({ mensaje: 'Inicio de sesión exitoso', ruta });
         } else {
             // Responder con un mensaje de error
             return res.status(apiResponse.status).json({

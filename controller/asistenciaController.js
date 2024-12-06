@@ -130,7 +130,7 @@ exports.getAssistancesFromAPI = async (req, res, next) => {
 
 
         // URL de la API para obtener asistencias
-        const apiUrl = `http://localhost:4000/api/assistances/${id_usuario}`;
+        const apiUrl = `${process.env.pathApi}/assistances/${id_usuario}`;
 
         // Realizar la solicitud a la API
         const response = await fetch(apiUrl);

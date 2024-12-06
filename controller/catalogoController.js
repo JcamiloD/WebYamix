@@ -12,7 +12,7 @@ exports.getCatalogo = async (req, res, next) => {
             throw new Error('Token no presente en las cookies');
         }
 
-        const response = await fetch('http://localhost:4000/api/get-catalogo', {
+        const response = await fetch(`${process.env.pathApi}/api/get-catalogo`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ exports.getCatalogo = async (req, res, next) => {
 exports.getAll = async (req, res, next) => {
     try {
         console.log('Iniciando solicitud a la API de catálogo...');
-        const response = await fetch('http://localhost:4000/api/get-all');
+        const response = await fetch(`${process.env.pathApi}/api/get-all`);
         
         if (!response.ok) {
             console.log('Error en la respuesta de la API:', response.status, response.statusText);
@@ -173,7 +173,7 @@ exports.actualizarProducto = async (req, res) => {
         const headers = form.getHeaders();
 
         // Enviar los datos y la imagen a un servidor externo
-        const response = await axios.put(`http://localhost:4000/api/update-producto/${id_catalogo}`, form, {
+        const response = await axios.put(`${process.env.pathApi}/api/update-producto/${id_catalogo}`, form, {
             headers: {
                 ...headers,
                 'Content-Type': 'multipart/form-data'

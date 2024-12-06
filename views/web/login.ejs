@@ -80,9 +80,33 @@
 
             // Procesar respuesta del controlador
             const resultado = await response.json();
+            console.log('Código de respuesta:', response.status);
+            if (response.status === 202) { 
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Cuenta en espera',
+                    text: 'Por favor, completa la documentación requerida en perfil',
+                    timer: 4000, // 3 segundos antes de redirigir
+                    showConfirmButton: false
+                }).then(() => {
+                    setTimeout(() => {
+                        window.location.href = '/perfil'; // Redirige a la ruta del backend
+                    });
+                });
+            }
 
-            if (response.ok) {
-                // Mostrar éxito y redirigir
+            if (response.status === 403) {
+                // Manejo de usuario deshabilitado
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Usuario deshabilitado',
+                    text: 'Tu cuenta está deshabilitada. Contacta al administrador para más información.'
+                });
+                return;
+            }
+
+            if (response.status === 200) {
+                // Manejo de inicio de sesión exitoso
                 Swal.fire({
                     icon: 'success',
                     title: 'Inicio de sesión exitoso',
@@ -92,12 +116,12 @@
                 }).then(() => {
                     window.location.href = resultado.ruta; // Redirige a la ruta del backend
                 });
-            } else {
-                // Manejo de errores desde el servidor
+            } else if(response.status === 500) {
+                // Manejo de otros errores desde el servidor
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: resultado.mensaje || 'Credenciales incorrectas. Intenta nuevamente.'
+                    text: resultado.message || 'Credenciales incorrectas. Intenta nuevamente.'
                 });
             }
         } catch (error) {
@@ -121,6 +145,7 @@
         }
     }
 </script>
+
 
 
 

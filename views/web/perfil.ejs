@@ -120,7 +120,7 @@
               <p><%= new Date(usuario.fecha_nacimiento).toLocaleDateString() %></p> <!-- Contenido dentro de un párrafo -->
               
               <h3>Rol: </h3>
-              <p><%= usuario.nombre_rol %></p> <!-- Contenido dentro de un párrafo -->
+              <p><%= usuario.nombre_rol.charAt(0).toUpperCase() + usuario.nombre_rol.slice(1)%></p> <!-- Contenido dentro de un párrafo -->
               
               <div class="button-group">
                 <button id="editBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" 
@@ -155,33 +155,30 @@
       <% } %>
       
       <!-- Mostrar Documentación solo si el rol no es admin -->
-      <% if (usuario && usuario.nombre_rol !== 'administrador') { %>
-        <h2>Documentación</h2>
-        <% if (usuario && usuario.documentos && usuario.documentos.length > 0) { %> <!-- Verificamos si existen documentos -->
-          <ul>
-            <% usuario.documentos.forEach(function(doc) { %> <!-- Iteramos sobre los documentos -->
-              <li>
-                <a href="<%= doc.ruta_archivo %>" target="_blank">Documento</a>
-                
-              </li>
-              <li>
-                
-              </li>
-            <% }); %>
-            
-          </ul>
-          
-        <% } else { %>
-          <p>No hay documentos disponibles.</p>
-          
-        <% } %>
-          
-        <!-- Botón para abrir el modal de documentos -->
-        <button id="editDocsBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#docsModal" 
-                data-id_usuario="<%= usuario ? usuario.id_usuario : '' %>">
-          Agregar
-        </button>
-      <% } %>
+<% if (usuario && usuario.nombre_rol !== 'administrador') { %>
+  <h2>Documentación</h2>
+  <% if (usuario && usuario.documentos && usuario.documentos.length > 0) { %> <!-- Verificamos si existen documentos -->
+    <ul>
+      <% usuario.documentos.forEach(function(doc) { %> <!-- Iteramos sobre los documentos -->
+        <li>
+          <a href="<%= doc.ruta_archivo %>" target="_blank">Documento</a>
+        </li>
+      <% }); %>
+    </ul>
+  
+    <!-- Botón para abrir el modal de documentos, solo si hay 3 o menos documentos -->
+    <% if (usuario.documentos.length <= 2) { %>
+      <button id="editDocsBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#docsModal" 
+              data-id_usuario="<%= usuario ? usuario.id_usuario : '' %>">
+        Agregar
+      </button>
+    <% } %>
+    
+  <% } else { %>
+    <p>No hay documentos disponibles.</p>
+  <% } %>
+<% } %>
+
     </div>
   </div>
 
@@ -308,7 +305,7 @@ document.getElementById('addDocumentForm').addEventListener('submit', function(e
   formData.append('id_usuario', usuarioId);
 
   // Enviar el formulario usando fetch
-  fetch('http://localhost:4000/api/add-documento', {
+  fetch('http://localhost:4000/api/documentoperfil', {
     method: 'POST',
     body: formData,
   })
