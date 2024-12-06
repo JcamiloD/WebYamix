@@ -60,6 +60,9 @@ exports.addDocument = async (req, res) => {
 // Traer usuarios desde la API
 exports.traer = async (req, res, next) => {
     try {
+        // Extraer el id del usuario desde el JWT
+        const { id } = req.usuario; // Aquí estamos obteniendo el id del usuario desde el token decodificado
+        
         // Traer usuarios
         const responseUsuarios = await fetch(`${process.env.pathApi}/traer_usuarios`, {
             method: 'GET',
@@ -87,6 +90,7 @@ exports.traer = async (req, res, next) => {
         // Almacenar los datos en res.locals
         res.locals.data = dataUsuarios; // Usuarios
         res.locals.roles = dataRoles;    // Roles
+        res.locals.usuarioId = id;      // ID del usuario desde el token
 
         next();
     } catch (error) {
@@ -94,6 +98,7 @@ exports.traer = async (req, res, next) => {
         res.status(500).send('Error interno del servidor');
     }
 };
+
 
 
 

@@ -155,85 +155,87 @@
                                         
                                                 <% usuariosOrdenados.forEach((usuario, index) => { %>
                                                     <% if (usuario.id_rol !== 2 && usuario.id_rol !== 1 && usuario.estado !== 'espera' && usuario.estado !== 'deshabilitado') { %>
-                                                        <tr>
-                                                            <td><%= index + 1 %></td>
-                                                            <td><%= usuario.nombre %></td>
-                                                            <td><%= usuario.apellido %></td>
-                                                            <td><%= usuario.nombre_rol.charAt(0).toUpperCase() + usuario.nombre_rol.slice(1).toLowerCase() %></td>
-                                                            <td><%= usuario.correo %></td>
-                                                            <td>
-                                                                <% if (usuario.fecha_nacimiento) { %>
-                                                                    <% 
-                                                                        const fechaNacimiento = new Date(usuario.fecha_nacimiento);
-                                                                        
-                                                                        // Sumar un día a la fecha
-                                                                        fechaNacimiento.setDate(fechaNacimiento.getDate() + 1);
-                                                                        
-                                                                        const dia = fechaNacimiento.getDate();
-                                                                        const mes = fechaNacimiento.toLocaleString('es-ES', { month: 'long' }).charAt(0).toUpperCase() + fechaNacimiento.toLocaleString('es-ES', { month: 'long' }).slice(1);
-                                                                        const año = fechaNacimiento.getFullYear();
-                                                                        
-                                                                        // Construimos la fecha en el formato deseado
-                                                                        const fechaFinal = `${dia} de ${mes} del ${año}`; // "20 de Febrero del 2001"
-                                                                    %>
-                                                                    <%= fechaFinal %>
-                                                                <% } else { %>
-                                                                    Sin fecha de nacimiento
-                                                                <% } %>
-                                                            </td>
-                                                            <td>
-                                                                <!-- Botón que abre el modal -->
-                                                                <button class="button-iconn" data-bs-toggle="modal" data-bs-target="#documentacion-<%= usuario.id_usuario %>" 
-                                                                >
-                                                                <i class="fas fa-plus"></i>
-                                                                </button>
-                                                            </td>
-                                                            <td><%= usuario.estado.charAt(0).toUpperCase() + usuario.estado.slice(1).toLowerCase() %></td>
-                                                            <td>
-                                                                <!-- Botón para editar -->
-                                                                <button type="button" class="icon-btn" data-toggle="modal"
-                                                                    data-target="#editModal"
-                                                                    data-id_usuario="<%= usuario.id_usuario %>"
-                                                                    data-nombre="<%= usuario.nombre %>"
-                                                                    data-apellido="<%= usuario.apellido %>"
-                                                                    data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
-                                                                    data-gmail="<%= usuario.correo %>"
-                                                                    data-id_rol="<%= usuario.id_rol %>"
-                                                                    data-estado="<%= usuario.estado %>">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                
-                                                                <!-- Botón para deshabilitar (enviar la solicitud directamente) -->
-                                                                <% if (usuario.estado === 'habilitado') { %>
-                                                                    <button type="button" class="icon-btn"
-                                                                            data-id_usuario="<%= usuario.id_usuario %>"
-                                                                            data-nombre="<%= usuario.nombre %>"
-                                                                            data-apellido="<%= usuario.apellido %>"
-                                                                            data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
-                                                                            data-gmail="<%= usuario.correo %>"
-                                                                            data-id_rol="<%= usuario.id_rol %>"
-                                                                            data-estado="deshabilitado"
-                                                                            onclick="cambiarEstado(this)">
-                                                                        <i class="mdi mdi-block-helper"></i>
+                                                        <% if (usuario.id_usuario !== usuarioId) { %> <!-- Añadir la condición para no mostrar el usuario con el id igual al del token -->
+                                                            <tr>
+                                                                <td><%= index + 1 %></td>
+                                                                <td><%= usuario.nombre %></td>
+                                                                <td><%= usuario.apellido %></td>
+                                                                <td><%= usuario.nombre_rol.charAt(0).toUpperCase() + usuario.nombre_rol.slice(1).toLowerCase() %></td>
+                                                                <td><%= usuario.correo %></td>
+                                                                <td>
+                                                                    <% if (usuario.fecha_nacimiento) { %>
+                                                                        <% 
+                                                                            const fechaNacimiento = new Date(usuario.fecha_nacimiento);
+                                                                            
+                                                                            // Sumar un día a la fecha
+                                                                            fechaNacimiento.setDate(fechaNacimiento.getDate() + 1);
+                                                                            
+                                                                            const dia = fechaNacimiento.getDate();
+                                                                            const mes = fechaNacimiento.toLocaleString('es-ES', { month: 'long' }).charAt(0).toUpperCase() + fechaNacimiento.toLocaleString('es-ES', { month: 'long' }).slice(1);
+                                                                            const año = fechaNacimiento.getFullYear();
+                                                                            
+                                                                            // Construimos la fecha en el formato deseado
+                                                                            const fechaFinal = `${dia} de ${mes} del ${año}`; // "20 de Febrero del 2001"
+                                                                        %>
+                                                                        <%= fechaFinal %>
+                                                                    <% } else { %>
+                                                                        Sin fecha de nacimiento
+                                                                    <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <!-- Botón que abre el modal -->
+                                                                    <button class="button-iconn" data-bs-toggle="modal" data-bs-target="#documentacion-<%= usuario.id_usuario %>" 
+                                                                    >
+                                                                    <i class="fas fa-plus"></i>
                                                                     </button>
-                                                                <% } %>
+                                                                </td>
+                                                                <td><%= usuario.estado.charAt(0).toUpperCase() + usuario.estado.slice(1).toLowerCase() %></td>
+                                                                <td>
+                                                                    <!-- Botón para editar -->
+                                                                    <button type="button" class="icon-btn" data-toggle="modal"
+                                                                        data-target="#editModal"
+                                                                        data-id_usuario="<%= usuario.id_usuario %>"
+                                                                        data-nombre="<%= usuario.nombre %>"
+                                                                        data-apellido="<%= usuario.apellido %>"
+                                                                        data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
+                                                                        data-gmail="<%= usuario.correo %>"
+                                                                        data-id_rol="<%= usuario.id_rol %>"
+                                                                        data-estado="<%= usuario.estado %>">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                    
+                                                                    <!-- Botón para deshabilitar (enviar la solicitud directamente) -->
+                                                                    <% if (usuario.estado === 'habilitado') { %>
+                                                                        <button type="button" class="icon-btn"
+                                                                                data-id_usuario="<%= usuario.id_usuario %>"
+                                                                                data-nombre="<%= usuario.nombre %>"
+                                                                                data-apellido="<%= usuario.apellido %>"
+                                                                                data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
+                                                                                data-gmail="<%= usuario.correo %>"
+                                                                                data-id_rol="<%= usuario.id_rol %>"
+                                                                                data-estado="deshabilitado"
+                                                                                onclick="cambiarEstado(this)">
+                                                                            <i class="mdi mdi-block-helper"></i>
+                                                                        </button>
+                                                                    <% } %>
 
-                                                                <!-- Botón para habilitar (enviar la solicitud directamente) -->
-                                                                <% if (usuario.estado === 'deshabilitado' || usuario.estado === 'espera') { %>
-                                                                    <button type="button" class="icon-btn"
-                                                                            data-id_usuario="<%= usuario.id_usuario %>"
-                                                                            data-nombre="<%= usuario.nombre %>"
-                                                                            data-apellido="<%= usuario.apellido %>"
-                                                                            data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
-                                                                            data-gmail="<%= usuario.correo %>"
-                                                                            data-id_rol="<%= usuario.id_rol %>"
-                                                                            data-estado="habilitado"
-                                                                            onclick="cambiarEstado(this)">
-                                                                        <i class="mdi mdi-check-circle-outline"></i>
-                                                                    </button>
-                                                                <% } %>
-                                                            </td>
-                                                        </tr>
+                                                                    <!-- Botón para habilitar (enviar la solicitud directamente) -->
+                                                                    <% if (usuario.estado === 'deshabilitado' || usuario.estado === 'espera') { %>
+                                                                        <button type="button" class="icon-btn"
+                                                                                data-id_usuario="<%= usuario.id_usuario %>"
+                                                                                data-nombre="<%= usuario.nombre %>"
+                                                                                data-apellido="<%= usuario.apellido %>"
+                                                                                data-fecha_nacimiento="<%= usuario.fecha_nacimiento %>"
+                                                                                data-gmail="<%= usuario.correo %>"
+                                                                                data-id_rol="<%= usuario.id_rol %>"
+                                                                                data-estado="habilitado"
+                                                                                onclick="cambiarEstado(this)">
+                                                                            <i class="mdi mdi-check-circle-outline"></i>
+                                                                        </button>
+                                                                    <% } %>
+                                                                </td>
+                                                            </tr>
+                                                        <% } %> <!-- Cierra el if que filtra por id_usuario -->
                                                     <% } %>
                                                     <div class="modal fade" id="documentacion-<%= usuario.id_usuario %>" tabindex="-1" role="dialog" aria-labelledby="editEstudiantesModalLabel-<%= usuario.id_usuario %>" aria-hidden="true">
                                                         <div class="modal-dialog modal-lg" role="document">
@@ -823,36 +825,30 @@
                         const passwordField = document.getElementById("addContrasena");
                         const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
                         const confirmPasswordField = document.getElementById("addConfirmarContrasena");
-                        const rolSelect = document.getElementById('addRol');
-                        const studentOptions = document.getElementById('studentOptions');
                         const fechaNacimientoInput = document.getElementById('addFechaNacimiento');
                         const errorMessage = document.getElementById('error-message');
                         const addForm = document.getElementById('addForm');
                         
                         // Expresión regular para la contraseña
-                        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&])[A-Za-z\d!@#$%^&*]{6,}$/;
+                        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
                 
-                        // Validación de contraseñas
-                        togglePassword.addEventListener("click", function () {
-                            const type = passwordField.type === "password" ? "text" : "password";
-                            passwordField.type = type;
-                            const icon = passwordField.type === "password" ? "fa-eye" : "fa-eye-slash";
-                            document.getElementById("password-eye").classList.replace("fa-eye", icon);
-                        });
-                        
-                        toggleConfirmPassword.addEventListener("click", function () {
-                            const type = confirmPasswordField.type === "password" ? "text" : "password";
-                            confirmPasswordField.type = type;
-                            const icon = confirmPasswordField.type === "password" ? "fa-eye" : "fa-eye-slash";
-                            document.getElementById("confirm-password-eye").classList.replace("fa-eye", icon);
-                        });
-                        
-                        
-                        
-                        // Validación de la edad
+                        // Configuración de rango de edad
                         const minAge = 8;
                         const maxAge = 65;
-                        
+                
+                        // Función para alternar la visibilidad de las contraseñas
+                        function togglePasswordVisibility(field, eyeIconId) {
+                            const type = field.type === "password" ? "text" : "password";
+                            field.type = type;
+                            const icon = field.type === "password" ? "fa-eye" : "fa-eye-slash";
+                            document.getElementById(eyeIconId).classList.replace(field.type === "password" ? "fa-eye-slash" : "fa-eye", icon);
+                        }
+                
+                        // Event listeners para alternar visibilidad
+                        togglePassword.addEventListener("click", () => togglePasswordVisibility(passwordField, "password-eye"));
+                        toggleConfirmPassword.addEventListener("click", () => togglePasswordVisibility(confirmPasswordField, "confirm-password-eye"));
+                
+                        // Validación de edad
                         function validateAge() {
                             const fechaNacimiento = new Date(fechaNacimientoInput.value);
                             if (isNaN(fechaNacimiento)) {
@@ -860,14 +856,14 @@
                                 errorMessage.textContent = 'Por favor, introduce una fecha válida.';
                                 return false;
                             }
-                        
+                
                             const hoy = new Date();
                             let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
                             const mesDiferencia = hoy.getMonth() - fechaNacimiento.getMonth();
                             if (mesDiferencia < 0 || (mesDiferencia === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
                                 edad--;
                             }
-                        
+                
                             if (edad < minAge || edad > maxAge) {
                                 errorMessage.style.display = 'block';
                                 errorMessage.textContent = `La edad debe estar entre ${minAge} y ${maxAge} años.`;
@@ -877,47 +873,37 @@
                                 return true;
                             }
                         }
-                        
+                
                         fechaNacimientoInput.addEventListener('input', validateAge);
-                        
-                        
-                        // Verificación de correo (AJAX)
+                
+                        // Validación al enviar el formulario
                         addForm.addEventListener('submit', function (event) {
-                            event.preventDefault(); // Evitar el envío del formulario
-                        
+                            event.preventDefault(); // Evitar envío por defecto del formulario
+                
                             const correo = document.getElementById('addCorreo').value;
-                        
-                            // Validación de la contraseña
                             const contrasena = passwordField.value;
                             const confirmPassword = confirmPasswordField.value;
-                        
-                            // Verifica la longitud de la contraseña
-                            if (contrasena.length < 6) {
-                                errorMessage.innerText = 'La contraseña debe tener al menos 6 caracteres.';
-                                errorMessage.style.display = 'block';
-                                return;
-                            }
-                        
+                
                             // Verifica si las contraseñas coinciden
                             if (contrasena !== confirmPassword) {
-                                errorMessage.innerText = 'Las contraseñas no coinciden. Por favor, inténtalo de nuevo.';
+                                errorMessage.textContent = 'Las contraseñas no coinciden. Por favor, inténtalo de nuevo.';
                                 errorMessage.style.display = 'block';
                                 return;
                             }
                 
-                            // Verifica que la contraseña cumpla con la expresión regular
+                            // Verifica que la contraseña cumpla con el patrón
                             if (!passwordRegex.test(contrasena)) {
-                                errorMessage.innerText = 'La contraseña debe contener al menos una letra, un número y un carácter especial.';
+                                errorMessage.textContent = 'La contraseña debe contener al menos una letra, un número y un carácter especial.';
                                 errorMessage.style.display = 'block';
                                 return;
                             }
-                        
-                            // Validar la edad antes de enviar el formulario
+                
+                            // Validar la edad
                             if (!validateAge()) {
                                 return;
                             }
-                        
-                            // Verificación del correo
+                
+                            // Verificar correo con AJAX
                             $.ajax({
                                 url: 'http://localhost:4000/api/verificar_correo',
                                 type: 'POST',
@@ -926,9 +912,7 @@
                                     if (response.existe) {
                                         $('#error-message').text('El correo ya está en uso.').show();
                                     } else {
-                                        // Si el correo no existe, continuar con el envío del formulario
-                        
-                                        // Enviar el formulario una vez todo esté validado
+                                        // Enviar el formulario si todo es válido
                                         $.ajax({
                                             url: addForm.getAttribute('action'),
                                             type: 'POST',
@@ -949,7 +933,8 @@
                             });
                         });
                     });
-                </script>                
+                </script>
+                               
                           
             
 

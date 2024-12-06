@@ -63,7 +63,7 @@ router.post('/agregar_usuario', (req, res, next) => {
 
 router.get('/usuariosAdmin',verifyToken, restrictToPermiso('usuarios'),attachUserPermissions, usuarios.traer, (req, res) => {
     const userPermissions = req.usuario ? req.usuario.permisos : [];
-    res.render('./admin/usuariosAdmin', { data: res.locals.data,  permisos: userPermissions  });
+    res.render('./admin/usuariosAdmin', { data: res.locals.data, usuarios: usuarios, permisos: userPermissions, usuarioId: req.usuario.id  });
 });
 
 
