@@ -154,30 +154,36 @@
       <% } %>
       <% } %>
       
-      <!-- Mostrar Documentación solo si el rol no es admin -->
+<!-- Mostrar Documentación solo si el rol no es admin -->
 <% if (usuario && usuario.nombre_rol !== 'administrador') { %>
   <h2>Documentación</h2>
-  <% if (usuario && usuario.documentos && usuario.documentos.length > 0) { %> <!-- Verificamos si existen documentos -->
+  <% if (usuario && usuario.documentos && usuario.documentos.length > 0) { %> 
+    <!-- Verificamos si existen documentos -->
     <ul>
-      <% usuario.documentos.forEach(function(doc) { %> <!-- Iteramos sobre los documentos -->
+      <% usuario.documentos.forEach(function(doc) { %> 
+        <!-- Iteramos sobre los documentos -->
         <li>
           <a href="<%= doc.ruta_archivo %>" target="_blank">Documento</a>
         </li>
       <% }); %>
     </ul>
-  
-    <!-- Botón para abrir el modal de documentos, solo si hay 3 o menos documentos -->
-    <% if (usuario.documentos.length <= 2) { %>
+
+    <% if (usuario.documentos.length < 3) { %>
       <button id="editDocsBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#docsModal" 
               data-id_usuario="<%= usuario ? usuario.id_usuario : '' %>">
         Agregar
       </button>
     <% } %>
-    
+  
   <% } else { %>
     <p>No hay documentos disponibles.</p>
+    <button id="editDocsBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#docsModal" 
+            data-id_usuario="<%= usuario ? usuario.id_usuario : '' %>">
+      Agregar
+    </button>
   <% } %>
 <% } %>
+
 
     </div>
   </div>
