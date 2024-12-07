@@ -104,6 +104,9 @@
   </div>
 
   <div class="grid" id="asistenciasGrid">
+    <% if (dataAsistencias.length === 0) { %>
+      <p>No se encontraron asistencias para mostrar.</p>
+  <% } else { %>
     <% dataAsistencias.forEach(asistencia => { %>
       <div class="card">
         <span class="icon">
@@ -165,13 +168,16 @@
         </div>
       </div>
     <% }) %>
+    <% } %>
   </div>
 
-  <div id="pagination" class="text-center mt-4">
-    <button id="prevPage" class="btn btn-outline-primary">Anterior</button>
-    <span id="pageNumber" class="mx-3"></span>
-    <button id="nextPage" class="btn btn-outline-primary">Siguiente</button>
-  </div>
+  <% if (dataAsistencias.length > 0) { %>
+    <div id="pagination" class="text-center mt-4">
+      <button id="prevPage" class="btn btn-outline-primary">Anterior</button>
+      <span id="pageNumber" class="mx-3"></span>
+      <button id="nextPage" class="btn btn-outline-primary">Siguiente</button>
+    </div>
+  <% } %>
 <!-- Modal Ver Detalle -->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
