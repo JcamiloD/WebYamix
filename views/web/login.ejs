@@ -116,7 +116,7 @@
                 }).then(() => {
                     window.location.href = resultado.ruta; // Redirige a la ruta del backend
                 });
-            } else if(response.status === 500) {
+            } else if(response.status === 401) {
                 // Manejo de otros errores desde el servidor
                 Swal.fire({
                     icon: 'error',

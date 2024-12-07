@@ -68,15 +68,12 @@ exports.crearAsistencia = async (req, res) => {
 // Traer asistencia del profesor desde la API
 exports.traerAsistenciaProfe = async (req, res, next) => {
     try {
-        // Obtener el token de la cookie
         const token = req.cookies.jwt;
 
-        // Verificar si el token existe
         if (!token) {
             return res.status(401).send('No se ha proporcionado un token');
         }
 
-        // Decodificar el token para obtener el ID del usuario
         const decoded = jwt.decode(token);
         const id_usuario = decoded ? decoded.id : null;
 
@@ -84,24 +81,20 @@ exports.traerAsistenciaProfe = async (req, res, next) => {
             return res.status(401).send('El token no contiene un ID de usuario válido');
         }
 
-        // Realizar la petición a la API para obtener las asistencias, pasando el id_usuario como parámetro
         const responseAsistencias = await fetch(`${process.env.pathApi}/traerAsistenciaProfe/${id_usuario}`);
         const dataAsistencias = await responseAsistencias.json();
 
-        // Realizar la petición a la API para obtener las clases
         const responseClases = await fetch(`${process.env.pathApi}/traer_clases`);
         const dataClases = await responseClases.json();
 
-        // Verificar que ambas peticiones fueron exitosas
         if (responseAsistencias.ok && responseClases.ok) {
-            // Filtrar las clases para mostrar solo las que corresponden al usuario actual
             const clasesUsuario = dataClases.filter(clase => clase.id_usuario === id_usuario);
 
-            // Pasar los datos de las asistencias y las clases filtradas a res.locals
-            res.locals.dataAsistencias = dataAsistencias;
-            res.locals.dataClases = clasesUsuario;  // Solo las clases del usuario
+            // Asegurarte de que siempre se renderice la vista
+            res.locals.dataAsistencias = dataAsistencias.length > 0 ? dataAsistencias : []; // Si no hay asistencias, un array vacío
+            res.locals.dataClases = clasesUsuario;
 
-            next(); // Continuamos con el siguiente middleware o controlador
+            next();
         } else {
             console.error('Error al traer asistencias o clases:', dataAsistencias, dataClases);
             res.status(responseAsistencias.status).send(dataAsistencias.message || 'Error al traer las asistencias o clases');
@@ -111,6 +104,7 @@ exports.traerAsistenciaProfe = async (req, res, next) => {
         res.status(500).send('Error al obtener las asistencias o clases');
     }
 };
+
 
 
 exports.getAssistancesFromAPI = async (req, res, next) => {

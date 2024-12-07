@@ -354,43 +354,71 @@
                                                     <script>
                                                         
                                                         document.getElementById('uploadForm-<%= usuario.id_usuario %>').addEventListener('submit', function (event) {
-                                                            event.preventDefault(); // Esto detiene el envío del formulario
+                                                        event.preventDefault(); // Esto detiene el envío del formulario
+
+                                                        const formData = new FormData(this);
+                                                        const validFiles = [];
+                                                        const invalidFiles = [];
                                                         
-                                                            const formData = new FormData(this);
-                                                        
-                                                            fetch('/add_documento', {
-                                                                method: 'POST',
-                                                                body: formData
-                                                            })
-                                                                .then(response => {
-                                                                    if (response.ok) {
-                                                                        Swal.fire({
-                                                                            icon: 'success',
-                                                                            title: 'Éxito',
-                                                                            text: 'Archivos subidos exitosamente.',
-                                                                            confirmButtonText: 'Aceptar'
-                                                                        }).then(() => {
-                                                                            window.location.reload(); // Recargar la página tras cerrar SweetAlert
-                                                                        });
-                                                                    } else {
-                                                                        Swal.fire({
-                                                                            icon: 'error',
-                                                                            title: 'Error',
-                                                                            text: 'Hubo un problema al subir los archivos. Por favor, inténtalo de nuevo.',
-                                                                            confirmButtonText: 'Cerrar'
-                                                                        });
-                                                                    }
-                                                                })
-                                                                .catch(error => {
-                                                                    console.error('Error:', error);
+                                                        // Validar archivos antes de enviar
+                                                        Array.from(formData.getAll('nuevoDocumento[]')).forEach(file => {
+                                                            if (file.type === 'application/pdf') {
+                                                                validFiles.push(file);
+                                                            } else {
+                                                                invalidFiles.push(file.name);
+                                                            }
+                                                        });
+
+                                                        // Si hay archivos no válidos, muestra alerta y detén el envío
+                                                        if (invalidFiles.length > 0) {
+                                                            Swal.fire({
+                                                                icon: 'error',
+                                                                title: 'Archivos inválidos',
+                                                                text: `Los siguientes archivos no son PDF y no se enviarán: ${invalidFiles.join(', ')}`,
+                                                                confirmButtonText: 'Aceptar',
+                                                                timer: 5000
+                                                            });
+                                                            return; // Detiene el proceso
+                                                        }
+
+                                                        // Crear nuevo FormData con solo los archivos válidos
+                                                        const filteredFormData = new FormData();
+                                                        filteredFormData.append('id_usuario', '<%= usuario.id_usuario %>'); // Asegúrate de incluir otros campos necesarios
+                                                        validFiles.forEach(file => filteredFormData.append('nuevoDocumento[]', file));
+
+                                                        fetch('/add_documento', {
+                                                            method: 'POST',
+                                                            body: filteredFormData
+                                                        })
+                                                            .then(response => {
+                                                                if (response.ok) {
+                                                                    Swal.fire({
+                                                                        icon: 'success',
+                                                                        title: 'Éxito',
+                                                                        text: 'Archivos subidos exitosamente.',
+                                                                        confirmButtonText: 'Aceptar'
+                                                                    }).then(() => {
+                                                                        window.location.reload(); // Recargar la página tras cerrar SweetAlert
+                                                                    });
+                                                                } else {
                                                                     Swal.fire({
                                                                         icon: 'error',
-                                                                        title: 'Error crítico',
-                                                                        text: 'Ocurrió un error inesperado. Por favor, verifica tu conexión o contacta al soporte.',
+                                                                        title: 'Error',
+                                                                        text: 'Hubo un problema al subir los archivos. Por favor, inténtalo de nuevo.',
                                                                         confirmButtonText: 'Cerrar'
                                                                     });
+                                                                }
+                                                            })
+                                                            .catch(error => {
+                                                                console.error('Error:', error);
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: 'Error crítico',
+                                                                    text: 'Ocurrió un error inesperado. Por favor, verifica tu conexión o contacta al soporte.',
+                                                                    confirmButtonText: 'Cerrar'
                                                                 });
-                                                        });                                                        
+                                                            });
+                                                        });                                                         
                                                     </script>   
                                                     <script>
                                                         const fileInput = document.getElementById('nuevoDocumento-<%= usuario.id_usuario %>');
