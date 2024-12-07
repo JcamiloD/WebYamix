@@ -826,12 +826,12 @@ $(document).ready(function() {
                     ? clasesUsuario.some(claseUsuario => String(claseUsuario.id_curso) === String(clase.id_curso))
                     : allClassesOfCourseEnrolled;
 
-                // Mostrar el botón "Unirse" si no está inscrito en todas las clases del curso
+                // Mostrar el botón "Unirse" si no está inscrito en todas las clases del curso y si el usuario está habilitado
                 const showJoinButton = !!(dataRolEstado.id_rol && (dataRolEstado.id_rol === 1 || dataRolEstado.id_rol === 4) && dataRolEstado.estado === 'habilitado' && !allClassesOfCourseEnrolledFixed);
 
-                // Mostrar el botón "Abandonar" solo si el usuario está inscrito en alguna de las clases de ese curso
+                // Mostrar el botón "Abandonar" solo si el usuario está inscrito en alguna de las clases de ese curso y si el usuario está habilitado
                 const isEnrolledInClass = clasesUsuario.some(claseUsuario => String(claseUsuario.id_curso) === String(clase.id_curso));
-                const showLeaveButton = !!(dataRolEstado.id_rol && isEnrolledInClass);
+                const showLeaveButton = !!(dataRolEstado.id_rol && isEnrolledInClass && dataRolEstado.estado === 'habilitado');
 
                 // Imprimir el valor de showJoinButton para depurar
                 console.log(`Mostrar botón Unirse para el curso ${clase.id_curso}: ${showJoinButton}`);
@@ -869,7 +869,7 @@ $(document).ready(function() {
     } catch (error) {
         console.error("Error al cargar las clases:", error);
     }
-  });
+});
 </script>
 
 
