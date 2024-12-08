@@ -39,7 +39,7 @@ let clasesGlobal = [];
 
 async function fetchClases() {
     try {
-        const response = await fetch('http://localhost:4000/api/traerPara');
+        const response = await fetch('http://35.199.176.100/api/traerPara');
         const clases = await response.json();
         clasesGlobal = clases;  
 
@@ -135,7 +135,7 @@ fetchClases();
 //cursos
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const response = await fetch("http://localhost:4000/api/traerParaCur");
+        const response = await fetch("http://35.199.176.100/api/traerParaCur");
         const clases = await response.json();
 
         if (!clases || clases.length === 0) {
@@ -210,8 +210,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 //catalogo
 
-<<<<<<< HEAD
-=======
     async function obtenerCatalogo() {
         try {
             const response = await fetch("http://localhost:4000/api/get-all");
@@ -311,5 +309,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.addEventListener('DOMContentLoaded', obtenerCatalogo);
 
 
->>>>>>> bb90b3390a8a4fa158ac53c2ff679c37c65e82f5
     
