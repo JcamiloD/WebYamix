@@ -149,6 +149,7 @@ exports.register = async (req, res) => {
 
 
 exports.login = async (req, res) => {
+    console.log("logueando")
     const { correo, contraseña } = req.body;
 
     try {
