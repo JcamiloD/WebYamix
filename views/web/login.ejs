@@ -126,8 +126,10 @@
                 });
             }
         } catch (error) {
+            console.log(error)
             // Manejo de errores de conexión o excepciones
             Swal.fire({
+                
                 icon: 'error',
                 title: 'Error',
                 text: 'Hubo un problema con el servidor. Intenta más tarde.'
