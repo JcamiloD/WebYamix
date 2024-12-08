@@ -29,10 +29,10 @@ const app = express();
 app.use(cookieParser());
 
 // Configura CORS para permitir solicitudes desde el frontend
-app.use(cors({
-    origin: 'http://10.138.0.3:3000', // Cambia esto si tu frontend está en otra URL
-    credentials: true // Permite el envío de cookies
-}));
+    app.use(cors({
+        origin: ['http://10.138.0.3:3000', 'http://yamix.online/'], // Cambia esto si tu frontend está en otra URL
+        credentials: true // Permite el envío de cookies
+    }));
 
 // Configura el motor de plantillas
 
