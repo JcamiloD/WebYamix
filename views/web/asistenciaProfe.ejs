@@ -444,6 +444,11 @@
           return;
         }
 
+        if (isBeforeTwoMonths(nuevaFecha)) {
+          alert("No se puede seleccionar una fecha anterior a hace dos meses.");
+          return;
+        }
+
         try {
           const nuevaFechaUTC = convertToUTC(nuevaFecha);
 
@@ -478,11 +483,16 @@
         fechaActual.setHours(0, 0, 0, 0);
         const fechaActualFormateada = convertToLocalDate(fechaActual);
 
-        const inputFecha = `<input type="date" class="form-control" value="${fechaFormateada}" max="${fechaActualFormateada}" />`;
+        const fechaLimite = new Date();
+        fechaLimite.setMonth(fechaLimite.getMonth() - 2);
+        const fechaLimiteFormateada = fechaLimite.toISOString().split("T")[0];
+
+        const inputFecha = `<input type="date" class="form-control" value="${fechaFormateada}" max="${fechaActualFormateada}" min="${fechaLimiteFormateada}" />`;
 
         fechaEl.innerHTML = inputFecha;
         const inputDateField = fechaEl.querySelector("input[type='date']");
         inputDateField.max = fechaActualFormateada;
+        inputDateField.min = fechaLimiteFormateada;
 
         inputDateField.addEventListener("change", function () {
           const selectedDate = new Date(this.value);
@@ -493,15 +503,22 @@
             alert("No se puede seleccionar una fecha futura.");
             this.value = fechaActualFormateada;
           }
+
+          if (selectedDate < fechaLimite) {
+            alert("No se puede seleccionar una fecha anterior a hace dos meses.");
+            this.value = fechaLimiteFormateada;
+          }
         });
       }
     });
 
+    // Función para convertir fecha a UTC
     function convertToUTC(localDate) {
       const localDateObj = new Date(localDate);
       return new Date(localDateObj.getUTCFullYear(), localDateObj.getUTCMonth(), localDateObj.getUTCDate()).toISOString();
     }
 
+    // Función para convertir a fecha local en formato 'YYYY-MM-DD'
     function convertToLocalDate(date) {
       const localDate = new Date(date);
       const offset = -5; // Zona horaria de Colombia (UTC -5)
@@ -509,12 +526,22 @@
       return localDate.toISOString().split("T")[0];
     }
 
+    // Función para verificar si la fecha es futura
     function isFutureDate(fecha) {
       const fechaSeleccionada = new Date(fecha);
       const fechaHoy = new Date();
       fechaHoy.setHours(0, 0, 0, 0);
       return fechaSeleccionada > fechaHoy;
     }
+
+    // Función para verificar si la fecha es anterior a hace dos meses
+    function isBeforeTwoMonths(fecha) {
+      const fechaSeleccionada = new Date(fecha);
+      const fechaLimite = new Date();
+      fechaLimite.setMonth(fechaLimite.getMonth() - 2);
+      return fechaSeleccionada < fechaLimite;
+    }
+
 
     // Editar asistencia
     document.getElementById("editButton").addEventListener("click", () => {
@@ -585,7 +612,7 @@
           <!-- Campo de fecha -->
           <div class="form-group">
             <label for="fechaAsistencia">Fecha</label>
-            <input type="date" class="form-control" id="fechaAsistencia" required max="<%= new Date().toISOString().split('T')[0] %>">
+            <input type="date" class="form-control" id="fechaAsistencia" required>
           </div>
 
           <!-- Campo de clase como un select -->
@@ -633,69 +660,102 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Llenar la lista de estudiantes cuando se selecciona la clase
-    document.getElementById('id_clase').addEventListener('change', async function () {
-      const idClase = this.value;
-      
+    const fechaAsistencia = document.getElementById('fechaAsistencia');
+    const idClase = document.getElementById('id_clase');
+    const estudiantesContainer = document.getElementById('estudiantes_container');
+
+    // Función para obtener estudiantes
+    async function obtenerEstudiantes() {
+      const idClaseSeleccionada = idClase.value;
+      const fechaSeleccionada = fechaAsistencia.value;
+
+      // Verificar que ambos campos tengan valores antes de realizar la consulta
+      if (!idClaseSeleccionada || !fechaSeleccionada) {
+        estudiantesContainer.innerHTML = '<p>Seleccione una clase y una fecha para ver los estudiantes.</p>';
+        return;
+      }
+
       try {
-        const response = await fetch(`http://localhost:4000/api/claseEstudiante/${idClase}`);
+        // Hacer la consulta a la API con los parámetros id_clase y fecha_asistencia
+        const response = await fetch(`http://localhost:4000/api/claseEstudiante/${idClaseSeleccionada}?fecha_asistencia=${fechaSeleccionada}`);
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`Error HTTP: ${response.status}`);
         }
-        
+
         const estudiantes = await response.json();
-        
-        // Limpiar la lista de estudiantes
-        const estudiantesContainer = document.getElementById('estudiantes_container');
-        if (!estudiantesContainer) {
-          console.error('Error: No se encontró el contenedor de estudiantes');
-          return;
-        }
+
+        // Limpiar el contenedor de estudiantes
         estudiantesContainer.innerHTML = '';
-        
+
         // Llenar la lista con los estudiantes obtenidos
-        estudiantes.forEach(estudiante => {
-          const checkboxHtml = `
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input" name="estudiantes" id="estudiante-${estudiante.id_usuario}" data-estudiante-id="${estudiante.id_usuario}">
-              <label class="form-check-label" for="estudiante-${estudiante.id_usuario}">
-                ${estudiante.nombre} ${estudiante.apellido}
-              </label>
-            </div>
-          `;
-          estudiantesContainer.innerHTML += checkboxHtml;
-        });
+        if (estudiantes.length === 0) {
+          estudiantesContainer.innerHTML = '<p>No hay estudiantes disponibles para la fecha seleccionada.</p>';
+        } else {
+          estudiantes.forEach(estudiante => {
+            const checkboxHtml = `
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="estudiantes" id="estudiante-${estudiante.id_usuario}" data-estudiante-id="${estudiante.id_usuario}">
+                <label class="form-check-label" for="estudiante-${estudiante.id_usuario}">
+                  ${estudiante.nombre} ${estudiante.apellido}
+                </label>
+              </div>
+            `;
+            estudiantesContainer.innerHTML += checkboxHtml;
+          });
+        }
       } catch (error) {
         console.error('Error al obtener los estudiantes:', error);
+        estudiantesContainer.innerHTML = '<p>Error al cargar los estudiantes. Por favor, intente nuevamente.</p>';
       }
-    });
+    }
+
+    // Agregar listeners para los campos de clase y fecha
+    idClase.addEventListener('change', obtenerEstudiantes);
+    fechaAsistencia.addEventListener('change', obtenerEstudiantes);
+
+    // Obtener la fecha de hoy y la fecha de hace dos meses
+    const today = new Date();
+    const twoMonthsAgo = new Date();
+    twoMonthsAgo.setMonth(today.getMonth() - 2);
+
+    // Función para formatear las fechas en formato YYYY-MM-DD
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Establecer los valores de fecha mínima y máxima
+    fechaAsistencia.setAttribute('min', formatDate(twoMonthsAgo)); // Hace dos meses
+    fechaAsistencia.setAttribute('max', formatDate(today)); // Hoy
 
     // Manejo del formulario de asistencia
     document.getElementById('formAsistencia').addEventListener('submit', async function (event) {
       event.preventDefault();
-  
-      const fechaAsistencia = document.getElementById('fechaAsistencia').value;
-      const idClase = document.getElementById('id_clase').value;
-      
+
+      const fechaSeleccionada = fechaAsistencia.value;
+      const idClaseSeleccionada = idClase.value;
+
       // Obtener los estudiantes seleccionados
       const allCheckboxes = document.querySelectorAll('input[name="estudiantes"]');
       const estudiantes = Array.from(allCheckboxes).map(checkbox => ({
-        id_usuario: checkbox.dataset.estudianteId, // Usamos el data-estudiante-id para obtener el ID
+        id_usuario: checkbox.dataset.estudianteId,
         presente: checkbox.checked ? 1 : 0
       }));
-      
+
       // Verificar que los campos no estén vacíos
-      if (!fechaAsistencia || !idClase) {
+      if (!fechaSeleccionada || !idClaseSeleccionada) {
         alert('Por favor, complete todos los campos.');
         return;
       }
-  
+
       const data = {
-        fecha_asistencia: fechaAsistencia,
-        id_clase: idClase,
+        fecha_asistencia: fechaSeleccionada,
+        id_clase: idClaseSeleccionada,
         estudiantes
       };
-      
+
       try {
         const response = await fetch('/crear_asistencia', {
           method: 'POST',
@@ -704,18 +764,18 @@
           },
           body: JSON.stringify(data)
         });
-  
+
         const result = await response.json();
         if (!response.ok) {
           throw new Error(result.message || 'Error en el servidor');
         }
-        
+
         alert(result.message);
-  
+
         // Limpiar el formulario y la lista de estudiantes
         document.getElementById('formAsistencia').reset();
-        document.getElementById('estudiantes_container').innerHTML = '';
-        
+        estudiantesContainer.innerHTML = '';
+
         // Recargar la vista
         window.location.reload();
       } catch (error) {
