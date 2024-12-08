@@ -30,7 +30,7 @@ app.use(cookieParser());
 
 // Configura CORS para permitir solicitudes desde el frontend
     app.use(cors({
-        origin: ['http://10.138.0.3:3000', 'http://yamix.online/'], // Cambia esto si tu frontend está en otra URL
+        origin: ['http://yamix.online/'], // Cambia esto si tu frontend está en otra URL
         credentials: true // Permite el envío de cookies
     }));
 
