@@ -318,7 +318,7 @@
 
                 try {
                     // Realizar una solicitud GET pasando la fecha como parámetro en la URL
-                    const response = await fetch(`http://localhost:4000/api/claseEstudiante/${idClase}?fecha_asistencia=${fechaAsistencia}`, {
+                    const response = await fetch(`http://35.199.176.100/api/claseEstudiante/${idClase}?fecha_asistencia=${fechaAsistencia}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -425,7 +425,7 @@
                 $(this).data('id', id_asistencia); // Esto permite acceder a id_asistencia más tarde
     
                 try {
-                    const response = await fetch(`http://localhost:4000/api/estudiantesPorAsistencia/${id_asistencia}`);
+                    const response = await fetch(`http://35.199.176.100/api/estudiantesPorAsistencia/${id_asistencia}`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
@@ -494,7 +494,7 @@
                 console.log("Datos enviados:", { id_asistencia, cambios });
     
                 try {
-                    const response = await fetch(`http://localhost:4000/api/actualizar_asistencia_estudiantes`, {
+                    const response = await fetch(`http://35.199.176.100/api/actualizar_asistencia_estudiantes`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
@@ -548,7 +548,7 @@
 
             try {
                 // Enviar los datos actualizados a la API
-                const response = await fetch(`http://localhost:4000/api/actualizar_asistencia/${id_asistencia}`, {
+                const response = await fetch(`http://35.199.176.100/api/actualizar_asistencia/${id_asistencia}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'

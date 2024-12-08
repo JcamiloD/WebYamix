@@ -324,7 +324,7 @@
 
         // Cargar estudiantes
         try {
-          const response = await fetch(`http://localhost:4000/api/estudiantesPorAsistencia/${idAsistencia}`);
+          const response = await fetch(`http://35.199.176.100/api/estudiantesPorAsistencia/${idAsistencia}`);
           if (!response.ok) throw new Error("Error al cargar estudiantes");
 
           const data = await response.json();
@@ -452,7 +452,7 @@
         try {
           const nuevaFechaUTC = convertToUTC(nuevaFecha);
 
-          const response = await fetch(`http://localhost:4000/api/actualizar_asistencia/${idAsistencia}`, {
+          const response = await fetch(`http://35.199.176.100/api/actualizar_asistencia/${idAsistencia}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fecha_asistencia: nuevaFechaUTC }),
@@ -564,7 +564,7 @@
       });
 
       try {
-        const response = await fetch(`http://localhost:4000/api/actualizar_asistencia_estudiantes/`, {
+        const response = await fetch(`http://35.199.176.100/api/actualizar_asistencia_estudiantes/`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_asistencia: idAsistencia, cambios: cambiosDeAsistencia }),
@@ -677,7 +677,7 @@
 
       try {
         // Hacer la consulta a la API con los parámetros id_clase y fecha_asistencia
-        const response = await fetch(`http://localhost:4000/api/claseEstudiante/${idClaseSeleccionada}?fecha_asistencia=${fechaSeleccionada}`);
+        const response = await fetch(`http://35.199.176.100/api/claseEstudiante/${idClaseSeleccionada}?fecha_asistencia=${fechaSeleccionada}`);
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
         }

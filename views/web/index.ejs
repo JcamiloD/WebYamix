@@ -279,11 +279,11 @@
    async function cargarEventos() {
     try {
       // Obtener eventos
-      const responseEventos = await fetch('http://localhost:4000/api/traer_eventosU');
+      const responseEventos = await fetch('http://35.199.176.100/api/traer_eventosU');
       const eventos = await responseEventos.json();
   
       // Obtener cursos
-      const responseCursos = await fetch('http://localhost:4000/api/traer_cursos');
+      const responseCursos = await fetch('http://35.199.176.100/api/traer_cursos');
       const cursos = await responseCursos.json();
   
       // Contenedores para los indicadores y las tarjetas
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', cargarEventos);
 
 async function mostrarDetallesModal(eventoId) {
     try {
-        const response = await fetch(`http://localhost:4000/api/obtener_evento/${eventoId}`);
+        const response = await fetch(`http://35.199.176.100/api/obtener_evento/${eventoId}`);
         const evento = await response.json();
 
         // Rellenar los campos de la modal con los datos del evento
@@ -640,7 +640,7 @@ $(document).ready(function() {
 
   async function fetchClases() {
       try {
-          const response = await fetch('http://localhost:4000/api/traerPara');
+          const response = await fetch('http://35.199.176.100/api/traerPara');
           const clases = await response.json();
           clasesGlobal = clases;  
   
@@ -746,7 +746,7 @@ $(document).ready(function() {
         console.log("Clases disponibles:", clasesDisponibles);
 
         // Traer las clases desde la API
-        const response = await fetch("http://localhost:4000/api/traer_clases");
+        const response = await fetch("http://35.199.176.100/api/traer_clases");
         const clasesData = await response.json();
 
         // Agrupar las clases por curso
@@ -891,7 +891,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalUnirse.addEventListener("show.bs.modal", async (event) => {
         const idCurso = event.relatedTarget.getAttribute("data-id-curso");  // Obtener el id_curso de la tarjeta
         try {
-            const response = await fetch("http://localhost:4000/api/traer_clases");
+            const response = await fetch("http://35.199.176.100/api/traer_clases");
             const clases = await response.json();
 
             // Obtener las clases en las que el usuario ya está inscrito
@@ -921,7 +921,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalAbandonar.addEventListener("show.bs.modal", async (event) => {
         const idCurso = event.relatedTarget.getAttribute("data-id-curso");  // Obtener el id_curso de la tarjeta
         try {
-            const response = await fetch("http://localhost:4000/api/traer_clases");
+            const response = await fetch("http://35.199.176.100/api/traer_clases");
             const clases = await response.json();
 
             // Filtrar las clases que el usuario está inscrito, basándonos en clasesUsuario

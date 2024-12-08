@@ -153,7 +153,7 @@ exports.actualizarCurso = async (req, res) => {
         }
 
         // Enviar la solicitud al servidor principal
-        const response = await axios.post(`${process.env.pathApi}/api/actualizar_curso/${id}`, formData, {
+        const response = await axios.post(`${process.env.pathApi}/actualizar_curso/${id}`, formData, {
             headers: {
                 ...formData.getHeaders(),
             },

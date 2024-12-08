@@ -221,7 +221,7 @@
                                                                                     <h6>PDF <%= index + 1 %></h6>
                                                                                     <iframe 
                                                                                         id="pdfViewer-<%= usuario.id_usuario %>-<%= index %>" 
-                                                                                        src="http://localhost:4000<%= doc.ruta_archivo %>" 
+                                                                                        src="http://35.199.176.100<%= doc.ruta_archivo %>" 
                                                                                         frameborder="0" 
                                                                                         style="width: 100%; height: 300px;">
                                                                                     </iframe>
@@ -683,7 +683,7 @@
                             }
                         });
         
-                        fetch(`http://localhost:4000/api/update-doc/${id_documento}`, {
+                        fetch(`http://35.199.176.100/api/update-doc/${id_documento}`, {
                             method: 'PUT',
                             body: formData,
                         })
@@ -729,7 +729,7 @@
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        fetch(`http://localhost:4000/api/delete-document/${id_documento}`, {
+                        fetch(`http://35.199.176.100/api/delete-document/${id_documento}`, {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' }
                         })
@@ -874,7 +874,7 @@
                 
                             // Verificar correo con AJAX
                             $.ajax({
-                                url: 'http://localhost:4000/api/verificar_correo',
+                                url: 'http://35.199.176.100/api/verificar_correo',
                                 type: 'POST',
                                 data: { correo: correo },
                                 success: function (response) {
@@ -1020,7 +1020,7 @@
                                     }
                         
                                     // Lógica para verificar si el correo ya está en uso
-                                    fetch('http://localhost:4000/api/verificar_correo_editar', {
+                                    fetch('http://35.199.176.100/api/verificar_correo_editar', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -1169,7 +1169,7 @@
         // Cargar eventos desde la API
         events: function(start, end, timezone, callback) {
           $.ajax({
-            url: 'http://localhost:4000/api/traer_eventos',
+            url: 'http://35.199.176.100/api/traer_eventos',
             dataType: 'json',
             success: function(data) {
               var events = data.map(function(event) {
@@ -1226,7 +1226,7 @@
                 $('#calendar').fullCalendar("removeEvents", event._id);
                 $.ajax({
                   type: 'DELETE',
-                  url: 'http://localhost:4000/api/eliminar_evento/' + event._id,
+                  url: 'http://35.199.176.100/api/eliminar_evento/' + event._id,
                   success: function() {
                     Swal.fire('Eliminado', 'El evento fue borrado correctamente.', 'success');
                   },
@@ -1259,7 +1259,7 @@
           }
     
           $.ajax({
-            url: `http://localhost:4000/api/actualizar_evento/${idEvento}`,
+            url: `http://35.199.176.100/api/actualizar_evento/${idEvento}`,
             type: 'POST',
             data: {
               fecha_hora_inicio: start,

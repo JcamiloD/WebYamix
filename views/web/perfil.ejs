@@ -311,7 +311,7 @@ document.getElementById('addDocumentForm').addEventListener('submit', function(e
   formData.append('id_usuario', usuarioId);
 
   // Enviar el formulario usando fetch
-  fetch('http://localhost:4000/api/documentoperfil', {
+  fetch('http://35.199.176.100/api/documentoperfil', {
     method: 'POST',
     body: formData,
   })
@@ -373,7 +373,7 @@ document.getElementById('addDocumentForm').addEventListener('submit', function(e
       }
 
       // Enviar los datos a la API
-      fetch(`http://localhost:4000/api/editar_perfil/${userId}`, {
+      fetch(`http://35.199.176.100/api/editar_perfil/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -512,7 +512,7 @@ async function fetchClases() {
   const rol = decoded.rol
 
   try {
-    const response = await fetch(`http://localhost:4000/api/claseParaEstudiante/${id}?rol=${rol}`);
+    const response = await fetch(`http://35.199.176.100/api/claseParaEstudiante/${id}?rol=${rol}`);
     const clases = await response.json();
     clasesGlobal = clases;
 
