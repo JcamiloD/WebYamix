@@ -69,7 +69,6 @@
         }
 
         try {
-
             // Enviar datos al controlador
             const response = await fetch('http://35.199.176.100/logueo', {
                 method: 'POST',
@@ -79,57 +78,64 @@
                 body: JSON.stringify({ correo, contraseña })
             });
 
-            // Procesar respuesta del controlador
-            const resultado = await response.json();
-            console.log('Código de respuesta:', response.status);
-            if (response.status === 202) { 
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Cuenta en espera',
-                    text: 'Por favor, completa la documentación requerida en perfil',
-                    timer: 4000, // 3 segundos antes de redirigir
-                    showConfirmButton: false
-                }).then(() => {
-                    setTimeout(() => {
-                        window.location.href = '/perfil'; // Redirige a la ruta del backend
+            // Verificar si la respuesta es JSON
+            const contentType = response.headers.get('Content-Type');
+            if (contentType?.includes('application/json')) {
+                const resultado = await response.json();
+
+                console.log('Código de respuesta:', response.status);
+
+                if (response.status === 202) { 
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Cuenta en espera',
+                        text: 'Por favor, completa la documentación requerida en perfil',
+                        timer: 4000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        setTimeout(() => {
+                            window.location.href = '/perfil'; // Redirige a la ruta del backend
+                        });
                     });
-                });
-            }
-
-            if (response.status === 403) {
-                // Manejo de usuario deshabilitado
+                } else if (response.status === 403) {
+                    // Manejo de usuario deshabilitado
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Usuario deshabilitado',
+                        text: 'Tu cuenta está deshabilitada. Contacta al administrador para más información.'
+                    });
+                } else if (response.status === 200) {
+                    // Manejo de inicio de sesión exitoso
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Inicio de sesión exitoso',
+                        text: 'Redirigiendo...',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = resultado.ruta; // Redirige a la ruta del backend
+                    });
+                } else if (response.status === 401) {
+                    // Manejo de errores de autenticación
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: resultado.message || 'Credenciales incorrectas. Intenta nuevamente.'
+                    });
+                }
+            } else {
+                // Manejar respuestas no JSON
+                console.error('Respuesta no JSON:', await response.text());
                 Swal.fire({
                     icon: 'error',
-                    title: 'Usuario deshabilitado',
-                    text: 'Tu cuenta está deshabilitada. Contacta al administrador para más información.'
-                });
-                return;
-            }
-
-            if (response.status === 200) {
-                // Manejo de inicio de sesión exitoso
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Inicio de sesión exitoso',
-                    text: 'Redirigiendo...',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    window.location.href = resultado.ruta; // Redirige a la ruta del backend
-                });
-            } else if(response.status === 401) {
-                // Manejo de otros errores desde el servidor
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: resultado.message || 'Credenciales incorrectas. Intenta nuevamente.'
+                    title: 'Error en el servidor',
+                    text: 'Respuesta inesperada del servidor.'
                 });
             }
         } catch (error) {
-            console.log(error)
+            console.error('Error de conexión:', error);
             // Manejo de errores de conexión o excepciones
             Swal.fire({
-                
                 icon: 'error',
                 title: 'Error',
                 text: 'Hubo un problema con el servidor. Intenta más tarde.'
@@ -148,6 +154,7 @@
         }
     }
 </script>
+
 
 
 
