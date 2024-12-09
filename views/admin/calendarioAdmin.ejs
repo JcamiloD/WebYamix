@@ -391,9 +391,9 @@
  
             eventDrop: function (event) {
                 var idEvento = event._id; 
-                var start = event.start ? event.start.format('YYYY-MM-DDTHH:mm:ss') : '';
-                var end = event.end ? event.end.format('YYYY-MM-DDTHH:mm:ss') : start;
-                var fechaActual = moment().format('YYYY-MM-DDTHH:mm:ss');
+                var start = event.start ? event.start.format('YYYY-MM-DD HH:mm:ss') : '';
+                var end = event.end ? event.end.format('YYYY-MM-DD HH:mm:ss') : start;
+                var fechaActual = moment().format('YYYY-MM-DD HH:mm:ss');
 
                 // Validaciones de fechas
                 if (start < fechaActual) {
