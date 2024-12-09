@@ -366,7 +366,7 @@ $('#addForm').on('submit', function (event) {
     $('#spinner').show();
 
     // Enviar solicitud al servidor
-    fetch('/agregar_curso', {
+    fetch('http://yamix.online/agregar_curso', {
         method: 'POST',
         body: formData
     })
