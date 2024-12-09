@@ -11,7 +11,7 @@
         <div class="form-box">
             <div class="form-value">
                 <form id="restablecerForm" action="/registro" method="post" onsubmit="validarFormulario(event)">
-                    <h2>Inscríbete</h2>
+                    <h2>Registrarse</h2>
                     <div class="inputbox">
                         <ion-icon name="person"></ion-icon>
                         <input name="nombre" type="text" id="nombre">
@@ -41,10 +41,10 @@
                         <label for="confirmarContraseña">Confirmar Contraseña</label>
                         <ion-icon name="eye-off-outline" class="show-password" onclick="togglePassword('confirmarContraseña', this)"></ion-icon>
                     </div>
-
+                    <br>
                     <!-- Google reCAPTCHA -->
                     <div class="g-recaptcha" data-sitekey="6Le2640qAAAAAOck_dTlrMgxvOAmMhFve0-OksUT"></div>
-
+                    <br>
                     <button type="submit">Registrar</button>
                     <div class="register">
                         <p>¿Ya tienes cuenta? <a href="/login">Iniciar Sesión</a></p>
@@ -66,7 +66,6 @@
     
             // Obtener la respuesta de reCAPTCHA
             const captchaResponse = grecaptcha.getResponse();
-            console.log("Token de reCAPTCHA obtenido:", captchaResponse);
     
             if (!captchaResponse) {
                 Swal.fire({
