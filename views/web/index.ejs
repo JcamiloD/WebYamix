@@ -889,18 +889,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // Manejador de eventos para la modal "Unirse"
     const modalUnirse = document.getElementById("modalUnirse");
     modalUnirse.addEventListener("show.bs.modal", async (event) => {
-        const idCurso = event.relatedTarget.getAttribute("data-id-curso");  // Obtener el id_curso de la tarjeta
+        const idCurso = event.relatedTarget.getAttribute("data-id-curso"); // Obtener el id_curso de la tarjeta
         try {
             const response = await fetch("http://35.199.176.100/api/traer_clases");
             const clases = await response.json();
 
             // Obtener las clases en las que el usuario ya está inscrito
-            const clasesUsuario = <%- JSON.stringify(dataRolEstado.clases) %>;  // Clases del usuario
+            const clasesUsuario = <%- JSON.stringify(dataRolEstado.clases) %>; // Clases del usuario
 
-            // Filtrar las clases que coincidan con el id_curso y que el usuario no esté inscrito
+            // Filtrar las clases que coincidan con el id_curso, estén activas, y el usuario no esté inscrito
             const clasesFiltradas = clases.filter(clase => 
-                String(clase.id_curso) === idCurso &&  // La clase debe ser del curso
-                !clasesUsuario.some(c => String(c.id_clase) === String(clase.id_clase))  // El usuario no debe estar inscrito en esa clase
+                String(clase.id_curso) === idCurso && // La clase debe ser del curso
+                clase.estado === "activo" && // La clase debe estar activa
+                !clasesUsuario.some(c => String(c.id_clase) === String(clase.id_clase)) // El usuario no debe estar inscrito en esa clase
             );
 
             // Formatear las clases para el select
@@ -919,18 +920,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Manejador de eventos para la modal "Abandonar"
     const modalAbandonar = document.getElementById("modalAbandonar");
     modalAbandonar.addEventListener("show.bs.modal", async (event) => {
-        const idCurso = event.relatedTarget.getAttribute("data-id-curso");  // Obtener el id_curso de la tarjeta
+        const idCurso = event.relatedTarget.getAttribute("data-id-curso"); // Obtener el id_curso de la tarjeta
         try {
             const response = await fetch("http://35.199.176.100/api/traer_clases");
             const clases = await response.json();
 
-            // Filtrar las clases que el usuario está inscrito, basándonos en clasesUsuario
-            const clasesUsuario = <%- JSON.stringify(dataRolEstado.clases) %>;  // Clases del usuario
+            // Filtrar las clases que sean del curso, estén activas, y el usuario esté inscrito
+            const clasesUsuario = <%- JSON.stringify(dataRolEstado.clases) %>; // Clases del usuario
 
-            // Filtrar las clases que sean del curso y que el usuario esté inscrito
             const clasesFiltradas = clases.filter(clase => 
-                String(clase.id_curso) === idCurso &&  // La clase debe ser del curso
-                clasesUsuario.some(c => String(c.id_clase) === String(clase.id_clase))  // El usuario debe estar inscrito en esa clase
+                String(clase.id_curso) === idCurso && // La clase debe ser del curso
+                clase.estado === "activo" && // La clase debe estar activa
+                clasesUsuario.some(c => String(c.id_clase) === String(clase.id_clase)) // El usuario debe estar inscrito en esa clase
             );
 
             // Formatear las clases para el select
@@ -946,35 +947,51 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Manejador de envío para la modal "Unirse"
-    const formUnirse = document.getElementById("formUnirse");
-    formUnirse.addEventListener("submit", async (event) => {
-        event.preventDefault();
 
-        const idClase = document.getElementById("claseUnirse").value;  // Obtener el id de la clase seleccionada
+// Manejador de envío para la modal "Unirse"
+const formUnirse = document.getElementById("formUnirse");
+formUnirse.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-        try {
-            const response = await fetch("/agregarAclase", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    id_clase: idClase
-                })
-            });
+    const idClase = document.getElementById("claseUnirse").value;  // Obtener el id de la clase seleccionada
 
-            if (response.ok) {
-                alert("Te has unido a la clase exitosamente!");
-                // Recargar la vista
+    try {
+        const response = await fetch("/agregarAclase", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id_clase: idClase
+            })
+        });
+
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Unido a la clase!',
+                text: "Te has unido a la clase exitosamente!"
+            }).then(() => {
+                // Recargar la vista después de confirmar el mensaje
                 location.reload();
-            } else {
-                alert("Hubo un error al intentar unirse.");
-            }
-        } catch (error) {
-            console.error("Error al unirse a la clase:", error);
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: "Hubo un error al intentar unirse."
+            });
         }
-    });
+    } catch (error) {
+        console.error("Error al unirse a la clase:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "Hubo un problema al intentar unirse a la clase. Intenta nuevamente."
+        });
+    }
+});
+
 
     // Manejador de envío para la modal "Abandonar"
     const formAbandonar = document.getElementById("formAbandonar");
@@ -995,15 +1012,29 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (response.ok) {
-                alert("Has abandonado la clase exitosamente!");
-                // Recargar la vista
+            Swal.fire({
+                icon: 'warning',
+                title: '¡Clase abandonada!',
+                text: "Has abandonado la clase exitosamente!"
+            }).then(() => {
+                // Recargar la vista después de confirmar el mensaje
                 location.reload();
-            } else {
-                alert("Hubo un error al intentar abandonar.");
-            }
-        } catch (error) {
-            console.error("Error al abandonar la clase:", error);
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: "Hubo un error al intentar abandonar la clase."
+            });
         }
+    } catch (error) {
+        console.error("Error al abandonar la clase:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "Hubo un problema al intentar abandonar la clase. Intenta nuevamente."
+        });
+    }
     });
 });
 
