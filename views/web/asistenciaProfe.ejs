@@ -352,13 +352,17 @@
             }
           });
 
-          // Almacenar los datos de estudiantes para usarlos cuando se edite la asistencia
-          window.estudiantes = data.estudiantes; // Guardar los estudiantes en un objeto global o en un lugar accesible
-        } catch (error) {
-          console.error("Error:", error);
-          alert("Error al cargar los estudiantes.");
-        }
-      });
+         // Almacenar los datos de estudiantes para usarlos cuando se edite la asistencia
+         window.estudiantes = data.estudiantes; // Guardar los estudiantes en un objeto global o en un lugar accesible
+            } catch (error) {
+                console.error("Error:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Error al cargar los estudiantes.",
+                });
+            }
+        });
     });
 
     // Función para activar o desactivar el modo de edición
@@ -425,57 +429,81 @@
       return `${day} de ${month} del ${year}`;
     }
 
-    // Función para editar la fecha
-    document.getElementById("editFechaBtn").addEventListener("click", async function () {
-      const fechaEl = document.getElementById("modalFechaAsistencia");
-      const button = document.querySelector(`.btn-view[data-id_asistencia='${idAsistencia}']`);
+  // Función para editar la fecha
+document.getElementById("editFechaBtn").addEventListener("click", async function () {
+    const fechaEl = document.getElementById("modalFechaAsistencia");
+    const button = document.querySelector(`.btn-view[data-id_asistencia='${idAsistencia}']`);
 
-      if (!button) {
+    if (!button) {
         console.error("No se encontró el botón correspondiente.");
-        alert("No se puede editar la fecha.");
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "No se puede editar la fecha.",
+        });
         return;
-      }
+    }
 
-      const existingInput = fechaEl.querySelector("input[type='date']");
-      if (existingInput) {
+    const existingInput = fechaEl.querySelector("input[type='date']");
+    if (existingInput) {
         const nuevaFecha = existingInput.value;
         if (isFutureDate(nuevaFecha)) {
-          alert("No se puede seleccionar una fecha futura.");
-          return;
+            Swal.fire({
+                icon: "warning",
+                title: "Fecha no válida",
+                text: "No se puede seleccionar una fecha futura.",
+            });
+            return;
         }
 
         if (isBeforeTwoMonths(nuevaFecha)) {
-          alert("No se puede seleccionar una fecha anterior a hace dos meses.");
-          return;
+            Swal.fire({
+                icon: "warning",
+                title: "Fecha no válida",
+                text: "No se puede seleccionar una fecha anterior a hace dos meses.",
+            });
+            return;
         }
 
         try {
-          const nuevaFechaUTC = convertToUTC(nuevaFecha);
+            const nuevaFechaUTC = convertToUTC(nuevaFecha);
 
-          const response = await fetch(`http://35.199.176.100/api/actualizar_asistencia/${idAsistencia}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fecha_asistencia: nuevaFechaUTC }),
-          });
+            const response = await fetch(`http://35.199.176.100/api/actualizar_asistencia/${idAsistencia}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ fecha_asistencia: nuevaFechaUTC }),
+            });
 
-          if (!response.ok) throw new Error("Error al actualizar la fecha");
+            if (!response.ok) throw new Error("Error al actualizar la fecha");
 
-          const result = await response.json();
-          alert(result.message);
+            const result = await response.json();
+            Swal.fire({
+                icon: "success",
+                title: "Fecha actualizada",
+                text: result.message,
+            });
 
-          fechaEl.innerHTML = formatDate(nuevaFechaUTC);
-          button.dataset.fecha_asistencia = nuevaFechaUTC;
+            fechaEl.innerHTML = formatDate(nuevaFechaUTC);
+            button.dataset.fecha_asistencia = nuevaFechaUTC;
         } catch (error) {
-          console.error("Error:", error);
-          alert("Error al guardar los cambios de la fecha");
+            console.error("Error:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Error al guardar los cambios de la fecha.",
+            });
         }
-      } else {
+    } else {
         const fechaSinFormato = button.dataset.fecha_asistencia;
 
         if (!fechaSinFormato) {
-          console.error("El valor de fecha_asistencia no está disponible.");
-          alert("No se puede editar la fecha porque no está disponible.");
-          return;
+            console.error("El valor de fecha_asistencia no está disponible.");
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "No se puede editar la fecha porque no está disponible.",
+            });
+            return;
         }
 
         const fechaFormateada = new Date(fechaSinFormato).toISOString().split("T")[0];
@@ -495,22 +523,31 @@
         inputDateField.min = fechaLimiteFormateada;
 
         inputDateField.addEventListener("change", function () {
-          const selectedDate = new Date(this.value);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-          if (selectedDate > today) {
-            alert("No se puede seleccionar una fecha futura.");
-            this.value = fechaActualFormateada;
-          }
+            if (selectedDate > today) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Fecha no válida",
+                    text: "No se puede seleccionar una fecha futura.",
+                });
+                this.value = fechaActualFormateada;
+            }
 
-          if (selectedDate < fechaLimite) {
-            alert("No se puede seleccionar una fecha anterior a hace dos meses.");
-            this.value = fechaLimiteFormateada;
-          }
+            if (selectedDate < fechaLimite) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Fecha no válida",
+                    text: "No se puede seleccionar una fecha anterior a hace dos meses.",
+                });
+                this.value = fechaLimiteFormateada;
+            }
         });
-      }
-    });
+    }
+});
+
 
     // Función para convertir fecha a UTC
     function convertToUTC(localDate) {
@@ -573,25 +610,35 @@
         if (!response.ok) throw new Error("Error al actualizar asistencia de estudiantes");
 
         const result = await response.json();
-        alert(result.message);
 
-        // Cerrar modal
-        const modal = new bootstrap.Modal(document.getElementById("viewModal"));
-        modal.hide();
+// SweetAlert de éxito
+Swal.fire({
+    icon: "success",
+    title: "¡Éxito!",
+    text: result.message,
+}).then(() => {
+    // Cerrar modal
+    const modal = new bootstrap.Modal(document.getElementById("viewModal"));
+    modal.hide();
 
-        // Reiniciar la página o cargar el contenido actualizado
-        location.reload(); // Recarga la página para actualizar los datos
+    // Reiniciar la página o cargar el contenido actualizado
+    location.reload(); // Recarga la página para actualizar los datos
 
-        // Alternativamente, si no quieres recargar la página, puedes resetear el estado de la vista aquí
-        // Ejemplo: restablecer los checkboxes y ocultar el botón de guardar cambios
-        document.getElementById("editButton").style.display = "block";
-        document.getElementById("saveChangesButton").style.display = "none";
-        toggleEditMode(false); // Esto quitaría los checkboxes si no quieres que se mantengan
+    // Alternativamente, si no quieres recargar la página, puedes resetear el estado de la vista aquí
+    document.getElementById("editButton").style.display = "block";
+    document.getElementById("saveChangesButton").style.display = "none";
+    toggleEditMode(false); // Esto quitaría los checkboxes si no quieres que se mantengan
+});
+} catch (error) {
+console.error("Error:", error);
 
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Error al actualizar asistencia de estudiantes");
-      }
+// SweetAlert de error
+Swal.fire({
+    icon: "error",
+    title: "Error",
+    text: "Error al actualizar asistencia de estudiantes",
+});
+}
     });
   });
 </script>
@@ -767,21 +814,32 @@
 
         const result = await response.json();
         if (!response.ok) {
-          throw new Error(result.message || 'Error en el servidor');
+            throw new Error(result.message || 'Error en el servidor');
         }
 
-        alert(result.message);
+        // SweetAlert de éxito
+        Swal.fire({
+            icon: 'success',
+            title: '¡Asistencia registrada!',
+            text: result.message,
+        }).then(() => {
+            // Limpiar el formulario y la lista de estudiantes
+            document.getElementById('formAsistencia').reset();
+            estudiantesContainer.innerHTML = '';
 
-        // Limpiar el formulario y la lista de estudiantes
-        document.getElementById('formAsistencia').reset();
-        estudiantesContainer.innerHTML = '';
-
-        // Recargar la vista
-        window.location.reload();
-      } catch (error) {
+            // Recargar la vista
+            window.location.reload();
+        });
+    } catch (error) {
         console.error('Error al enviar datos:', error);
-        alert('Error al enviar datos: ' + error.message);
-      }
+
+        // SweetAlert de error
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al enviar datos: ' + error.message,
+        });
+    }
     });
   });
   // Obtener el select del filtro y las tarjetas de asistencia

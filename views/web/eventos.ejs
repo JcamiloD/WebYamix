@@ -194,7 +194,7 @@
                 locale: 'es',
                 events: function(start, end, timezone, callback) {
     $.ajax({
-        url: 'http://35.199.176.100/api/traer_eventos',
+        url: 'http://35.199.176.100/api/traer_eventosU',
         dataType: 'json',
         success: function(data) {
             var events = data.map(event => ({
